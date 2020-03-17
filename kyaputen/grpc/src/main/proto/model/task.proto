@@ -1,0 +1,21 @@
+syntax = "proto3";
+package kyaputen.proto;
+
+option java_package = "com.kagaya.kyaputen.proto";
+option java_outer_classname = "TaskPb";
+
+message Task {
+    enum Status {
+        IN_PROGRESS = 0;
+        CANCELED = 1;
+        FAILED = 2;
+        FAILED_WITH_TERMINAL_ERROR = 3;
+        COMPLETED = 4;
+        COMPLETED_WITH_ERRORS = 5;
+        SCHEDULED = 6;
+        TIMED_OUT = 7;
+        SKIPPED = 8;
+    }
+    string task_type = 1;
+    Task.Status status = 2;
+}

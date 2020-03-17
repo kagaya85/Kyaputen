@@ -1,0 +1,22 @@
+syntax = "proto3";
+package kyaputen.grpc.tasks;
+
+import "model/task.proto";
+
+option java_package = "com.kagaya.kyaputen.grpc";
+option java_outer_classname = "TaskServicePb";
+
+service TaskService {
+    // GET /poll/{tasktype}
+    rpc Poll(PollRequest) returns (PollResponse);
+}
+
+message PollRequest {
+    string task_type = 1;
+    string worker_id = 2;
+    string domain = 3;
+}
+
+message PollResponse {
+    kyaputen.proto.Task task = 1;
+}
