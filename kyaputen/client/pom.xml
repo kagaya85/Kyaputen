@@ -11,5 +11,13 @@
 
     <artifactId>client</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.kagaya</groupId>
+            <artifactId>grpc</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+    </dependencies>
+
 
 </project>

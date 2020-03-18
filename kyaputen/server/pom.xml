@@ -10,12 +10,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>server</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>knative-client</artifactId>
-            <version>4.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kagaya</groupId>
+            <artifactId>grpc</artifactId>
+            <version>4.0.0</version>
         </dependency>
     </dependencies>
 
