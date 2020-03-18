@@ -15,8 +15,8 @@ public class KyaputenServer {
     private int port;
     private Server server;
 
-    public KyaputenServer(int bindPort) {
-        port = bindPort;
+    public KyaputenServer(int port) {
+        this.port = port;
     }
 
     public void start() throws IOException {
@@ -32,7 +32,7 @@ public class KyaputenServer {
         }
     }
 
-    private void blockUntilShutdown() throws InterruptedException {
+    public void blockUntilShutdown() throws InterruptedException {
         if (server != null) {
             server.awaitTermination();
         }
