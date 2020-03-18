@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>kyaputen</artifactId>
-        <groupId>com.kagaya</groupId>
+        <groupId>com.kagaya.kyaputen</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -18,9 +18,9 @@
             <artifactId>knative-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kagaya</groupId>
+            <groupId>com.kagaya.kyaputen</groupId>
             <artifactId>grpc</artifactId>
-            <version>4.0.0</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

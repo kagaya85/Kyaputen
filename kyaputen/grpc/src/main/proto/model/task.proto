@@ -16,6 +16,19 @@ message Task {
         TIMED_OUT = 7;
         SKIPPED = 8;
     }
-    string task_type = 1;
-    Task.Status status = 2;
+    string task_id = 1;
+    string task_type = 2;
+    Task.Status status = 3;
+    string reference_task_name = 4;
+    int32 retry_count = 5;
+    int32 seq = 6;
+    int32 poll_count = 7;
+    int64 scheduled_time = 8;
+    int64 start_time = 9;
+    int64 end_time = 10;
+    int64 update_time = 11;
+    int32 start_delay_in_seconds = 12;
+    bool retried = 13;
+    bool executed = 14;
+    string worker_id = 15;
 }
