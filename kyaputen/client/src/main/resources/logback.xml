@@ -5,7 +5,7 @@
             <Pattern>%d{HH:mm:ss.SSS} [%-5level] [%thread] - %msg%n</Pattern>
         </layout>
     </appender>
-    <logger name="com.kagaya" level="TRACE"/>
+    <logger name="com.kagaya.kyaputen.client" level="TRACE"/>
 
     <root level="warn">
         <appender-ref ref="STDOUT" />

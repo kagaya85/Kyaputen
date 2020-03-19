@@ -7,11 +7,13 @@ import com.kagaya.kyaputen.grpc.TaskServicePb.PollRequest;
 import com.kagaya.kyaputen.grpc.TaskServicePb.PollResponse;
 import com.kagaya.kyaputen.proto.TaskPb.Task;
 import io.grpc.stub.StreamObserver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class KyaputenServer {
-
+    private static Logger logger = LoggerFactory.getLogger(KyaputenServer.class);
     private int port;
     private Server server;
 

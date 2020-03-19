@@ -20,6 +20,13 @@ public class KyaputenClient {
     private String workerId;
     private String domain;
 
+    public KyaputenClient() {
+        channel = ManagedChannelBuilder.forAddress(this.host, this.port)
+                .usePlaintext(true)
+                .build();
+
+        blockingStub = TaskServiceGrpc.newBlockingStub(channel);
+    }
 
     public KyaputenClient(String host, int port, String taskType, String workerId, String domain) {
         this.host = host;

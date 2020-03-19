@@ -1,8 +1,8 @@
-package com.kagaya.kyaputen.client.utility;
+package com.kagaya.kyaputen.client.entity;
 
-import com.kagaya.kyaputen.client.config.ClientConfig;
-import com.kagaya.kyaputen.client.config.DefaultClientConfig;
-import org.slf4j.ILoggerFactory;
+import com.kagaya.kyaputen.client.config.KyaputenClientConfig;
+import com.kagaya.kyaputen.client.config.DefaultKyaputenClientConfig;
+import com.kagaya.kyaputen.client.exceptions.KyaputenClientException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -15,22 +15,24 @@ public abstract class ClientBase {
 
     protected String root = "";
 
-    protected ClientConfig clientConfig;
+    protected KyaputenClientConfig kyaputenClientConfig;
 
     protected ClientBase () {
-        this(new DefaultClientConfig());
+        this(new DefaultKyaputenClientConfig());
     }
 
-    protected ClientBase(ClientConfig config) {
-        clientConfig = config;
+    protected ClientBase(KyaputenClientConfig config) {
+        kyaputenClientConfig = config;
     }
 
     public void setRoot(String root) {
         this.root = root;
     }
 
-    private handleRuntimeException(RuntimeException exception, URI uri) {
-        
+    private void handleRuntimeException(RuntimeException exception, URI uri) {
+        String errorMessage = String.format("Unable to invoke Kyaputen API with uri: %s, runtime exception occured", uri);
+        logger.error(errorMessage, exception);
+        throw new KyaputenClientException(errorMessage, exception);
     }
 
 }

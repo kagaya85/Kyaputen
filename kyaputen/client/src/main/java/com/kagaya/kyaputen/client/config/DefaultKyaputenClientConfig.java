@@ -1,5 +1,5 @@
 package com.kagaya.kyaputen.client.config;
 
-public class DefaultClientConfig implements ClientConfig {
+public class DefaultKyaputenClientConfig implements KyaputenClientConfig {
 
 }

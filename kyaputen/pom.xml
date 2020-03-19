@@ -12,6 +12,7 @@
         <module>server</module>
         <module>client</module>
         <module>grpc</module>
+        <module>common</module>
     </modules>
 
     <dependencyManagement>
@@ -35,6 +36,21 @@
                 <groupId>io.fabric8</groupId>
                 <artifactId>knative-client</artifactId>
                 <version>4.9.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
