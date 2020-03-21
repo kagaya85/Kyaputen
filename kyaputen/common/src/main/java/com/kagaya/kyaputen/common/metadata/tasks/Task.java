@@ -36,7 +36,7 @@ public class Task {
 
     private Map<String, Object> inputData;
 
-    Task() {
+    public Task() {
 
     }
 

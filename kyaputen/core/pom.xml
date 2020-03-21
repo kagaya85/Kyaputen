@@ -9,14 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>server</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>core</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>io.fabric8</groupId>
-            <artifactId>knative-client</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -28,14 +23,6 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.kagaya.kyaputen</groupId>
-            <artifactId>grpc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.kagaya.kyaputen</groupId>
-            <artifactId>core</artifactId>
         </dependency>
     </dependencies>
 
