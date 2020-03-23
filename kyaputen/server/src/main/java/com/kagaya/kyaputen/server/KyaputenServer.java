@@ -1,5 +1,6 @@
 package com.kagaya.kyaputen.server;
 
+import com.kagaya.kyaputen.server.grpc.GRPCServer;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import com.kagaya.kyaputen.grpc.TaskServiceGrpc;
@@ -11,33 +12,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class KyaputenServer {
-    private static Logger logger = LoggerFactory.getLogger(KyaputenServer.class);
-    private int port;
-    private Server server;
+
+    private static final Logger logger = LoggerFactory.getLogger(KyaputenServer.class);
+
+    private final GRPCServer grpcServer;
 
     public KyaputenServer(int port) {
-        this.port = port;
-    }
 
-    public void start() throws IOException {
-        server = ServerBuilder.forPort(port)
-                .addService(new TaskServiceImpl())
-                .build()
-                .start();
-    }
+        logger.info("gRPC server bind at port " + port);
 
-    public void stop() {
-        if (server != null) {
-            server.shutdown();
-        }
-    }
-
-    public void blockUntilShutdown() throws InterruptedException {
-        if (server != null) {
-            server.awaitTermination();
-        }
+        grpcServer = new GRPCServer(port);
     }
 
     private class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {

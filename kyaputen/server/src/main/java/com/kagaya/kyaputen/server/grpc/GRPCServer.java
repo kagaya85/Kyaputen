@@ -26,13 +26,13 @@ public class GRPCServer implements Lifecycle {
     public void start() throws IOException {
         registerShutdownHook();
         server.start();
-        logger.info("grpc: Server started, listening on " + server.getPort());
+        logger.info("gRPC server started, listening on " + server.getPort());
     }
 
     @Override
     public void stop() {
         if (server != null) {
-            logger.info("grpc: server shutting down");
+            logger.info("gRPC server shutting down");
             server.shutdown();
         }
     }
