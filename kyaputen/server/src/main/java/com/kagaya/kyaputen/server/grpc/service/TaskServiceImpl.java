@@ -27,6 +27,7 @@ public class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
         System.out.println("Request Domain: " + request.getDomain());
         System.out.println(("Request Worker Id: ") + request.getWorkerId());
 
+        // 调用 {@link ExecutionService} 中的方法
         TaskPb.Task task = TaskPb.Task.newBuilder().setStartTime(System.currentTimeMillis()/1000L).build();
         TaskServicePb.PollResponse response = TaskServicePb.PollResponse.newBuilder().setTask(task).build();
 
