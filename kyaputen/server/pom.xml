@@ -30,6 +30,14 @@
             <artifactId>logback-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.kagaya.kyaputen</groupId>
             <artifactId>grpc</artifactId>
         </dependency>

@@ -1,8 +1,14 @@
 package com.kagaya.kyaputen.server;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.kagaya.kyaputen.core.service.ExecutionService;
+import com.kagaya.kyaputen.core.service.TaskService;
+import com.kagaya.kyaputen.server.grpc.GRPCModule;
 import com.kagaya.kyaputen.server.grpc.GRPCServer;
-import io.grpc.Server;
-import io.grpc.ServerBuilder;
+import com.kagaya.kyaputen.server.grpc.GRPCServerBuilder;
+import com.kagaya.kyaputen.server.grpc.service.GRPCServerConfiguration;
+import com.kagaya.kyaputen.server.grpc.service.TaskServiceImpl;
 import com.kagaya.kyaputen.grpc.TaskServiceGrpc;
 import com.kagaya.kyaputen.grpc.TaskServicePb.PollRequest;
 import com.kagaya.kyaputen.grpc.TaskServicePb.PollResponse;
@@ -12,19 +18,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Optional;
 
 public class KyaputenServer {
 
     private static final Logger logger = LoggerFactory.getLogger(KyaputenServer.class);
 
     private final GRPCServer grpcServer;
+    private final GRPCServerBuilder grpcServerBuilder;
 
     public KyaputenServer(int port) {
-
         logger.info("gRPC server bind at port " + port);
 
-        grpcServer = new GRPCServer(port);
+        Injector injector = Guice.createInjector(new GRPCModule());
+
+        grpcServerBuilder = injector.getInstance(GRPCServerBuilder.class);
+
+        grpcServer = grpcServerBuilder.build();
+    }
+
+    public void start() {
+        try {
+            grpcServer.start();
+        }
+        catch (IOException ioe) {
+            logger.error("gRPC server error occured: " + ioe.getMessage());
+            ioe.printStackTrace(System.err);
+            System.exit(3);
+        }
     }
 
     private class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
