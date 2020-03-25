@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.common.metadata.tasks;
 
 import java.util.Map;
+import com.google.protobuf.Any;
 
 public class Task {
 
@@ -34,7 +35,23 @@ public class Task {
 
     private String workerId;
 
+    private String domain;
+
+    private String executionNameSpace;
+
     private Map<String, Object> inputData;
+
+    private Map<String, Object> outputData;
+
+    private Any inputMessage;
+
+    private Any outputMessage;
+
+    String workflowInstanceId;
+
+    String workflowPriority;
+
+    String subWorkflowId;
 
     public Task() {
 
@@ -166,6 +183,70 @@ public class Task {
 
     public void setWorkerId(String workerId) {
         this.workerId = workerId;
+    }
+
+    public Any getInputMessage() {
+        return inputMessage;
+    }
+
+    public void setInputMessage(Any inputMessage) {
+        this.inputMessage = inputMessage;
+    }
+
+    public Any getOutputMessage() {
+        return outputMessage;
+    }
+
+    public void setOutputMessage(Any outputMessage) {
+        this.outputMessage = outputMessage;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public Map<String, Object> getOutputData() {
+        return outputData;
+    }
+
+    public void setOutputData(Map<String, Object> outputData) {
+        this.outputData = outputData;
+    }
+
+    public String getExecutionNameSpace() {
+        return executionNameSpace;
+    }
+
+    public void setExecutionNameSpace(String executionNameSpace) {
+        this.executionNameSpace = executionNameSpace;
+    }
+
+    public String getSubWorkflowId() {
+        return subWorkflowId;
+    }
+
+    public void setSubWorkflowId(String subWorkflowId) {
+        this.subWorkflowId = subWorkflowId;
+    }
+
+    public String getWorkflowInstanceId() {
+        return workflowInstanceId;
+    }
+
+    public void setWorkflowInstanceId(String workflowInstanceId) {
+        this.workflowInstanceId = workflowInstanceId;
+    }
+
+    public String getWorkflowPriority() {
+        return workflowPriority;
+    }
+
+    public void setWorkflowPriority(String workflowPriority) {
+        this.workflowPriority = workflowPriority;
     }
 
     public enum Status {

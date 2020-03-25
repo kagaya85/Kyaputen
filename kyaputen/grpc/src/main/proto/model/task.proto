@@ -31,4 +31,14 @@ message Task {
     bool retried = 13;
     bool executed = 14;
     string worker_id = 15;
+    string domain = 28;
+    string execution_name_space = 29;
+    map<string, google.protobuf.Value> input_data = 30;
+    map<string, google.protobuf.Value> output_data = 31;
+    google.protobuf.Any input_message = 32;
+    google.protobuf.Any output_message = 33;
+    string workflow_instance_id = 34;
+    int32 workflow_priority = 35;
+    string sub_workflow_id = 36;
+
 }

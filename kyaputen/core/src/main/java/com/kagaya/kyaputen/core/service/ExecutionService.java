@@ -1,11 +1,19 @@
 package com.kagaya.kyaputen.core.service;
 
+import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
+import com.kagaya.kyaputen.core.execution.ExecutionException;
+import com.kagaya.kyaputen.core.utils.QueueUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @description 逻辑部分代码
@@ -34,17 +42,72 @@ public class ExecutionService {
     }
 
     public Task poll(String taskType, String workerId, String domain) {
-        List<Task> tasks = poll(taskType, workerId, domain, i, 100);
+        List<Task> tasks = poll(taskType, workerId, domain, 1, 100);
         
         if (tasks.isEmpty()) {
             return null;
-        
         }
         else
-            reutrn tasks.get(0);
+            return tasks.get(0);
     }
 
-    public Task poll(String taskType, String workerId, String domain, int count, int timeoutMilliSecond) {
+    public List<Task> poll(String taskType, String workerId, int count, int timeoutInMilliSecond) {
+        return poll(taskType, workerId, null, count, timeoutInMilliSecond);
+    }
 
+    public List<Task> poll(String taskType, String workerId, String domain, int count, int timeoutMilliSecond) {
+        if (timeoutMilliSecond > MAX_POLL_TIMEOUT_MS) {
+            throw new ExecutionException(ExecutionException.Code.INVALID_INPUT,
+                    "Long Poll Timeout value cannot be more than 5 seconds");
+        }
+
+        String queueName = QueueUtils.getQueueName(taskType, domain,null);
+
+        List<String> taskIds = new LinkedList<>();
+        List<Task> tasks = new LinkedList<>();
+
+        try {
+            taskIds = queueDAO.pop(queueName, count, timeoutMilliSecond);
+        } catch (Exception e) {
+            logger.error("Error polling for task: {} from worker: {} in domain: {}, count: {}", taskType, workerId,
+                    domain, count, e);
+        }
+
+        for (String taskId : taskIds) {
+            Task task = getTask(taskId);
+            if (task == null || task.getStatus().isTerminal()) {
+                // Remove taskId(s) without a valid Task/terminal state task from the queue
+                queueDAO.remove(queueName, taskId);
+                logger.debug("Removed taskId from the queue: {}, {}", queueName, taskId);
+                continue;
+            }
+
+            task.setStatus(Status.IN_PROGRESS);
+            if (task.getStartTime() == 0) {
+                task.setStartTime(System.currentTimeMillis());
+            }
+            task.setWorkerId(workerId);
+            task.setPollCount(task.getPollCount() + 1);
+            updateTask(task);
+            tasks.add(task);
+        }
+
+        return tasks;
+    }
+
+    public List<Task> getTasks(String taskType, String startKey, int count) {
+        return workflowExecutor.getTasks(taskType, startKey, count);
+    }
+
+    public void updateTask(Task task) {
+        updateTask(new TaskResult(task));
+    }
+
+    public void updateTask(TaskResult taskResult) {
+        workflowExecutor.updateTask(taskResult);
+    }
+
+    public Task getTask(String taskId) {
+        return workflowExecutor.getTask(taskId);
     }
 }

@@ -2,7 +2,7 @@ package com.kagaya.kyaputen.common.metadata.tasks;
 
 import java.util.Objects;
 
-public class Poll {
+public class PollData {
     private String queueName;
 
     private String taskType;
@@ -13,11 +13,11 @@ public class Poll {
 
     private String lastPollTime;
 
-    public Poll() {
+    public PollData() {
         super();
     }
 
-    public Poll (String queueName, String workerId, String taskType, String domain, String lastPollTime) {
+    public PollData(String queueName, String workerId, String taskType, String domain, String lastPollTime) {
         super();
         this.queueName = queueName;
         this.workerId = workerId;
@@ -81,12 +81,12 @@ public class Poll {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Poll poll = (Poll) o;
-        return Objects.equals(getQueueName(), poll.getQueueName()) &&
-                Objects.equals(getTaskType(), poll.getTaskType()) &&
-                Objects.equals(getWorkerId(), poll.getWorkerId()) &&
-                Objects.equals(getDomain(), poll.getDomain()) &&
-                Objects.equals(getLastPollTime(), poll.getLastPollTime());
+        PollData pollData = (PollData) o;
+        return Objects.equals(getQueueName(), pollData.getQueueName()) &&
+                Objects.equals(getTaskType(), pollData.getTaskType()) &&
+                Objects.equals(getWorkerId(), pollData.getWorkerId()) &&
+                Objects.equals(getDomain(), pollData.getDomain()) &&
+                Objects.equals(getLastPollTime(), pollData.getLastPollTime());
     }
 
     @Override
