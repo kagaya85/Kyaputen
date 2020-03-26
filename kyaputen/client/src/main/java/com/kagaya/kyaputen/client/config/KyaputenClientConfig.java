@@ -1,16 +1,25 @@
 package com.kagaya.kyaputen.client.config;
 
-public interface KyaputenClientConfig {
+public class KyaputenClientConfig {
 
-    String address = "";
+    private String address = "localhost";
 
-    int port = 0;
+    private int port = 18080;
 
-    int getPort();
+    public int getPort() {
+        return port;
+    }
 
-    void setPort(int port);
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-    String getAddress();
 
-    void setAddress(String address);
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }

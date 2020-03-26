@@ -18,6 +18,7 @@ public class GRPCServer implements Lifecycle {
 
     public GRPCServer(int port, BindableService... services) {
         ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
+        logger.info("gRPC server bind at port " + port);
         Arrays.stream(services).forEach(serverBuilder::addService);
         server = serverBuilder.build();
     }
@@ -27,6 +28,12 @@ public class GRPCServer implements Lifecycle {
         registerShutdownHook();
         server.start();
         logger.info("gRPC server started, listening on " + server.getPort());
+    }
+
+    public void blockUntilShutdown() throws InterruptedException {
+        if (server != null) {
+            server.awaitTermination();
+        }
     }
 
     @Override

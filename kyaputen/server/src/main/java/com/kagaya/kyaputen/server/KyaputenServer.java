@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.kagaya.kyaputen.core.service.ExecutionService;
 import com.kagaya.kyaputen.core.service.TaskService;
-import com.kagaya.kyaputen.server.grpc.GRPCModule;
 import com.kagaya.kyaputen.server.grpc.GRPCServer;
 import com.kagaya.kyaputen.server.grpc.GRPCServerBuilder;
 import com.kagaya.kyaputen.server.grpc.service.GRPCServerConfiguration;
@@ -27,9 +26,8 @@ public class KyaputenServer {
     private final GRPCServerBuilder grpcServerBuilder;
 
     public KyaputenServer(int port) {
-        logger.info("gRPC server bind at port " + port);
 
-        Injector injector = Guice.createInjector(new GRPCModule());
+        Injector injector = Guice.createInjector(new ServerModule());
 
         grpcServerBuilder = injector.getInstance(GRPCServerBuilder.class);
 
@@ -45,22 +43,32 @@ public class KyaputenServer {
             ioe.printStackTrace(System.err);
             System.exit(3);
         }
-    }
 
-    private class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
-
-        @Override
-        public void poll(PollRequest request, StreamObserver<PollResponse> responseObserver) {
-            System.out.println(("Request Task Type: ") + request.getTaskType());
-            System.out.println("Request Domain: " + request.getDomain());
-            System.out.println(("Request Worker Id: ") + request.getWorkerId());
-
-            Task task = Task.newBuilder().setStartTime(System.currentTimeMillis()/1000L).build();
-            PollResponse response = PollResponse.newBuilder().setTask(task).build();
-
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
+        try {
+            grpcServer.blockUntilShutdown();
         }
+        catch (InterruptedException ie) {
+            logger.error("gRPC server error occured: " + ie.getMessage());
+            ie.printStackTrace(System.err);
+            System.exit(3);
+        }
+
     }
+
+//    private class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
+//
+//        @Override
+//        public void poll(PollRequest request, StreamObserver<PollResponse> responseObserver) {
+//            System.out.println(("Request Task Type: ") + request.getTaskType());
+//            System.out.println("Request Domain: " + request.getDomain());
+//            System.out.println(("Request Worker Id: ") + request.getWorkerId());
+//
+//            Task task = Task.newBuilder().setStartTime(System.currentTimeMillis()/1000L).build();
+//            PollResponse response = PollResponse.newBuilder().setTask(task).build();
+//
+//            responseObserver.onNext(response);
+//            responseObserver.onCompleted();
+//        }
+//    }
 
 }

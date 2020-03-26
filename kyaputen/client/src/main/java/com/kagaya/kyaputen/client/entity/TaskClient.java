@@ -1,7 +1,6 @@
 package com.kagaya.kyaputen.client.entity;
 
 import com.kagaya.kyaputen.client.config.KyaputenClientConfig;
-import com.kagaya.kyaputen.client.config.DefaultKyaputenClientConfig;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.client.grpc.GRPCTaskClient;
 import org.slf4j.LoggerFactory;
@@ -21,13 +20,12 @@ public class TaskClient extends ClientBase {
     public static final Logger logger = LoggerFactory.getLogger(TaskClient.class);
 
     public TaskClient() {
-        this(new DefaultKyaputenClientConfig());
-        grpcClient = new GRPCTaskClient(kyaputenClientConfig.getAddress(), kyaputenClientConfig.getPort());
+        grpcClient = new GRPCTaskClient(config.getAddress(), config.getPort());
     }
 
     public TaskClient(KyaputenClientConfig config) {
         super(config);
-        grpcClient = new GRPCTaskClient(kyaputenClientConfig.getAddress(), kyaputenClientConfig.getPort());
+        grpcClient = new GRPCTaskClient(config.getAddress(), config.getPort());
     }
 
     public Task pollTask(String taskType, String workId, String domain) {

@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.server.grpc;
 
 import com.google.common.collect.ImmutableList;
+import com.kagaya.kyaputen.grpc.TaskServiceGrpc;
 import com.kagaya.kyaputen.server.grpc.service.GRPCServerConfiguration;
 import io.grpc.BindableService;
 
@@ -11,7 +12,7 @@ public class GRPCServerBuilder {
     private final BindableService taskServiceImpl;
 
     @Inject
-    public GRPCServerBuilder(BindableService taskServiceImpl) {
+    public GRPCServerBuilder(TaskServiceGrpc.TaskServiceImplBase taskServiceImpl) {
         this.taskServiceImpl = taskServiceImpl;
     }
 
