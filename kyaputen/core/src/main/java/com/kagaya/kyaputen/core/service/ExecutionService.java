@@ -68,7 +68,7 @@ public class ExecutionService {
 
         Task t = new Task();
         t.setStatus(Status.IN_PROGRESS);
-        tasks.set(0, t);
+        tasks.add(t);
 
 //        try {
 //            taskIds = queueDAO.pop(queueName, count, timeoutMilliSecond);

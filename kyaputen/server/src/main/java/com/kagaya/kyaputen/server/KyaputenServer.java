@@ -37,22 +37,13 @@ public class KyaputenServer {
     public void start() {
         try {
             grpcServer.start();
-        }
-        catch (IOException ioe) {
-            logger.error("gRPC server error occured: " + ioe.getMessage());
-            ioe.printStackTrace(System.err);
-            System.exit(3);
-        }
-
-        try {
             grpcServer.blockUntilShutdown();
         }
-        catch (InterruptedException ie) {
-            logger.error("gRPC server error occured: " + ie.getMessage());
-            ie.printStackTrace(System.err);
+        catch (Exception e) {
+            logger.error("gRPC server error occured: " + e.getMessage());
+            e.printStackTrace(System.err);
             System.exit(3);
         }
-
     }
 
 //    private class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {

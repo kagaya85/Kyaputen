@@ -266,5 +266,14 @@ public class Task {
         public boolean isRetriable() {
             return retriable;
         }
+
+        @Override
+        public String toString() {
+            return "Status{" +
+                    "terminal=" + terminal +
+                    ", successful=" + successful +
+                    ", retriable=" + retriable +
+                    '}';
+        }
     }
 }

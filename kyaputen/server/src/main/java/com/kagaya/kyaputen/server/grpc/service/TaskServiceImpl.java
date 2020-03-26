@@ -16,7 +16,7 @@ import java.util.List;
 public class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
 
     public static final Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
-    private static final ProtoMapper PROTO_MAPPER = new ProtoMapper();
+    private static final ProtoMapper protoMapper = new ProtoMapper();
 
 
     private static final int MAX_TASK_COUNT = 100;
@@ -40,7 +40,8 @@ public class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
                     request.getDomain(), 1, POLL_TIMEOUT_MS);
 
             if (!tasks.isEmpty()) {
-                TaskPb.Task t = PROTO_MAPPER.toProto(tasks.get(0));
+                TaskPb.Task t = protoMapper.toProto(tasks.get(0));
+                logger.debug("TaskPb Task status: " + t.getStatus());
                 response.onNext(TaskServicePb.PollResponse.newBuilder()
                         .setTask(t)
                         .build()
@@ -49,6 +50,7 @@ public class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
             response.onCompleted();
         } catch (Exception e) {
             logger.error("TaskServiceImpl poll error: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
     }
 }
