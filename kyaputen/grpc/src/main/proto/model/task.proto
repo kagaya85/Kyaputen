@@ -35,10 +35,8 @@ message Task {
     string execution_name_space = 29;
     map<string, google.protobuf.Value> input_data = 30;
     map<string, google.protobuf.Value> output_data = 31;
-    google.protobuf.Any input_message = 32;
-    google.protobuf.Any output_message = 33;
-    string workflow_instance_id = 34;
-    int32 workflow_priority = 35;
-    string sub_workflow_id = 36;
+    string workflow_instance_id = 32;
+    int32 workflow_priority = 33;
+    string sub_workflow_id = 34;
 
 }

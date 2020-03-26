@@ -2,6 +2,7 @@ package com.kagaya.kyaputen.common.metadata.tasks;
 
 import java.util.Map;
 import com.google.protobuf.Any;
+import com.kagaya.kyaputen.common.runtime.Resource;
 
 public class Task {
 
@@ -43,15 +44,13 @@ public class Task {
 
     private Map<String, Object> outputData;
 
-    private Any inputMessage;
+    private String workflowInstanceId;
 
-    private Any outputMessage;
+    private String workflowPriority;
 
-    String workflowInstanceId;
+    private String subWorkflowId;
 
-    String workflowPriority;
-
-    String subWorkflowId;
+    public final Resource reource = new Resource();
 
     public Task() {
 
@@ -183,22 +182,6 @@ public class Task {
 
     public void setWorkerId(String workerId) {
         this.workerId = workerId;
-    }
-
-    public Any getInputMessage() {
-        return inputMessage;
-    }
-
-    public void setInputMessage(Any inputMessage) {
-        this.inputMessage = inputMessage;
-    }
-
-    public Any getOutputMessage() {
-        return outputMessage;
-    }
-
-    public void setOutputMessage(Any outputMessage) {
-        this.outputMessage = outputMessage;
     }
 
     public String getDomain() {

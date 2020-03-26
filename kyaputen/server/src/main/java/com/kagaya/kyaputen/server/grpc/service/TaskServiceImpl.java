@@ -36,7 +36,7 @@ public class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
         try {
             // 调用 {@link ExecutionService} 中的方法
             // 查询可以分配的任务列表
-            List<Task> tasks = executionService.poll(request.getTaskType(), request.getWorkerId(),
+            List<Task> tasks = executionService.getPollTaskList(request.getTaskType(), request.getWorkerId(),
                     request.getDomain(), 1, POLL_TIMEOUT_MS);
 
             if (!tasks.isEmpty()) {
