@@ -66,37 +66,35 @@ public class ExecutionService {
         List<String> taskIds = new LinkedList<>();
         List<Task> tasks = new LinkedList<>();
 
-        Task t = new Task();
-        t.setStatus(Status.IN_PROGRESS);
-        tasks.add(t);
+//        Task t = new Task();
+//        t.setStatus(Status.IN_PROGRESS);
+//        tasks.add(t);
 
-//        try {
-//            taskIds = queueDAO.pop(queueName, count, timeoutMilliSecond);
-//        } catch (Exception e) {
-//            logger.error("Error polling for task: {} from worker: {} in domain: {}, count: {}", taskType, workerId,
-//                    domain, count, e);
-//        }
-//
-//        for (String taskId : taskIds) {
-//            Task task = getTask(taskId);
-//            if (task == null || task.getStatus().isTerminal()) {
-//                // Remove taskId(s) without a valid Task/terminal state task from the queue
-//                queueDAO.remove(queueName, taskId);
-//                logger.debug("Removed taskId from the queue: {}, {}", queueName, taskId);
-//                continue;
-//            }
-//
-//            task.setStatus(Status.IN_PROGRESS);
-//            if (task.getStartTime() == 0) {
-//                task.setStartTime(System.currentTimeMillis());
-//            }
-//            task.setWorkerId(workerId);
-//            task.setPollCount(task.getPollCount() + 1);
-////            updateTask(task);
-//            tasks.add(task);
-//        }
+        try {
+            taskIds = queueDAO.pop(queueName, count, timeoutMilliSecond);
+        } catch (Exception e) {
+            logger.error("Error polling for task: {} from worker: {} in domain: {}, count: {}", taskType, workerId,
+                    domain, count, e);
+        }
 
+        for (String taskId : taskIds) {
+            Task task = getTask(taskId);
+            if (task == null || task.getStatus().isTerminal()) {
+                // Remove taskId(s) without a valid Task/terminal state task from the queue
+                queueDAO.remove(queueName, taskId);
+                logger.debug("Removed taskId from the queue: {}, {}", queueName, taskId);
+                continue;
+            }
 
+            task.setStatus(Status.IN_PROGRESS);
+            if (task.getStartTime() == 0) {
+                task.setStartTime(System.currentTimeMillis());
+            }
+            task.setWorkerId(workerId);
+            task.setPollCount(task.getPollCount() + 1);
+//            updateTask(task);
+            tasks.add(task);
+        }
 
         return tasks;
     }
@@ -109,7 +107,7 @@ public class ExecutionService {
 //        workflowExecutor.updateTask(taskResult);
 //    }
 //
-//    public Task getTask(String taskId) {
-//        return workflowExecutor.getTask(taskId);
-//    }
+    public Task getTask(String taskId) {
+        return workflowExecutor.getTask(taskId);
+    }
 }

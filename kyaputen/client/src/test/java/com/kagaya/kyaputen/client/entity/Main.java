@@ -14,6 +14,6 @@ public class Main {
 
         Task task = taskClient.pollTask("testType", "test123", "testDomain");
 
-        System.out.println("task status: " + task.getStatus());
+        System.out.println("task status: " + task.getStatus().name());
     }
 }
