@@ -1,6 +1,9 @@
 syntax = "proto3";
 package kyaputen.proto;
 
+import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
+
 option java_package = "com.kagaya.kyaputen.proto";
 option java_outer_classname = "TaskPb";
 
@@ -31,12 +34,12 @@ message Task {
     bool retried = 13;
     bool executed = 14;
     string worker_id = 15;
-    string domain = 28;
-    string execution_name_space = 29;
-    map<string, google.protobuf.Value> input_data = 30;
-    map<string, google.protobuf.Value> output_data = 31;
-    string workflow_instance_id = 32;
-    int32 workflow_priority = 33;
-    string sub_workflow_id = 34;
+    string domain = 16;
+    string execution_name_space = 17;
+    map<string, google.protobuf.Value> input_data = 18;
+    map<string, google.protobuf.Value> output_data = 19;
+    string workflow_instance_id = 20;
+    int32 workflow_priority = 21;
+    string sub_workflow_id = 22;
 
 }

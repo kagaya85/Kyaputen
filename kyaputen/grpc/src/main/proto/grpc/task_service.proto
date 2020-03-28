@@ -2,7 +2,7 @@ syntax = "proto3";
 package kyaputen.grpc.tasks;
 
 import "model/task.proto";
-import "model/taskResult.proto"
+import "model/taskResult.proto";
 
 option java_package = "com.kagaya.kyaputen.grpc";
 option java_outer_classname = "TaskServicePb";
@@ -44,3 +44,9 @@ message GetTaskResponse {
     kyaputen.proto.Task task = 1;
 }
 
+message RemoveTaskRequest {
+    string task_type = 1;
+    string task_id = 2;
+}
+
+message RemoveTaskResponse {}

@@ -6,48 +6,49 @@ import com.kagaya.kyaputen.common.runtime.Resource;
 
 public class Task {
 
+    // 1
     private String taskId;
-
+    // 2
     private String taskType;
-
+    // 3
     private Status status;
-
+    // 4
     private String referenceTaskName;
-
+    // 5
     private int retryCount;
-
+    // 6
     private int seq;
-
+    // 7
     private int pollCount;
-
+    // 8
     private long scheduledTime;
-
+    // 9
     private long startTime;
-
+    // 10
     private long endTime;
-
+    // 11
     private long updateTime;
-
+    // 12
     private int startDelayInSeconds;
-
+    // 13
     private boolean retried;
-
+    // 14
     private boolean executed;
-
+    // 15
     private String workerId;
-
+    // 16
     private String domain;
-
+    // 17
     private String executionNameSpace;
-
+    // 18
     private Map<String, Object> inputData;
-
+    // 19
     private Map<String, Object> outputData;
-
+    // 20
     private String workflowInstanceId;
-
-    private String workflowPriority;
-
+    // 21
+    private int workflowPriority;
+    // 22
     private String subWorkflowId;
 
     public final Resource reource = new Resource();
@@ -224,11 +225,11 @@ public class Task {
         this.workflowInstanceId = workflowInstanceId;
     }
 
-    public String getWorkflowPriority() {
+    public int getWorkflowPriority() {
         return workflowPriority;
     }
 
-    public void setWorkflowPriority(String workflowPriority) {
+    public void setWorkflowPriority(int workflowPriority) {
         this.workflowPriority = workflowPriority;
     }
 

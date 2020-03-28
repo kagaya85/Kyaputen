@@ -35,13 +35,15 @@ public class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
 
         try {
             // 调用 {@link ExecutionService} 中的方法
+            logger.debug(String.format("Get request, TaskType: %s, WorkerId: %s, Domain: %s",
+                    request.getTaskType(), request.getWorkerId(), request.getDomain()));
             // 查询可以分配的任务列表
             List<Task> tasks = executionService.getPollTaskList(request.getTaskType(), request.getWorkerId(),
                     request.getDomain(), 1, POLL_TIMEOUT_MS);
 
             if (!tasks.isEmpty()) {
                 TaskPb.Task t = protoMapper.toProto(tasks.get(0));
-                logger.debug("TaskPb Task status: " + t.getStatus());
+                logger.debug("TaskPb Task set status: " + t.getStatus());
                 response.onNext(TaskServicePb.PollResponse.newBuilder()
                         .setTask(t)
                         .build()
