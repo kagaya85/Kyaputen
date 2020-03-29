@@ -9,15 +9,15 @@ public interface QueueDAO {
 
     void push(String queueName, String id);
 
-    void push(String queueName, String id, int priority, long offsetTimeInSecond);
+    void push(String queueName, String id, int priority);
 
     void push(String queueName, List<Message> messages);
 
     List<String> pop(String queueName, int count, int timeout);
 
-    default List<String> pop(String queueName, int count, int timeout, long leaseDurationSeconds) {
-        return pop(queueName, count, timeout);
-    }
+//    default List<String> pop(String queueName, int count, int timeout, long leaseDurationSeconds) {
+//        return pop(queueName, count, timeout);
+//    }
 
     void remove(String queueName, String messageId);
 

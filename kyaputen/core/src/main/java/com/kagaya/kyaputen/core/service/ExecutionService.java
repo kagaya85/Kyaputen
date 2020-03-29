@@ -1,10 +1,12 @@
 package com.kagaya.kyaputen.core.service;
 
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
+import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
 import com.kagaya.kyaputen.core.execution.ExecutionException;
+import com.kagaya.kyaputen.core.execution.WorkflowExecutor;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ *
  * @description 逻辑部分代码
  */
 
@@ -25,6 +28,7 @@ public class ExecutionService {
     private static final Logger logger = LoggerFactory.getLogger(ExecutionService.class);
 
     private final QueueDAO queueDAO;
+    private final WorkflowExecutor workflowExecutor;
 
     private static final int MAX_POLL_TIMEOUT_MS = 5000;
     private static final int POLL_COUNT_ONE = 1;
@@ -35,6 +39,7 @@ public class ExecutionService {
     @Inject
     public ExecutionService(QueueDAO queueDAO) {
         this.queueDAO = queueDAO;
+        this.workflowExecutor = new WorkflowExecutor();
     }
 
     public Task getPollTask(String taskType, String workId) {

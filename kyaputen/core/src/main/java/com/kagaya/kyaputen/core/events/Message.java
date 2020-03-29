@@ -5,28 +5,30 @@ import java.util.Objects;
 
 public class Message {
 
+    public enum MessageType {
+        WorkflowMessage, TaskMessage;
+    }
+
     private String payload;
 
     private String id;
 
-    private String receipt;
+    private MessageType type;
 
     private int priority;
 
-    public Message() {
-
+    public Message(String id) {
+        this.id = id;
     }
 
-    public Message(String id, String payload, String receipt) {
-        this.payload = payload;
+    public Message(String id, int priority) {
         this.id = id;
-        this.receipt = receipt;
+        this.priority = priority;
     }
 
-    public Message(String id, String payload, String receipt, int priority) {
-        this.payload = payload;
+    public Message(String id, MessageType type, int priority) {
         this.id = id;
-        this.receipt = receipt;
+        this.type = type;
         this.priority = priority;
     }
 
@@ -59,22 +61,6 @@ public class Message {
     }
 
     /**
-     *
-     * @return Receipt attached to the message
-     */
-    public String getReceipt() {
-        return receipt;
-    }
-
-    /**
-     *
-     * @param receipt Receipt attached to the message
-     */
-    public void setReceipt(String receipt) {
-        this.receipt = receipt;
-    }
-
-    /**
      * Gets the message priority
      * @return priority of message.
      */
@@ -87,25 +73,18 @@ public class Message {
         this.priority = priority;
     }
 
+    public MessageType getType() {
+        return type;
+    }
+
+    public void setType(MessageType type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Message message = (Message) o;
-        return Objects.equals(payload, message.payload) &&
-                Objects.equals(id, message.id) &&
-                Objects.equals(priority, message.priority) &&
-                Objects.equals(receipt, message.receipt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(payload, id, receipt, priority);
-    }
 
 }

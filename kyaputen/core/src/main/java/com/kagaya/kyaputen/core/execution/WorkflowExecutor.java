@@ -32,6 +32,7 @@ public class WorkflowExecutor {
 
     }
 
+
 //    public void updateTask(TaskResult taskResult) {
 //        if (taskResult == null) {
 //            throw new ExecutionException(ExecutionException.Code.INVALID_INPUT, "TaskResult object is null");
@@ -84,7 +85,7 @@ public class WorkflowExecutor {
 //        }
 //    }
 
-//    public Task getTask(String taskId) {
+    public Task getTask(String taskId) {
 //        return getTaskById(taskId)
 //                .map(task -> {
 //                    if (task.getWorkflowTask() != null) {
@@ -93,6 +94,8 @@ public class WorkflowExecutor {
 //                    return task;
 //                })
 //                .orElse(null);
-//    }
+
+        return new Task();
+    }
 
 }

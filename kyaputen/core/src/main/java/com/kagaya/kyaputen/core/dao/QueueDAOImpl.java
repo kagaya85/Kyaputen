@@ -2,25 +2,29 @@ package com.kagaya.kyaputen.core.dao;
 
 import com.kagaya.kyaputen.core.events.Message;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class QueueDAOImpl implements QueueDAO {
-    private Queue<Message> queue = new LinkedList<Message>();
+
+    private Map<String, Queue<Message>> queueMap = new HashMap<>();
 
     @Override
     public void push(String queueName, String id) {
+        push(queueName, id, 0);
     }
 
     @Override
     public void push(String queueName, List<Message> messages) {
+        Queue<Message> queue = queueMap.get(queueName);
 
+        queue.addAll(messages);
     }
 
     @Override
-    public void push(String queueName, String id, int priority, long offsetTimeInSecond) {
+    public void push(String queueName, String id, int priority) {
+        Queue<Message> queue = queueMap.get(queueName);
 
+        queue.add(new Message(id, priority));
     }
 
     @Override
@@ -28,10 +32,10 @@ public class QueueDAOImpl implements QueueDAO {
         return null;
     }
 
-    @Override
-    public List<String> pop(String queueName, int count, int timeout, long leaseDurationSeconds) {
-        return null;
-    }
+//    @Override
+//    public List<String> pop(String queueName, int count, int timeout, long leaseDurationSeconds) {
+//        return null;
+//    }
 
     @Override
     public void remove(String queueName, String messageId) {

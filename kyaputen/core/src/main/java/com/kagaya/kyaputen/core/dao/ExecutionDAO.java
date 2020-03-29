@@ -1,5 +1,6 @@
 package com.kagaya.kyaputen.core.dao;
 
+import com.kagaya.kyaputen.common.metadata.tasks.PollData;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 
@@ -22,4 +23,10 @@ public interface ExecutionDAO {
     Workflow getWorkflow(String workflowId);
 
     long getInProgressTaskCount();
+
+    void updateLastPollData(String taskDefName, String domain, String workerId);
+
+    PollData getPollData(String taskDefName, String domain);
+
+    List<PollData> getPollData(String taskDefName);
 }
