@@ -1,4 +1,13 @@
 package com.kagaya.kyaputen.client.worker;
 
-public class Worker {
+import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
+
+public interface Worker {
+
+    String getTaskDefName();
+
+    TaskResult execute(Task task);
+
+
 }

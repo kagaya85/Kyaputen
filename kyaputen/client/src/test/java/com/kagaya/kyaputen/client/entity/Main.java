@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.client.entity;
 
 import com.kagaya.kyaputen.client.config.KyaputenClientConfig;
+import com.kagaya.kyaputen.client.worker.Worker;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 
 public class Main {
@@ -12,8 +13,10 @@ public class Main {
 
         TaskClient taskClient = new TaskClient(config);
 
-        Task task = taskClient.pollTask("testType", "test123", "testDomain");
+//        Task task = taskClient.pollTask("testType", "test123", "testDomain");
+//        System.out.println("task status: " + task.getStatus().name());
 
-        System.out.println("task status: " + task.getStatus().name());
+        Worker worker = new SampleWorker("testTask");
+
     }
 }

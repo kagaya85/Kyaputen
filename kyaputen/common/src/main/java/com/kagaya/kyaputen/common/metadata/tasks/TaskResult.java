@@ -20,7 +20,25 @@ public class TaskResult {
     private Map<String, Object> outputData = new HashMap<>();
 
     public TaskResult(Task task) {
+        this.workflowInstanceId = task.getWorkflowInstanceId();
+        this.taskId = this.getTaskId();
+        this.workerId = this.getWorkerId();
+        this.outputData = this.getOutputData();
 
+        switch (task.getStatus()) {
+            case CANCELED:
+            case COMPLETED_WITH_ERRORS:
+            case TIMED_OUT:
+            case SKIPPED:
+                this.status = Status.FAILED;
+                break;
+            case SCHEDULED:
+                this.status = Status.IN_PROGRESS;
+                break;
+            default:
+                this.status = Status.valueOf(task.getStatus().name());
+                break;
+        }
     }
 
     public void setWorkerId(String workerId) {
