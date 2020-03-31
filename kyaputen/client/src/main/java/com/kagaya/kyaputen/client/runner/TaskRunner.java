@@ -3,6 +3,8 @@ package com.kagaya.kyaputen.client.runner;
 import com.google.common.base.Preconditions;
 import com.kagaya.kyaputen.client.entity.TaskClient;
 import com.kagaya.kyaputen.client.worker.Worker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -16,6 +18,7 @@ public class TaskRunner {
     private Worker worker;
     private TaskPollExecutor taskPollExecutor;
     private ScheduledExecutorService scheduledExecutorService;
+    private static final Logger logger = LoggerFactory.getLogger(TaskRunner.class);
 
     private String workerPrefixName;
     private int retrySleep;
@@ -71,6 +74,8 @@ public class TaskRunner {
         this.workerPrefixName = builder.workerPrefixName;
         this.retrySleep = builder.retrySleep;
         this.updateRetryCount = builder.updateRetryCount;
+
+        logger.info("Initialized TaskRunner");
     }
 
     public int getRetrySleep() {
