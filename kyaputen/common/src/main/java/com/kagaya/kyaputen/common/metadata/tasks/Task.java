@@ -13,7 +13,7 @@ public class Task {
     // 3
     private Status status;
     // 4
-    private String referenceTaskName;
+    private String taskDefName;
     // 5
     private int retryCount;
     // 6
@@ -89,12 +89,12 @@ public class Task {
         this.inputData = inputData;
     }
 
-    public String getReferenceTaskName() {
-        return referenceTaskName;
+    public String getTaskDefName() {
+        return taskDefName;
     }
 
-    public void setReferenceTaskName(String referenceTaskName) {
-        this.referenceTaskName = referenceTaskName;
+    public void setTaskDefName(String taskDefName) {
+        this.taskDefName = taskDefName;
     }
 
     public int getRetryCount() {

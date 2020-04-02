@@ -2,29 +2,31 @@ package com.kagaya.kyaputen.client.runner;
 
 import com.google.common.base.Stopwatch;
 import com.kagaya.kyaputen.client.entity.TaskClient;
+import com.kagaya.kyaputen.client.worker.PropertyFactory;
 import com.kagaya.kyaputen.client.worker.Worker;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
+import com.netflix.discovery.EurekaClient;
+import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.concurrent.*;
 
 public class TaskPollExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskPollExecutor.class);
 
-//    private EurekaClient eurekaClient;
+    private EurekaClient eurekaClient;
     private TaskClient taskClient;
     private int updateRetryCount;
     private ExecutorService executorService;
 
-    public TaskPollExecutor(TaskClient taskClient, int updateRetryCount, String workerPrefixName) {
+    public TaskPollExecutor(EurekaClient eurekaClient, TaskClient taskClient, int updateRetryCount, String workerPrefixName) {
 
-//        this.eurekaClient = eurekaClient;
+        this.eurekaClient = eurekaClient;
         this.taskClient = taskClient;
         this.updateRetryCount = updateRetryCount;
 
@@ -54,14 +56,71 @@ public class TaskPollExecutor {
         shutdownExecutorService(executorService);
     }
 
-    public void pollAndExecute(Worker worker) {
+    public void pollAndExecuteTask(Worker worker) {
+        if (eurekaClient != null && !eurekaClient.getInstanceRemoteStatus().equals(InstanceStatus.UP)) {
+            logger.debug("Service instance is NOT UP in discovery - will not poll");
+            return;
+        }
 
+        Task task;
+
+        try {
+            String taskType = worker.getTaskDefName();
+            String domain = PropertyFactory.getString("domain", null);
+
+            logger.debug("Polling task of type: {} in domain: {}", taskType, domain);
+
+            task = taskClient.pollTask(taskType, worker.getIdentity(), domain);
+            if (Objects.nonNull(task) && task.getTaskId() != null) {
+                logger.debug("Get Task from server, TaskType: {}, in domain: {}, from worker: {}", taskType, domain, worker.getIdentity());
+                CompletableFuture<Task> taskCompletableFuture = CompletableFuture.supplyAsync(() ->
+                        executeTask(worker, task), executorService);
+
+                taskCompletableFuture.whenComplete(this::finalizeTask);
+            }
+        } catch ( Exception e) {
+            logger.error("Error happend when task polling", e);
+        }
     }
 
-    public void executeTask(Worker worker, Task task) {
+    public Task executeTask(Worker worker, Task task) {
+        logger.debug("Executing task: {} of type: {} in worker: {} at {}", task.getTaskId(), task.getTaskDefName(),
+                worker.getClass().getSimpleName(), worker.getIdentity());
+
         Stopwatch stopwatch = Stopwatch.createStarted();
         TaskResult result = null;
 
+        try {
+            result = worker.execute(task);
+            result.setWorkflowInstanceId(task.getWorkflowInstanceId());
+            result.setTaskId(task.getTaskId());
+            result.setWorkerId(worker.getIdentity());
+        } catch ( Exception e) {
+            task.setStatus(Status.FAILED);
+            result = new TaskResult(task);
+            logger.error("Error happend when execute task", e);
+        } finally {
+            stopwatch.stop();
+        }
+
+        logger.debug("Task: {} executed by worker: {} at {} with status: {}", task.getTaskId(),
+                worker.getClass().getSimpleName(), worker.getIdentity(), result.getStatus());
+
+        updateWithRetry(updateRetryCount, task, result, worker);
+        return task;
+    }
+
+    private void updateWithRetry(int count, Task task, TaskResult result, Worker worker) {
+
+    }
+
+    private void finalizeTask(Task task, Throwable throwable) {
+        if (throwable != null) {
+            logger.error("Error processing task: {} of type: {}", task.getTaskId(), task.getTaskType(), throwable);
+        } else {
+            logger.debug("Task:{} of type:{} finished processing with status:{}", task.getTaskId(),
+                    task.getTaskDefName(), task.getStatus());
+        }
     }
 
 }
