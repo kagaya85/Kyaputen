@@ -19,6 +19,8 @@ public class TaskResult {
 
     private Map<String, Object> outputData = new HashMap<>();
 
+    public TaskResult() {}
+
     public TaskResult(Task task) {
         this.workflowInstanceId = task.getWorkflowInstanceId();
         this.taskId = this.getTaskId();
@@ -79,6 +81,16 @@ public class TaskResult {
 
     public String getWorkflowInstanceId() {
         return workflowInstanceId;
+    }
+
+    public TaskResult copy() {
+        TaskResult taskResult = new TaskResult();
+        taskResult.setWorkflowInstanceId(workflowInstanceId);
+        taskResult.setTaskId(taskId);
+        taskResult.setWorkerId(workerId);
+        taskResult.setStatus(status);
+        taskResult.setOutputData(outputData);
+        return taskResult;
     }
 }
 

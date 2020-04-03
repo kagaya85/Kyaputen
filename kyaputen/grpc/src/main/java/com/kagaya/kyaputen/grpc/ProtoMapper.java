@@ -2,7 +2,9 @@ package com.kagaya.kyaputen.grpc;
 
 import com.google.protobuf.*;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.proto.TaskPb;
+import com.kagaya.kyaputen.proto.TaskResultPb;
 
 import java.util.Map;
 import java.util.List;
@@ -105,8 +107,8 @@ public class ProtoMapper {
         if (from.getStatus() != null) {
             to.setStatus( toProto( from.getStatus() ) );
         }
-        if (from.getReferenceTaskName() != null) {
-            to.setReferenceTaskName( from.getReferenceTaskName() );
+        if (from.getTaskDefName() != null) {
+            to.setTaskDefName( from.getTaskDefName() );
         }
         to.setRetryCount( from.getRetryCount() );
         to.setSeq( from.getSeq() );
@@ -146,7 +148,7 @@ public class ProtoMapper {
         to.setTaskId( from.getTaskId() );
         to.setTaskType( from.getTaskType() );
         to.setStatus( fromProto( from.getStatus() ) );
-        to.setReferenceTaskName( from.getReferenceTaskName() );
+        to.setTaskDefName( from.getTaskDefName() );
         to.setRetryCount( from.getRetryCount() );
         to.setSeq( from.getSeq() );
         to.setPollCount( from.getPollCount() );
@@ -206,6 +208,64 @@ public class ProtoMapper {
             case SCHEDULED: to = Task.Status.SCHEDULED; break;
             case TIMED_OUT: to = Task.Status.TIMED_OUT; break;
             case SKIPPED: to = Task.Status.SKIPPED; break;
+            default: throw new IllegalArgumentException("Unexpected enum constant: " + from);
+        }
+        return to;
+    }
+
+    public TaskResultPb.TaskResult toProto(TaskResult from) {
+        TaskResultPb.TaskResult.Builder to = TaskResultPb.TaskResult.newBuilder();
+        if (from.getWorkflowInstanceId() != null) {
+            to.setWorkflowInstanceId( from.getWorkflowInstanceId() );
+        }
+        if (from.getTaskId() != null) {
+            to.setTaskId( from.getTaskId() );
+        }
+        if (from.getWorkerId() != null) {
+            to.setWorkerId( from.getWorkerId() );
+        }
+        if (from.getStatus() != null) {
+            to.setStatus( toProto( from.getStatus() ) );
+        }
+        for (Map.Entry<String, Object> pair : from.getOutputData().entrySet()) {
+            to.putOutputData( pair.getKey(), toProto( pair.getValue() ) );
+        }
+        return to.build();
+    }
+
+    public TaskResult fromProto(TaskResultPb.TaskResult from) {
+        TaskResult to = new TaskResult();
+        to.setWorkflowInstanceId( from.getWorkflowInstanceId() );
+        to.setTaskId( from.getTaskId() );
+        to.setWorkerId( from.getWorkerId() );
+        to.setStatus( fromProto( from.getStatus() ) );
+        Map<String, Object> outputDataMap = new HashMap<String, Object>();
+        for (Map.Entry<String, Value> pair : from.getOutputDataMap().entrySet()) {
+            outputDataMap.put( pair.getKey(), fromProto( pair.getValue() ) );
+        }
+        to.setOutputData(outputDataMap);
+        return to;
+    }
+
+    public TaskResultPb.TaskResult.Status toProto(TaskResult.Status from) {
+        TaskResultPb.TaskResult.Status to;
+        switch (from) {
+            case IN_PROGRESS: to = TaskResultPb.TaskResult.Status.IN_PROGRESS; break;
+            case FAILED: to = TaskResultPb.TaskResult.Status.FAILED; break;
+            case FAILED_WITH_TERMINAL_ERROR: to = TaskResultPb.TaskResult.Status.FAILED_WITH_TERMINAL_ERROR; break;
+            case COMPLETED: to = TaskResultPb.TaskResult.Status.COMPLETED; break;
+            default: throw new IllegalArgumentException("Unexpected enum constant: " + from);
+        }
+        return to;
+    }
+
+    public TaskResult.Status fromProto(TaskResultPb.TaskResult.Status from) {
+        TaskResult.Status to;
+        switch (from) {
+            case IN_PROGRESS: to = TaskResult.Status.IN_PROGRESS; break;
+            case FAILED: to = TaskResult.Status.FAILED; break;
+            case FAILED_WITH_TERMINAL_ERROR: to = TaskResult.Status.FAILED_WITH_TERMINAL_ERROR; break;
+            case COMPLETED: to = TaskResult.Status.COMPLETED; break;
             default: throw new IllegalArgumentException("Unexpected enum constant: " + from);
         }
         return to;

@@ -111,7 +111,11 @@ public class TaskPollExecutor {
     }
 
     private void updateWithRetry(int count, Task task, TaskResult result, Worker worker) {
+        try {
 
+        } catch (Exception e) {
+
+        }
     }
 
     private void finalizeTask(Task task, Throwable throwable) {

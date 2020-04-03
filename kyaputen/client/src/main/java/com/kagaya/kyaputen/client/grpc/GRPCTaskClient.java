@@ -1,7 +1,9 @@
 package com.kagaya.kyaputen.client.grpc;
 
+import com.google.common.base.Preconditions;
 import com.kagaya.kyaputen.client.entity.TaskClient;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.grpc.TaskServiceGrpc;
 import com.kagaya.kyaputen.grpc.TaskServicePb;
 import org.slf4j.Logger;
@@ -34,4 +36,13 @@ public class GRPCTaskClient extends GRPCClientBase {
         return protoMapper.fromProto(response.getTask());
     }
 
+    public void updateTask(TaskResult taskResult) {
+        Preconditions.checkNotNull(taskResult, "Task result cannot be null");
+
+        TaskServicePb.UpdateTaskRequest request = TaskServicePb.UpdateTaskRequest.newBuilder()
+                .setResult(protoMapper.toProto(taskResult))
+                .build();
+
+        blockingStub.updateTask(request);
+    }
 }

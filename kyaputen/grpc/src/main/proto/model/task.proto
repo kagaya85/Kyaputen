@@ -22,7 +22,7 @@ message Task {
     string task_id = 1;
     string task_type = 2;
     Task.Status status = 3;
-    string reference_task_name = 4;
+    string task_def_name = 4;
     int32 retry_count = 5;
     int32 seq = 6;
     int32 poll_count = 7;

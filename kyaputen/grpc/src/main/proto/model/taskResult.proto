@@ -16,10 +16,7 @@ message TaskResult {
     }
     string workflow_instance_id = 1;
     string task_id = 2;
-    string reason_for_incompletion = 3;
-    int64 callback_after_seconds = 4;
-    string worker_id = 5;
-    TaskResult.Status status = 6;
-    map<string, google.protobuf.Value> output_data = 7;
-    google.protobuf.Any output_message = 8;
+    string worker_id = 3;
+    TaskResult.Status status = 4;
+    map<string, google.protobuf.Value> output_data = 5;
 }
