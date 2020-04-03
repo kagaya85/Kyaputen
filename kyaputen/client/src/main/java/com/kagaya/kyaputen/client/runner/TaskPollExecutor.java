@@ -77,6 +77,8 @@ public class TaskPollExecutor {
                         executeTask(worker, task), executorService);
 
                 taskCompletableFuture.whenComplete(this::finalizeTask);
+            } else {
+
             }
         } catch ( Exception e) {
             logger.error("Error happend when task polling", e);
@@ -112,9 +114,10 @@ public class TaskPollExecutor {
 
     private void updateWithRetry(int count, Task task, TaskResult result, Worker worker) {
         try {
-
+            taskClient.updateTask(result);
         } catch (Exception e) {
-
+            logger.error(String.format("Error happend when update task: %s, in worker: %s, with result: %s",
+                    task.getTaskDefName(), worker.getIdentity(), result.toString()), e);
         }
     }
 
