@@ -37,9 +37,10 @@ public class ExecutionService {
     private static final int MAX_SEARCH_SIZE = 5_000;
 
     @Inject
-    public ExecutionService(QueueDAO queueDAO) {
+    public ExecutionService(QueueDAO queueDAO,
+                            WorkflowExecutor workflowExecutor) {
         this.queueDAO = queueDAO;
-        this.workflowExecutor = new WorkflowExecutor();
+        this.workflowExecutor = workflowExecutor;
     }
 
     public Task getPollTask(String taskType, String workId) {
@@ -71,9 +72,9 @@ public class ExecutionService {
         List<String> taskIds = new LinkedList<>();
         List<Task> tasks = new LinkedList<>();
 
-//        Task t = new Task();
-//        t.setStatus(Status.IN_PROGRESS);
-//        tasks.add(t);
+        /////////
+        ///////
+        //////
 
         try {
             taskIds = queueDAO.pop(queueName, count, timeoutMilliSecond);
@@ -104,13 +105,13 @@ public class ExecutionService {
         return tasks;
     }
 
-//    public void updateTask(Task task) {
-//        updateTask(new TaskResult(task));
-//    }
-//
-//    public void updateTask(TaskResult taskResult) {
-//        workflowExecutor.updateTask(taskResult);
-//    }
+    public void updateTask(Task task) {
+        updateTask(new TaskResult(task));
+    }
+
+    public void updateTask(TaskResult taskResult) {
+        workflowExecutor.updateTask(taskResult);
+    }
 //
     public Task getTask(String taskId) {
         return workflowExecutor.getTask(taskId);

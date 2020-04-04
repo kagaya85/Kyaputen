@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.server.grpc.service;
 
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.core.service.ExecutionService;
 import com.kagaya.kyaputen.grpc.ProtoMapper;
 import com.kagaya.kyaputen.grpc.TaskServiceGrpc;
@@ -51,8 +52,27 @@ public class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
             }
             response.onCompleted();
         } catch (Exception e) {
-            logger.error("TaskServiceImpl poll error: " + e.getMessage());
-            e.printStackTrace(System.err);
+            logger.error("TaskServiceImpl poll error", e);
+        }
+    }
+
+    @Override
+    public void updateTask(TaskServicePb.UpdateTaskRequest request, StreamObserver<TaskServicePb.UpdateTaskResponse> response) {
+        try {
+            TaskResult taskResult = protoMapper.fromProto(request.getResult());
+
+            logger.debug("Update Task: {}", taskResult);
+            executionService.updateTask(taskResult);
+            logger.debug("Task: {} updated successfully", taskResult);
+
+            response.onNext(
+                    TaskServicePb.UpdateTaskResponse.newBuilder()
+                            .setTaskId(taskResult.getTaskId())
+                            .build()
+            );
+            response.onCompleted();
+        } catch (Exception e) {
+            logger.error("TaskServiceImpl updateTask error", e);
         }
     }
 }
