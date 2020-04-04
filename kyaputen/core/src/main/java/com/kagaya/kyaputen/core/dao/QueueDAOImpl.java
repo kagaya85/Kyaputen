@@ -6,7 +6,7 @@ import java.util.*;
 
 public class QueueDAOImpl implements QueueDAO {
 
-    private Map<String, Queue<Message>> queueMap = new HashMap<>();
+    private static Map<String, Queue<Message>> queueMap = new HashMap<>();
 
     @Override
     public void push(String queueName, String id) {

@@ -3,6 +3,7 @@ package com.kagaya.kyaputen.core.execution;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.runtime.Workflow;
+import com.kagaya.kyaputen.core.dao.ExecutionDAO;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.core.service.DeciderService;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class WorkflowExecutor {
 
@@ -19,9 +21,12 @@ public class WorkflowExecutor {
 
     private final DeciderService deciderService;
 
+    private final ExecutionDAO executionDAO;
+
     @Inject
-    public WorkflowExecutor(QueueDAO queueDAO, DeciderService deciderService) {
+    public WorkflowExecutor(QueueDAO queueDAO, ExecutionDAO executionDAO, DeciderService deciderService) {
         this.queueDAO = queueDAO;
+        this.executionDAO = executionDAO;
         this.deciderService = deciderService;
     }
 
@@ -40,15 +45,13 @@ public class WorkflowExecutor {
         }
 
         String workflowId = taskResult.getWorkflowInstanceId();
-        Workflow workflowInstance = executionDAOFacade.getWorkflowById(workflowId, true);
+        Workflow workflowInstance = executionDAO.getWorkflow(workflowId);
 
-        if (workflowInstance.getWorkflowDefinition() == null) {
-            workflowInstance = metadataMapperService.populateWorkflowWithDefinitions(workflowInstance);
-        }
+//        if (workflowInstance.getWorkflowDefinition() == null) {
+//            workflowInstance = metadataMapperService.populateWorkflowWithDefinitions(workflowInstance);
+//        }
 
-        Task task = executionDAOFacade.getTaskById(taskResult.getTaskId());
-
-        logger.debug("Task: {} being updated", task.getTaskId());
+        Task task = executionDAO.getTask(taskResult.getTaskId());
 
         String taskQueueName = QueueUtils.getQueueName(task);
 
@@ -70,11 +73,11 @@ public class WorkflowExecutor {
         task.setWorkerId(taskResult.getWorkerId());
         task.setOutputData(taskResult.getOutputData());
 
-        deciderService.externalizeTaskData(task);
+        logger.debug("Task: {} being updated", task.getTaskId());
 
-        if (task.getStatus().isTerminal()) {
-            task.setEndTime(System.currentTimeMillis());
-        }
+//        if (task.getStatus().isTerminal()) {
+//            task.setEndTime(System.currentTimeMillis());
+//        }
 
         decide(workflowId);
 
@@ -97,6 +100,41 @@ public class WorkflowExecutor {
 //                .orElse(null);
 
         return new Task();
+    }
+
+    public boolean decide(String workflowId) {
+
+        Workflow workflow = executionDAO.getWorkflow(workflowId);
+
+        if (workflow.getStatus().isTerminal()) {
+            return true;
+        }
+
+        try {
+            // 决定需要执行的任务
+            DeciderService.DeciderOutcome outcome = deciderService.decide(workflow);
+            if (outcome.isComplete) {
+                completeWorkflow(workflow);
+                return true;
+            }
+
+            List<Task> tasksToBeScheduled = outcome.tasksToBeScheduled;
+            List<Task> tasksToBeUpdated = outcome.tasksToBeUpdated;
+
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    private long getTaskDuration(long s, Task task) {
+        long duration = task.getEndTime() - task.getStartTime();
+
+        return s + duration;
+    }
+
+    private void completeWorkflow(Workflow workflow) {
+
     }
 
 }
