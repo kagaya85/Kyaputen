@@ -1,8 +1,9 @@
 package com.kagaya.kyaputen.client.entity;
 
 import com.kagaya.kyaputen.client.config.KyaputenClientConfig;
+import com.kagaya.kyaputen.client.runner.TaskRunner;
 import com.kagaya.kyaputen.client.worker.Worker;
-import com.kagaya.kyaputen.common.metadata.tasks.Task;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -16,5 +17,12 @@ public class Main {
 
         Worker worker = new SampleWorker("testTask");
 
+        TaskRunner runner = new TaskRunner.Builder(taskClient, worker).build();
+
+        try {
+            runner.start();
+        } catch (Exception e) {
+            runner.shutdown();
+        }
     }
 }

@@ -4,7 +4,7 @@ public class KyaputenClientConfig {
 
     private static String address = "localhost";
 
-    private static  int port = 18080;
+    private static int port = 18080;
 
     private static String domain = null;
 

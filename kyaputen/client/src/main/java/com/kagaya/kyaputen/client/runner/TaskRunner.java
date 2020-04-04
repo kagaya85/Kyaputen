@@ -29,7 +29,7 @@ public class TaskRunner {
     private int retrySleep;
     private int updateRetryCount;
 
-    public class Builder {
+    public static class Builder {
 
         private String workerPrefixName = "worker-";
         private int retrySleep = 500;
@@ -97,13 +97,15 @@ public class TaskRunner {
 
     public void start() {
         this.taskPollExecutor = new TaskPollExecutor(eurekaClient, taskClient, updateRetryCount, workerPrefixName);
-
         this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+        logger.info("TaskRunner start poll and execute Task");
         this.scheduledExecutorService.scheduleWithFixedDelay(() -> taskPollExecutor.pollAndExecuteTask(worker),
                 KyaputenClientConfig.getPollingInterval(), KyaputenClientConfig.getPollingInterval(), TimeUnit.MILLISECONDS);
     }
 
     public void shutdown() {
+        logger.info("TaskRunner shutting down...");
         taskPollExecutor.shutdownExecutorService(scheduledExecutorService);
     }
 }
