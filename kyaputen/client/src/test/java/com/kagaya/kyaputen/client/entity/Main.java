@@ -6,12 +6,10 @@ import com.kagaya.kyaputen.common.metadata.tasks.Task;
 
 public class Main {
     public static void main(String[] args) {
-        KyaputenClientConfig config = new KyaputenClientConfig();
+        KyaputenClientConfig.setAddress("localhost");
+        KyaputenClientConfig.setPort(18080);
 
-        config.setAddress("localhost");
-        config.setPort(18080);
-
-        TaskClient taskClient = new TaskClient(config);
+        TaskClient taskClient = new TaskClient();
 
 //        Task task = taskClient.pollTask("testType", "test123", "testDomain");
 //        System.out.println("task status: " + task.getStatus().name());

@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.client.runner;
 
 import com.google.common.base.Preconditions;
+import com.kagaya.kyaputen.client.config.KyaputenClientConfig;
 import com.kagaya.kyaputen.client.entity.TaskClient;
 import com.kagaya.kyaputen.client.worker.Worker;
 import com.netflix.discovery.EurekaClient;
@@ -99,7 +100,7 @@ public class TaskRunner {
 
         this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         this.scheduledExecutorService.scheduleWithFixedDelay(() -> taskPollExecutor.pollAndExecuteTask(worker),
-                1000, 1000, TimeUnit.MILLISECONDS);
+                KyaputenClientConfig.getPollingInterval(), KyaputenClientConfig.getPollingInterval(), TimeUnit.MILLISECONDS);
     }
 
     public void shutdown() {

@@ -14,9 +14,7 @@ public abstract class ClientBase {
 
     protected KyaputenClientConfig config;
 
-    protected ClientBase () {
-        this(new KyaputenClientConfig());
-    }
+    protected ClientBase () { }
 
     protected ClientBase(KyaputenClientConfig config) {
         this.config = config;

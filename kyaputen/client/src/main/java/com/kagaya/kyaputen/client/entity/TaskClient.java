@@ -21,7 +21,7 @@ public class TaskClient extends ClientBase {
     public static final Logger logger = LoggerFactory.getLogger(TaskClient.class);
 
     public TaskClient() {
-        grpcTaskClient = new GRPCTaskClient(config.getAddress(), config.getPort());
+        grpcTaskClient = new GRPCTaskClient(KyaputenClientConfig.getAddress(), KyaputenClientConfig.getPort());
     }
 
     public TaskClient(KyaputenClientConfig config) {

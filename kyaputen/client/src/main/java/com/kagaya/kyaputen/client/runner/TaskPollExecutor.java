@@ -1,8 +1,8 @@
 package com.kagaya.kyaputen.client.runner;
 
 import com.google.common.base.Stopwatch;
+import com.kagaya.kyaputen.client.config.KyaputenClientConfig;
 import com.kagaya.kyaputen.client.entity.TaskClient;
-import com.kagaya.kyaputen.client.worker.PropertyFactory;
 import com.kagaya.kyaputen.client.worker.Worker;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
@@ -66,7 +66,7 @@ public class TaskPollExecutor {
 
         try {
             String taskType = worker.getTaskDefName();
-            String domain = PropertyFactory.getString("domain", null);
+            String domain = KyaputenClientConfig.getDomain();
 
             logger.debug("Polling task of type: {} in domain: {}", taskType, domain);
 
@@ -77,8 +77,6 @@ public class TaskPollExecutor {
                         executeTask(worker, task), executorService);
 
                 taskCompletableFuture.whenComplete(this::finalizeTask);
-            } else {
-
             }
         } catch ( Exception e) {
             logger.error("Error happend when task polling", e);
