@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.core.dao;
 
 import com.kagaya.kyaputen.core.events.Message;
+import com.kagaya.kyaputen.core.events.Message.MessageType;
 
 import java.util.*;
 
@@ -10,7 +11,12 @@ public class QueueDAOImpl implements QueueDAO {
 
     @Override
     public void push(String queueName, String id) {
-        push(queueName, id, 0);
+        push(queueName, id, 0, null);
+    }
+
+    @Override
+    public void push(String queueName, String id, MessageType type) {
+        push(queueName, id, 0, type);
     }
 
     @Override
@@ -21,10 +27,17 @@ public class QueueDAOImpl implements QueueDAO {
     }
 
     @Override
-    public void push(String queueName, String id, int priority) {
+    public void push(String queueName, Message message) {
         Queue<Message> queue = queueMap.get(queueName);
 
-        queue.add(new Message(id, priority));
+        queue.add(message);
+    }
+
+    @Override
+    public void push(String queueName, String id, int priority, MessageType type) {
+        Queue<Message> queue = queueMap.get(queueName);
+
+        queue.add(new Message(id, type, priority));
     }
 
     @Override

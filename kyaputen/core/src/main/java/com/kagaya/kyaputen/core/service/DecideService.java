@@ -6,18 +6,24 @@ import com.kagaya.kyaputen.common.runtime.Workflow;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DeciderService {
+public class DecideService {
 
-    public DeciderOutcome decide(final Workflow workflowd) {
+    /**
+     *
+     * @param workflowd
+     * @description 筛选待执行任务与待更新任务，传递参数
+     * @return DecideOutcome
+     */
+    public DecideOutcome decide(final Workflow workflowd) {
 
 
 
 
 
-        return new DeciderOutcome();
+        return new DecideOutcome();
     }
 
-    public static class DeciderOutcome {
+    public static class DecideOutcome {
 
         public List<Task> tasksToBeScheduled = new LinkedList<>();
 
@@ -25,7 +31,7 @@ public class DeciderService {
 
         public boolean isComplete;
 
-        public DeciderOutcome() {
+        public DecideOutcome() {
         }
 
     }

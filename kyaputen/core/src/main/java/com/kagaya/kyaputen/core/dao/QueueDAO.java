@@ -9,7 +9,11 @@ public interface QueueDAO {
 
     void push(String queueName, String id);
 
-    void push(String queueName, String id, int priority);
+    void push(String queueName, String id, Message.MessageType type);
+
+    void push(String queueName, String id, int priority, Message.MessageType type);
+
+    void push(String queueName, Message message);
 
     void push(String queueName, List<Message> messages);
 

@@ -106,11 +106,11 @@ public class TaskPollExecutor {
         logger.debug("Task: {} executed by worker: {} at {} with status: {}", task.getTaskId(),
                 worker.getClass().getSimpleName(), worker.getIdentity(), result.getStatus());
 
-        updateWithRetry(updateRetryCount, task, result, worker);
+        updateTask(updateRetryCount, task, result, worker);
         return task;
     }
 
-    private void updateWithRetry(int count, Task task, TaskResult result, Worker worker) {
+    private void updateTask(int count, Task task, TaskResult result, Worker worker) {
         try {
             taskClient.updateTask(result);
         } catch (Exception e) {
