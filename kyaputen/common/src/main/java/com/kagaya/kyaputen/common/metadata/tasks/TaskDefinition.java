@@ -1,11 +1,13 @@
 package com.kagaya.kyaputen.common.metadata.tasks;
 
+import com.kagaya.kyaputen.common.runtime.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class TaskDefinition {
 
-    private String name;
+    private String taskDefName;
 
     private String description;
 
@@ -21,40 +23,43 @@ public class TaskDefinition {
 
     private long responseTimeoutSeconds = 60 * 60;
 
+    // 资源分配量
+    private Resource resource;
+
     public TaskDefinition() {
 
     }
 
-    public TaskDefinition(String name) {
-        this.name = name;
+    public TaskDefinition(String taskDefName) {
+        this.taskDefName = taskDefName;
     }
 
-    public TaskDefinition(String name, String description) {
-        this.name = name;
+    public TaskDefinition(String taskDefName, String description) {
+        this.taskDefName = taskDefName;
         this.description = description;
     }
 
-    public TaskDefinition(String name, String description, int retryCount, long timeoutSeconds) {
-        this.name = name;
+    public TaskDefinition(String taskDefName, String description, int retryCount, long timeoutSeconds) {
+        this.taskDefName = taskDefName;
         this.description = description;
         this.retryCount = retryCount;
         this.timeoutSeconds = timeoutSeconds;
     }
 
-    public TaskDefinition(String name, String description, int retryCount, long timeoutSeconds, long responseTimeoutSeconds) {
-        this.name = name;
+    public TaskDefinition(String taskDefName, String description, int retryCount, long timeoutSeconds, long responseTimeoutSeconds) {
+        this.taskDefName = taskDefName;
         this.description = description;
         this.retryCount = retryCount;
         this.timeoutSeconds = timeoutSeconds;
         this.responseTimeoutSeconds = responseTimeoutSeconds;
     }
 
-    public String getName() {
-        return name;
+    public String getTaskDefName() {
+        return taskDefName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTaskDefName(String taskDefName) {
+        this.taskDefName = taskDefName;
     }
 
     public int getRetryCount() {
@@ -113,9 +118,17 @@ public class TaskDefinition {
         this.timeoutSeconds = timeoutSeconds;
     }
 
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
+
     @Override
     public String toString() {
-        return "Task name: " + name;
+        return "Task name: " + taskDefName;
     }
 }
 

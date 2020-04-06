@@ -73,6 +73,8 @@ public class TaskPollExecutor {
             task = taskClient.pollTask(taskType, worker.getIdentity(), domain);
             if (Objects.nonNull(task) && task.getTaskId() != null) {
                 logger.debug("Get Task from server, TaskType: {}, in domain: {}, from worker: {}", taskType, domain, worker.getIdentity());
+
+                // 异步执行Task
                 CompletableFuture<Task> taskCompletableFuture = CompletableFuture.supplyAsync(() ->
                         executeTask(worker, task), executorService);
 

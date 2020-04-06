@@ -8,6 +8,8 @@ import java.util.List;
 
 public class ExecutionDAOImpl implements ExecutionDAO {
 
+    private QueueDAO queueDAO;
+
     List<Task> getTasks(String taskType, String startKey, int count) {
 
     }
