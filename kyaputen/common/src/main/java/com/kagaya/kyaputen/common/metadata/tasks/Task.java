@@ -51,8 +51,6 @@ public class Task {
     // 22
     private String subWorkflowId;
 
-    public final Resource reource = new Resource();
-
     public Task() {
 
     }
@@ -276,5 +274,33 @@ public class Task {
                     ", retriable=" + retriable +
                     '}';
         }
+    }
+
+    public Task copy() {
+        Task task = new Task();
+
+        task.setTaskId(taskId);
+        task.setTaskType(taskType);
+        task.setStatus(status);
+        task.setTaskDefName(taskDefName);
+        task.setRetryCount(retryCount);
+        task.setPollCount(pollCount);
+        task.setInputData(inputData);
+        task.setOutputData(outputData);
+        task.setExecuted(executed);
+        task.setRetried(retried);
+        task.setExecutionNameSpace(executionNameSpace);
+        task.setStartTime(startTime);
+        task.setScheduledTime(scheduledTime);
+        task.setUpdateTime(updateTime);
+        task.setWorkflowInstanceId(workflowInstanceId);
+        task.setStartDelayInSeconds(startDelayInSeconds);
+        task.setWorkerId(workerId);
+        task.setWorkflowPriority(workflowPriority);
+        task.setSubWorkflowId(subWorkflowId);
+        task.setEndTime(endTime);
+        task.setDomain(domain);
+
+        return task;
     }
 }

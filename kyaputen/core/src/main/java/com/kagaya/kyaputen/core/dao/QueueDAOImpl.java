@@ -1,67 +1,63 @@
 package com.kagaya.kyaputen.core.dao;
 
-import com.kagaya.kyaputen.core.events.Message;
-import com.kagaya.kyaputen.core.events.Message.MessageType;
+import com.kagaya.kyaputen.common.metadata.tasks.Task;
 
 import java.util.*;
 
 public class QueueDAOImpl implements QueueDAO {
 
-    private static Map<String, Queue<Message>> queueMap = new HashMap<>();
+    private static Map<String, Queue<Task>> taskQueueMap = new HashMap<>();
 
     @Override
-    public void push(String queueName, String id) {
-        push(queueName, id, 0, null);
+    public void push(String queueName, Task task) {
+        Queue<Task> queue = taskQueueMap.get(queueName);
+
+        if (queue == null) {
+            taskQueueMap.put(queueName, new LinkedList<>());
+        }
+
+        queue.add(task);
     }
 
     @Override
-    public void push(String queueName, String id, MessageType type) {
-        push(queueName, id, 0, type);
+    public Task get(String queueName) {
+        Queue<Task> queue = taskQueueMap.get(queueName);
+
+        if (queue != null)
+            return queue.poll();
+        else
+            return null;
     }
 
     @Override
-    public void push(String queueName, List<Message> messages) {
-        Queue<Message> queue = queueMap.get(queueName);
+    public Task peek(String queueName) {
+        Queue<Task> queue = taskQueueMap.get(queueName);
 
-        queue.addAll(messages);
+        if (queue != null)
+            return queue.peek().copy();
+        else
+            return null;
     }
 
     @Override
-    public void push(String queueName, Message message) {
-        Queue<Message> queue = queueMap.get(queueName);
+    public void remove(String queueName, String id) {
+        Queue<Task> queue = taskQueueMap.get(queueName);
 
-        queue.add(message);
-    }
-
-    @Override
-    public void push(String queueName, String id, int priority, MessageType type) {
-        Queue<Message> queue = queueMap.get(queueName);
-
-        queue.add(new Message(id, type, priority));
-    }
-
-    @Override
-    public List<String> pop(String queueName, int count, int timeout) {
-        return null;
-    }
-
-//    @Override
-//    public List<String> pop(String queueName, int count, int timeout, long leaseDurationSeconds) {
-//        return null;
-//    }
-
-    @Override
-    public void remove(String queueName, String messageId) {
-
+        queue.removeIf(task -> task.getTaskId().equals(id));
     }
 
     @Override
     public int getSize(String queueName) {
-        return 0;
+        Queue<Task> queue = taskQueueMap.get(queueName);
+
+        return queue.size();
     }
 
     @Override
-    public boolean ack(String queueName, String messageId) {
-        return false;
+    public boolean isEmpty(String queueName) {
+        Queue<Task> queue = taskQueueMap.get(queueName);
+
+        return queue.isEmpty();
     }
+
 }
