@@ -5,24 +5,19 @@ import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.core.events.Message;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class ExecutionDAOImpl implements ExecutionDAO {
 
     private QueueDAO queueDAO;
 
-    /**
-     *
-     * @param taskDefName 任务队列名
-     * @param startKey 起始序号
-     * @param count 数量
-     * @return
-     */
-    List<Task> getTasks(String taskDefName, String startKey, int count) {
+    @Inject
+    ExecutionDAOImpl(QueueDAO queueDAO) {
+        this.queueDAO = queueDAO;
     }
 
     void updateTask(Task task) {
-
     }
 
     boolean removeTask(String taskId) {

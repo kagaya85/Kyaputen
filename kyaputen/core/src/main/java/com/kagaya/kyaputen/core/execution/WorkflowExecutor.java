@@ -13,8 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
+
+/**
+ * @description 工作流执行类
+ */
 public class WorkflowExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowExecutor.class);
@@ -25,11 +32,21 @@ public class WorkflowExecutor {
 
     private final ExecutionDAO executionDAO;
 
+    /**
+     * @description 工作流队列，按workflowInstanceId保存运行中的工作流任务
+     */
+    private final Map<String, Queue<Task>> workflowQueue;
+
     @Inject
     public WorkflowExecutor(QueueDAO queueDAO, ExecutionDAO executionDAO, DecideService decideService) {
         this.queueDAO = queueDAO;
         this.executionDAO = executionDAO;
         this.decideService = decideService;
+        this.workflowQueue = new HashMap<>();
+    }
+
+    public void createWorkflow() {
+
     }
 
     public void startWorkflow() {
@@ -130,7 +147,7 @@ public class WorkflowExecutor {
             for (Task task : tasksToBeScheduled) {
                 if (task.getWorkflowInstanceId() == workflowId) {
                     task.setStatus(Task.Status.SCHEDULED);
-                    queueDAO.push(workflowId, task.getTaskId(), MessageType.WorkflowMessage);
+                    queueDAO.push(workflowId, task);
                 }
             }
 
