@@ -1,6 +1,6 @@
 package com.kagaya.kyaputen.common.metadata.tasks;
 
-import com.kagaya.kyaputen.common.runtime.Resource;
+import com.kagaya.kyaputen.common.runtime.PodResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class TaskDefinition {
     private long responseTimeoutSeconds = 60 * 60;
 
     // 资源分配量
-    private Resource resource;
+    private PodResource resource;
 
     public TaskDefinition() {
 
