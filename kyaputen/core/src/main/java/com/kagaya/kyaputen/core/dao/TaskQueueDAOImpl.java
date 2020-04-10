@@ -4,7 +4,7 @@ import com.kagaya.kyaputen.common.metadata.tasks.Task;
 
 import java.util.*;
 
-public class QueueDAOImpl implements QueueDAO {
+public class TaskQueueDAOImpl implements QueueDAO<Task> {
 
     private static Map<String, Queue<Task>> taskQueueMap = new HashMap<>();
 

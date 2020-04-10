@@ -2,13 +2,14 @@ package com.kagaya.kyaputen.core.dao;
 
 import com.kagaya.kyaputen.common.metadata.tasks.PollData;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 
 import java.util.List;
 
 public interface ExecutionDAO {
 
-    void updateTask(Task task);
+    void updateTask(Task task, TaskResult taskResult);
 
     boolean removeTask(String taskId);
 

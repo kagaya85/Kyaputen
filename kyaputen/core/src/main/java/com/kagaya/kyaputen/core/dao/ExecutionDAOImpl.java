@@ -2,6 +2,8 @@ package com.kagaya.kyaputen.core.dao;
 
 import com.kagaya.kyaputen.common.metadata.tasks.PollData;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.core.events.Message;
 
@@ -13,19 +15,29 @@ import java.util.List;
  */
 public class ExecutionDAOImpl implements ExecutionDAO {
 
-    private QueueDAO queueDAO;
+    private QueueDAO<Task> taskQueue;
+
+    private QueueDAO<TaskDefinition> taskDefQueue;
+
+    private QueueDAO<Message> pollingQueue;
     
 
     @Inject
-    ExecutionDAOImpl(QueueDAO queueDAO) {
-        this.queueDAO = queueDAO;
+    ExecutionDAOImpl(QueueDAO<Task> taskQueue, QueueDAO<TaskDefinition> taskDefQueue, QueueDAO<Message> pollingQueue) {
+
+        this.taskQueue = taskQueue;
+        this.taskDefQueue = taskDefQueue;
+        this.pollingQueue = pollingQueue;
+
     }
 
-    void updateTask(Task task) {
+    @Override
+    void updateTask(Task task, TaskResult taskResult) {
     }
 
     boolean removeTask(String taskId) {
 
+        return false;
     }
 
     Task getTask(String taskId) {

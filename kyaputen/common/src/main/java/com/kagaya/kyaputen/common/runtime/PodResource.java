@@ -15,22 +15,22 @@ public class PodResource {
 
     private String computeUnitId;
 
-    public Resource() {}
+    public PodResource() {}
 
     public int getCpuNeeded() {
-        return cpuNeeded;
+        return cpuNeed;
     }
 
-    public void setCpuNeeded(int cpuNeeded) {
-        this.cpuNeeded = cpuNeeded;
+    public void setCpuNeeded(int cpuNeed) {
+        this.cpuNeed = cpuNeed;
     }
 
     public int getMemNeeded() {
-        return memNeeded;
+        return memNeed;
     }
 
     public void setMemNeeded(int memNeeded) {
-        this.memNeeded = memNeeded;
+        this.memNeed = memNeed;
     }
 
     public int getCpuAllocated() {

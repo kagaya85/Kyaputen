@@ -15,12 +15,22 @@ public interface QueueDAO<T> {
      */
     T get(String queueName);
 
+    T get(String queueName, String id);
+
     /**
      *
      * @param queueName
      * @return 查看队列中第一个任务
      */
     T peek(String queueName);
+
+    /**
+     *
+     * @param queueName
+     * @param id
+     * @return target object if exist, or null
+     */
+    T peek(String queueName, String id);
 
     void remove(String queueName, String id);
 

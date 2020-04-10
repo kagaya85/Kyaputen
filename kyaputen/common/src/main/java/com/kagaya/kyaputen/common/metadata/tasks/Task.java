@@ -1,8 +1,6 @@
 package com.kagaya.kyaputen.common.metadata.tasks;
 
 import java.util.Map;
-import com.google.protobuf.Any;
-import com.kagaya.kyaputen.common.runtime.Resource;
 
 public class Task {
 

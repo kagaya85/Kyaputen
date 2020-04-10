@@ -15,9 +15,13 @@ public class TaskDefinition {
 
     private long timeoutSeconds;
 
-    private List<String> inputKeys = new ArrayList<String>();
+    private List<String> inputKeys = new ArrayList<>();
 
-    private List<String> outputKeys = new ArrayList<String>();
+    private List<String> outputKeys = new ArrayList<>();
+
+    private List<String> priorTasks = new ArrayList<>();
+
+    private List<String> nextTasks = new ArrayList<>();
 
     private int retryDelaySeconds = 60;
 
@@ -118,11 +122,11 @@ public class TaskDefinition {
         this.timeoutSeconds = timeoutSeconds;
     }
 
-    public Resource getResource() {
+    public PodResource getResource() {
         return resource;
     }
 
-    public void setResource(Resource resource) {
+    public void setResource(PodResource resource) {
         this.resource = resource;
     }
 
