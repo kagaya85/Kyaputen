@@ -20,7 +20,7 @@ import java.util.Queue;
 
 
 /**
- * @description 工作流执行类
+ * @description 工作流执行逻辑，为其他服务提供任务队列操作函数
  */
 public class WorkflowExecutor {
 

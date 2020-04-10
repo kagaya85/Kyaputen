@@ -4,23 +4,23 @@ import com.kagaya.kyaputen.common.metadata.tasks.Task;
 
 import java.util.List;
 
-public interface QueueDAO {
+public interface QueueDAO<T> {
 
-    void push(String queueName, Task task);
+    void push(String queueName, T Item);
 
     /**
      *
      * @param queueName
      * @return 队列中第一个任务，出队列
      */
-    Task get(String queueName);
+    T get(String queueName);
 
     /**
      *
      * @param queueName
      * @return 查看队列中第一个任务
      */
-    Task peek(String queueName);
+    T peek(String queueName);
 
     void remove(String queueName, String id);
 

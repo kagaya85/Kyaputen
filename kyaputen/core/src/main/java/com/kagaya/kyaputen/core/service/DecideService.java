@@ -10,11 +10,11 @@ public class DecideService {
 
     /**
      *
-     * @param workflowd
-     * @description 筛选待执行任务与待更新任务，传递参数
+     * @param workflowId
+     * @description 
      * @return DecideOutcome
      */
-    public DecideOutcome decide(final Workflow workflowd) {
+    public DecideOutcome decide(final Workflow workflowId) {
 
 
 

@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  *
- * @description 逻辑部分代码
+ * @description 面向Worker的任务轮询处理逻辑
  */
 
 @Singleton

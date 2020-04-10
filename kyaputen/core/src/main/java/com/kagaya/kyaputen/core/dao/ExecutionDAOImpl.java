@@ -8,9 +8,13 @@ import com.kagaya.kyaputen.core.events.Message;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * @description 队列操作工具类
+ */
 public class ExecutionDAOImpl implements ExecutionDAO {
 
     private QueueDAO queueDAO;
+    
 
     @Inject
     ExecutionDAOImpl(QueueDAO queueDAO) {
