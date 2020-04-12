@@ -11,10 +11,14 @@ import java.util.Map;
 
 public class PollingQueueDAOImpl implements QueueDAO<Message> {
 
+    private String queueNamePrefix = "taskPolling-";
+
     private static Map<String, List<Message>> taskQueueMap = new HashMap<>();
 
     @Override
     public void push(String queueName, Message task) {
+        queueName = queueNamePrefix + queueName;
+
         List<Message> queue = taskQueueMap.get(queueName);
 
         if (queue == null) {
@@ -26,6 +30,8 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
 
     @Override
     public Message pop(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<Message> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
@@ -39,6 +45,8 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
 
     @Override
     public Message pop(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<Message> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
@@ -55,7 +63,9 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
     }
 
     @Override
-    public Message peek(String queueName) {
+    public Message get(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<Message> queue = taskQueueMap.get(queueName);
 
         if (queue != null)
@@ -65,7 +75,9 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
     }
 
     @Override
-    public Message peek(String queueName, String id) {
+    public Message get(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<Message> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
@@ -82,6 +94,8 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
 
     @Override
     public void remove(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<Message> queue = taskQueueMap.get(queueName);
 
         queue.removeIf(message -> message.getId().equals(id));
@@ -89,6 +103,8 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
 
     @Override
     public int getSize(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<Message> queue = taskQueueMap.get(queueName);
 
         return queue.size();
@@ -96,6 +112,8 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
 
     @Override
     public boolean isEmpty(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<Message> queue = taskQueueMap.get(queueName);
 
         return queue.isEmpty();

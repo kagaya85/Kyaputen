@@ -11,7 +11,7 @@ public interface QueueDAO<T> {
     /**
      *
      * @param queueName
-     * @return 队列中第一个任务，出队列
+     * @return 弹出队列中的任务
      */
     T pop(String queueName);
 
@@ -20,9 +20,9 @@ public interface QueueDAO<T> {
     /**
      *
      * @param queueName
-     * @return 查看队列中第一个任务
+     * @return 获取队列中第一个任务，保持在队列中
      */
-    T peek(String queueName);
+    T get(String queueName);
 
     /**
      *
@@ -30,7 +30,7 @@ public interface QueueDAO<T> {
      * @param id
      * @return target object if exist, or null
      */
-    T peek(String queueName, String id);
+    T get(String queueName, String id);
 
     void remove(String queueName, String id);
 

@@ -2,6 +2,7 @@ package com.kagaya.kyaputen.core.execution;
 
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
+import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.core.dao.ExecutionDAO;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
@@ -45,15 +46,23 @@ public class WorkflowExecutor {
         this.workflowQueue = new HashMap<>();
     }
 
-    public void createWorkflow() {
+    /**
+     * @description 创建工作流，进入工作流队列，设置workflowId
+     * @param workflowDef
+     */
+    public void createWorkflow(WorkflowDefinition workflowDef) {
 
     }
 
-    public void startWorkflow() {
+    /**
+     * @description 启动指定工作流，赋值输入参数
+     * @param workflowName
+     */
+    public void startWorkflow(String workflowName, Map<String, Object> param) {
 
     }
 
-    public void completeWorkflow() {
+    public void completeWorkflow(String workflowId) {
 
     }
 

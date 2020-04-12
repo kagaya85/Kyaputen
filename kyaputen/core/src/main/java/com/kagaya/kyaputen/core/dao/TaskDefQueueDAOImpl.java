@@ -9,10 +9,14 @@ import java.util.*;
  */
 public class TaskDefQueueDAOImpl implements QueueDAO<TaskDefinition> {
 
+    private String queueNamePrefix = "taskDef-";
+
     private static Map<String, List<TaskDefinition>> taskDefQueueMap = new HashMap<>();
 
     @Override
     public void push(String queueName, TaskDefinition task) {
+        queueName = queueNamePrefix + queueName;
+
         List<TaskDefinition> queue = taskDefQueueMap.get(queueName);
 
         if (queue == null) {
@@ -24,6 +28,8 @@ public class TaskDefQueueDAOImpl implements QueueDAO<TaskDefinition> {
 
     @Override
     public TaskDefinition pop(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<TaskDefinition> queue = taskDefQueueMap.get(queueName);
 
         if (queue != null) {
@@ -37,6 +43,8 @@ public class TaskDefQueueDAOImpl implements QueueDAO<TaskDefinition> {
 
     @Override
     public TaskDefinition pop(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<TaskDefinition> queue = taskDefQueueMap.get(queueName);
 
         if (queue != null) {
@@ -53,7 +61,9 @@ public class TaskDefQueueDAOImpl implements QueueDAO<TaskDefinition> {
     }
 
     @Override
-    public TaskDefinition peek(String queueName) {
+    public TaskDefinition get(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<TaskDefinition> queue = taskDefQueueMap.get(queueName);
 
         if (queue != null)
@@ -63,7 +73,9 @@ public class TaskDefQueueDAOImpl implements QueueDAO<TaskDefinition> {
     }
 
     @Override
-    public TaskDefinition peek(String queueName, String id) {
+    public TaskDefinition get(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<TaskDefinition> queue = taskDefQueueMap.get(queueName);
 
         if (queue != null) {
@@ -79,6 +91,8 @@ public class TaskDefQueueDAOImpl implements QueueDAO<TaskDefinition> {
 
     @Override
     public void remove(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<TaskDefinition> queue = taskDefQueueMap.get(queueName);
 
         queue.removeIf(task -> task.getTaskDefName().equals(id));
@@ -86,6 +100,8 @@ public class TaskDefQueueDAOImpl implements QueueDAO<TaskDefinition> {
 
     @Override
     public int getSize(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<TaskDefinition> queue = taskDefQueueMap.get(queueName);
 
         return queue.size();
@@ -93,6 +109,8 @@ public class TaskDefQueueDAOImpl implements QueueDAO<TaskDefinition> {
 
     @Override
     public boolean isEmpty(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<TaskDefinition> queue = taskDefQueueMap.get(queueName);
 
         return queue.isEmpty();

@@ -7,10 +7,14 @@ import java.util.*;
 
 public class TaskQueueDAOImpl implements QueueDAO<Task> {
 
+    private String queueNamePrefix = "task-";
+
     private static Map<String, List<Task>> taskQueueMap = new HashMap<>();
 
     @Override
     public void push(String queueName, Task task) {
+        queueName = queueNamePrefix + queueName;
+
         List<Task> queue = taskQueueMap.get(queueName);
 
         if (queue == null) {
@@ -22,6 +26,8 @@ public class TaskQueueDAOImpl implements QueueDAO<Task> {
 
     @Override
     public Task pop(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<Task> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
@@ -35,6 +41,8 @@ public class TaskQueueDAOImpl implements QueueDAO<Task> {
 
     @Override
     public Task pop(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<Task> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
@@ -51,7 +59,9 @@ public class TaskQueueDAOImpl implements QueueDAO<Task> {
     }
 
     @Override
-    public Task peek(String queueName) {
+    public Task get(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<Task> queue = taskQueueMap.get(queueName);
 
         if (queue != null)
@@ -61,7 +71,9 @@ public class TaskQueueDAOImpl implements QueueDAO<Task> {
     }
 
     @Override
-    public Task peek(String queueName, String id) {
+    public Task get(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<Task> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
@@ -78,6 +90,8 @@ public class TaskQueueDAOImpl implements QueueDAO<Task> {
 
     @Override
     public void remove(String queueName, String id) {
+        queueName = queueNamePrefix + queueName;
+
         List<Task> queue = taskQueueMap.get(queueName);
 
         queue.removeIf(task -> task.getTaskId().equals(id));
@@ -85,6 +99,8 @@ public class TaskQueueDAOImpl implements QueueDAO<Task> {
 
     @Override
     public int getSize(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<Task> queue = taskQueueMap.get(queueName);
 
         return queue.size();
@@ -92,6 +108,8 @@ public class TaskQueueDAOImpl implements QueueDAO<Task> {
 
     @Override
     public boolean isEmpty(String queueName) {
+        queueName = queueNamePrefix + queueName;
+
         List<Task> queue = taskQueueMap.get(queueName);
 
         return queue.isEmpty();

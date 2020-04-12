@@ -20,7 +20,8 @@ public class ExecutionDAOImpl implements ExecutionDAO {
     private QueueDAO<TaskDefinition> taskDefQueue;
 
     private QueueDAO<Message> pollingQueue;
-    
+
+    private QueueDAO<Workflow> workflowQueue;
 
     @Inject
     ExecutionDAOImpl(QueueDAO<Task> taskQueue, QueueDAO<TaskDefinition> taskDefQueue, QueueDAO<Message> pollingQueue) {
@@ -32,43 +33,43 @@ public class ExecutionDAOImpl implements ExecutionDAO {
     }
 
     @Override
-    void updateTask(Task task, TaskResult taskResult) {
+    public void updateTask(Task task, TaskResult taskResult) {
+        Task t = taskQueue.get(task.getTaskDefName(), task.getTaskId());
+
+        t.setOutputData(taskResult.getOutputData());
     }
 
-    boolean removeTask(String taskId) {
+    public boolean removeTask(String taskId) {
 
         return false;
     }
 
-    Task getTask(String taskId) {
+
+    public String createWorkflow(Workflow workflow) {
 
     }
 
-    String createWorkflow(Workflow workflow) {
+    public String updateWorkflow(Workflow workflow) {
 
     }
 
-    String updateWorkflow(Workflow workflow) {
+    public Workflow getWorkflow(String workflowId) {
 
     }
 
-    Workflow getWorkflow(String workflowId) {
+    public long getInProgressTaskCount() {
 
     }
 
-    long getInProgressTaskCount() {
+    public void updateLastPollData(String taskDefName, String domain, String workerId) {
 
     }
 
-    void updateLastPollData(String taskDefName, String domain, String workerId) {
+    public PollData getPollData(String taskDefName, String domain) {
 
     }
 
-    PollData getPollData(String taskDefName, String domain) {
-
-    }
-
-    List<PollData> getPollData(String taskDefName) {
+    public List<PollData> getPollData(String taskDefName) {
 
     }
 }
