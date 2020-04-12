@@ -13,9 +13,9 @@ public interface QueueDAO<T> {
      * @param queueName
      * @return 队列中第一个任务，出队列
      */
-    T get(String queueName);
+    T pop(String queueName);
 
-    T get(String queueName, String id);
+    T pop(String queueName, String id);
 
     /**
      *
