@@ -27,7 +27,7 @@ public class WorkflowExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowExecutor.class);
 
-    private final QueueDAO queueDAO;
+    private final QueueDAO<Task> taskQueue;
 
     private final DecideService decideService;
 
@@ -39,8 +39,8 @@ public class WorkflowExecutor {
     private final Map<String, Queue<Task>> workflowQueue;
 
     @Inject
-    public WorkflowExecutor(QueueDAO queueDAO, ExecutionDAO executionDAO, DecideService decideService) {
-        this.queueDAO = queueDAO;
+    public WorkflowExecutor(QueueDAO<Task> taskQueue, ExecutionDAO executionDAO, DecideService decideService) {
+        this.taskQueue = taskQueue;
         this.executionDAO = executionDAO;
         this.decideService = decideService;
         this.workflowQueue = new HashMap<>();
@@ -85,14 +85,14 @@ public class WorkflowExecutor {
 
         if (task.getStatus().isTerminal()) {
             // Task was already updated....
-            queueDAO.remove(taskQueueName, taskResult.getTaskId());
+            taskQueue.remove(taskQueueName, taskResult.getTaskId());
             logger.info("Task: {} has already finished execution with status: {} within workflow: {}. Removed task from queue: {}", task.getTaskId(), task.getStatus(), task.getWorkflowInstanceId(), taskQueueName);
             return;
         }
 
         if (workflowInstance.getStatus().isTerminal()) {
             // Workflow is in terminal state
-            queueDAO.remove(taskQueueName, taskResult.getTaskId());
+            taskQueue.remove(taskQueueName, taskResult.getTaskId());
             logger.info("Workflow: {} has already finished execution. Task update for: {} ignored and removed from Queue: {}.", workflowInstance, taskResult.getTaskId(), taskQueueName);
             return;
         }
@@ -113,17 +113,8 @@ public class WorkflowExecutor {
         }
     }
 
-    public Task getTask(String taskId) {
-//        return getTaskById(taskId)
-//                .map(task -> {
-//                    if (task.getWorkflowTask() != null) {
-//                        return metadataMapperService.populateTaskWithDefinition(task);
-//                    }
-//                    return task;
-//                })
-//                .orElse(null);
-
-        return new Task();
+    public Task getTask(String queueName, String taskId) {
+        return taskQueue.get(queueName, taskId);
     }
 
     /**
@@ -156,7 +147,7 @@ public class WorkflowExecutor {
             for (Task task : tasksToBeScheduled) {
                 if (task.getWorkflowInstanceId() == workflowId) {
                     task.setStatus(Task.Status.SCHEDULED);
-                    queueDAO.push(workflowId, task);
+                    taskQueue.push(workflowId, task);
                 }
             }
 

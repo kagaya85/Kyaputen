@@ -39,36 +39,49 @@ public class ExecutionDAOImpl implements ExecutionDAO {
         t.setOutputData(taskResult.getOutputData());
     }
 
+    @Override
+    public Task getTask(String queueName, String taskId) {
+        return taskQueue.get(queueName, taskId);
+    }
+
+    @Override
     public boolean removeTask(String taskId) {
 
         return false;
     }
 
 
+    @Override
     public String createWorkflow(Workflow workflow) {
 
     }
 
+    @Override
     public String updateWorkflow(Workflow workflow) {
 
     }
 
+    @Override
     public Workflow getWorkflow(String workflowId) {
 
     }
 
+    @Override
     public long getInProgressTaskCount() {
 
     }
 
+    @Override
     public void updateLastPollData(String taskDefName, String domain, String workerId) {
 
     }
 
+    @Override
     public PollData getPollData(String taskDefName, String domain) {
 
     }
 
+    @Override
     public List<PollData> getPollData(String taskDefName) {
 
     }

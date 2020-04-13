@@ -13,7 +13,7 @@ public interface ExecutionDAO {
 
     boolean removeTask(String taskId);
 
-    Task getTask(String taskId);
+    Task getTask(String queueName, String taskId);
 
     String createWorkflow(Workflow workflow);
 
