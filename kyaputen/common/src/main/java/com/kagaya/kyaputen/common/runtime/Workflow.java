@@ -38,6 +38,8 @@ public class Workflow {
 
     private Long createTime;
 
+    private Long startTime;
+
     private Long updateTime;
 
     private Long endTime;
@@ -53,6 +55,23 @@ public class Workflow {
     private WorkflowDefinition workflowDefinition;
 
     private int priority;
+
+    public Task getTask(String taskId) {
+        for (Task task: tasks) {
+            if (task.getTaskId().equals(taskId))
+                return task;
+        }
+
+        return null;
+    }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
 
     public WorkflowStatus getStatus() {
         return status;

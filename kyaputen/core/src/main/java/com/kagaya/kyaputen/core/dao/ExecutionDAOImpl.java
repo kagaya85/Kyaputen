@@ -4,10 +4,14 @@ import com.kagaya.kyaputen.common.metadata.tasks.PollData;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
+import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
+import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
 import com.kagaya.kyaputen.core.events.Message;
+import com.kagaya.kyaputen.core.utils.IdGenerator;
 
 import javax.inject.Inject;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,33 +19,29 @@ import java.util.List;
  */
 public class ExecutionDAOImpl implements ExecutionDAO {
 
-    private QueueDAO<Task> taskQueue;
-
-    private QueueDAO<TaskDefinition> taskDefQueue;
-
     private QueueDAO<Message> pollingQueue;
 
-    private QueueDAO<Workflow> workflowQueue;
+    private WorkflowRunQueue workflowQueue;
 
     @Inject
-    ExecutionDAOImpl(QueueDAO<Task> taskQueue, QueueDAO<TaskDefinition> taskDefQueue, QueueDAO<Message> pollingQueue) {
-
-        this.taskQueue = taskQueue;
-        this.taskDefQueue = taskDefQueue;
+    ExecutionDAOImpl(QueueDAO<Message> pollingQueue) {
         this.pollingQueue = pollingQueue;
-
     }
 
     @Override
     public void updateTask(Task task, TaskResult taskResult) {
-        Task t = taskQueue.get(task.getTaskDefName(), task.getTaskId());
+        Workflow workflow = workflowQueue.get(task.getWorkflowInstanceId());
+        Task t = workflow.getTask(task.getTaskId());
 
         t.setOutputData(taskResult.getOutputData());
     }
 
     @Override
-    public Task getTask(String queueName, String taskId) {
-        return taskQueue.get(queueName, taskId);
+    public Task getTask(String workflowId, String taskId) {
+        Workflow workflow = workflowQueue.get(workflowId);
+        Task t = workflow.getTask(taskId);
+
+        return t;
     }
 
     @Override
@@ -52,37 +52,63 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
 
     @Override
-    public String createWorkflow(Workflow workflow) {
+    public boolean createWorkflow(WorkflowDefinition workflowDef) {
 
+        Workflow workflow = new Workflow();
+        String workflowId = IdGenerator.generate();
+
+        workflow.setStatus(WorkflowStatus.RUNNING);
+        workflow.setCreateTime(System.currentTimeMillis());
+        workflow.setWorkflowDefinition(workflowDef);
+        workflow.setWorkflowId(workflowId);
+        workflow.setTasks(createTaskQueue(workflowId, workflowDef.getTaskDefs()));
+
+        workflowQueue.add(workflow);
+
+        return false;
+    }
+
+    public List<Task> createTaskQueue(String workflowId, List<TaskDefinition> taskDefs) {
+
+        List<Task> taskQueue = new LinkedList<>();
+
+        for (TaskDefinition taskDef: taskDefs) {
+            Task task = new Task();
+
+            task.setWorkflowInstanceId(workflowId);
+            task.setTaskDefName(taskDef.getTaskDefName());
+            task.setExecuted(false);
+            task.setPollCount(0);
+            task.setTaskId(IdGenerator.generate());
+            task.setRetryCount(0);
+
+            taskQueue.add(task);
+        }
+
+        return taskQueue;
     }
 
     @Override
-    public String updateWorkflow(Workflow workflow) {
+    public void updateWorkflow(Workflow workflow) {
+        Workflow w = workflowQueue.get(workflow.getWorkflowId());
 
     }
 
     @Override
     public Workflow getWorkflow(String workflowId) {
-
+        return workflowQueue.get(workflowId);
     }
 
     @Override
     public long getInProgressTaskCount() {
 
-    }
-
-    @Override
-    public void updateLastPollData(String taskDefName, String domain, String workerId) {
-
+        return -1;
     }
 
     @Override
     public PollData getPollData(String taskDefName, String domain) {
 
+        return new PollData();
     }
 
-    @Override
-    public List<PollData> getPollData(String taskDefName) {
-
-    }
 }

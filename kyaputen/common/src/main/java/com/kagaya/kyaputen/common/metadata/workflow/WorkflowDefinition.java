@@ -15,7 +15,7 @@ public class WorkflowDefinition {
 
     private int version = 1;
 
-    private List<TaskDefinition> tasks = new LinkedList<>();
+    private List<TaskDefinition> taskDefs = new LinkedList<>();
 
     private List<String> inputParameters = new LinkedList<>();
 
@@ -55,12 +55,12 @@ public class WorkflowDefinition {
         this.inputParameters = inputParameters;
     }
 
-    public List<TaskDefinition> getTasks() {
-        return tasks;
+    public List<TaskDefinition> getTaskDefs() {
+        return taskDefs;
     }
 
-    public void setTasks(List<TaskDefinition> tasks) {
-        this.tasks = tasks;
+    public void setTaskDefs(List<TaskDefinition> tasks) {
+        this.taskDefs = tasks;
     }
 
     public long getTimeoutSeconds() {
