@@ -1,60 +1,58 @@
 package com.kagaya.kyaputen.core.dao;
 
-import com.kagaya.kyaputen.common.metadata.tasks.Task;
-import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
-import com.kagaya.kyaputen.core.events.Message;
+import com.kagaya.kyaputen.core.events.TaskMessage;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class PollingQueueDAOImpl implements QueueDAO<Message> {
+public class PollingQueueDAOImpl implements QueueDAO<TaskMessage> {
 
-    private String queueNamePrefix = "taskPolling-";
+    private String queueNamePrefix = "PollingQueue-";
 
-    private static Map<String, List<Message>> taskQueueMap = new HashMap<>();
+    private static Map<String, List<TaskMessage>> taskQueueMap = new HashMap<>();
 
     @Override
-    public void push(String queueName, Message task) {
+    public void push(String queueName, TaskMessage task) {
         queueName = queueNamePrefix + queueName;
 
-        List<Message> queue = taskQueueMap.get(queueName);
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
 
         if (queue == null) {
             taskQueueMap.put(queueName, new LinkedList<>());
         }
-
-        queue.add(task);
+        else
+            queue.add(task);
     }
 
     @Override
-    public Message pop(String queueName) {
+    public TaskMessage pop(String queueName) {
         queueName = queueNamePrefix + queueName;
 
-        List<Message> queue = taskQueueMap.get(queueName);
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
-            Message message = queue.get(0);
+            TaskMessage taskMessage = queue.get(0);
             queue.remove(0);
-            return message;
+            return taskMessage;
         }
         else
             return null;
     }
 
     @Override
-    public Message pop(String queueName, String id) {
+    public TaskMessage pop(String queueName, String id) {
         queueName = queueNamePrefix + queueName;
 
-        List<Message> queue = taskQueueMap.get(queueName);
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
             for (int i = 0; i < queue.size(); i++) {
-                Message message = queue.get(i);
-                if (message.getId().equals(id)) {
+                TaskMessage taskMessage = queue.get(i);
+                if (taskMessage.getTaskId().equals(id)) {
                     queue.remove(i);
-                    return message;
+                    return taskMessage;
                 }
             }
         }
@@ -63,10 +61,10 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
     }
 
     @Override
-    public Message get(String queueName) {
+    public TaskMessage get(String queueName) {
         queueName = queueNamePrefix + queueName;
 
-        List<Message> queue = taskQueueMap.get(queueName);
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
 
         if (queue != null)
             return queue.get(0);
@@ -75,16 +73,15 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
     }
 
     @Override
-    public Message get(String queueName, String id) {
+    public TaskMessage get(String queueName, String id) {
         queueName = queueNamePrefix + queueName;
 
-        List<Message> queue = taskQueueMap.get(queueName);
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
 
         if (queue != null) {
-            for (int i = 0; i < queue.size(); i++) {
-                Message message = queue.get(i);
-                if (message.getId().equals(id)) {
-                    return message;
+            for (TaskMessage taskMessage : queue) {
+                if (taskMessage.getTaskId().equals(id)) {
+                    return taskMessage;
                 }
             }
         }
@@ -96,16 +93,16 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
     public void remove(String queueName, String id) {
         queueName = queueNamePrefix + queueName;
 
-        List<Message> queue = taskQueueMap.get(queueName);
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
 
-        queue.removeIf(message -> message.getId().equals(id));
+        queue.removeIf(taskMessage -> taskMessage.getTaskId().equals(id));
     }
 
     @Override
     public int getSize(String queueName) {
         queueName = queueNamePrefix + queueName;
 
-        List<Message> queue = taskQueueMap.get(queueName);
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
 
         return queue.size();
     }
@@ -114,7 +111,7 @@ public class PollingQueueDAOImpl implements QueueDAO<Message> {
     public boolean isEmpty(String queueName) {
         queueName = queueNamePrefix + queueName;
 
-        List<Message> queue = taskQueueMap.get(queueName);
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
 
         return queue.isEmpty();
     }

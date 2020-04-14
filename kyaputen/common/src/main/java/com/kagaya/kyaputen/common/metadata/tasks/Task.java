@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.common.metadata.tasks;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class Task {
 
@@ -45,9 +46,12 @@ public class Task {
     // 20
     private String workflowInstanceId;
     // 21
-    private int workflowPriority;
+    private int priority;
     // 22
     private String subWorkflowId;
+
+    // not include in proto
+    private TaskDefinition taskDefinition;
 
     public Task() {
 
@@ -221,12 +225,20 @@ public class Task {
         this.workflowInstanceId = workflowInstanceId;
     }
 
-    public int getWorkflowPriority() {
-        return workflowPriority;
+    public int getPriority() {
+        return priority;
     }
 
-    public void setWorkflowPriority(int workflowPriority) {
-        this.workflowPriority = workflowPriority;
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public TaskDefinition getTaskDefinition() {
+        return taskDefinition;
+    }
+
+    public void setTaskDefinition(TaskDefinition taskDefinition) {
+        this.taskDefinition = taskDefinition;
     }
 
     public enum Status {
@@ -294,11 +306,27 @@ public class Task {
         task.setWorkflowInstanceId(workflowInstanceId);
         task.setStartDelayInSeconds(startDelayInSeconds);
         task.setWorkerId(workerId);
-        task.setWorkflowPriority(workflowPriority);
+        task.setPriority(priority);
         task.setSubWorkflowId(subWorkflowId);
         task.setEndTime(endTime);
         task.setDomain(domain);
 
         return task;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(getTaskId(), task.getTaskId()) &&
+                Objects.equals(getTaskType(), task.getTaskType()) &&
+                Objects.equals(getTaskDefName(), task.getTaskDefName()) &&
+                Objects.equals(getWorkflowInstanceId(), task.getWorkflowInstanceId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTaskId(), getTaskType(), getTaskDefName(), getWorkflowInstanceId());
     }
 }

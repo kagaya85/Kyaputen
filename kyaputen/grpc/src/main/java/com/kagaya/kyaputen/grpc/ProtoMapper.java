@@ -135,7 +135,7 @@ public class ProtoMapper {
         for (Map.Entry<String, Object> pair : from.getOutputData().entrySet()) {
             to.putOutputData( pair.getKey(), toProto( pair.getValue() ) );
         }
-        to.setWorkflowPriority( from.getWorkflowPriority() );
+        to.setPriority( from.getPriority() );
         if (from.getSubWorkflowId() != null) {
             to.setSubWorkflowId( from.getSubWorkflowId() );
         }
@@ -173,7 +173,7 @@ public class ProtoMapper {
         }
         to.setOutputData(outputDataMap);
         to.setWorkflowInstanceId( from.getWorkflowInstanceId() );
-        to.setWorkflowPriority( from.getWorkflowPriority() );
+        to.setPriority( from.getPriority() );
         to.setSubWorkflowId( from.getSubWorkflowId() );
 
         return to;

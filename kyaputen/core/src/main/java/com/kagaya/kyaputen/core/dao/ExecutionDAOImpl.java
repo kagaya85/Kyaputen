@@ -7,7 +7,7 @@ import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
-import com.kagaya.kyaputen.core.events.Message;
+import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.utils.IdGenerator;
 
 import javax.inject.Inject;
@@ -15,16 +15,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @description 队列操作工具类
+ * 队列操作工具类
  */
 public class ExecutionDAOImpl implements ExecutionDAO {
 
-    private QueueDAO<Message> pollingQueue;
+    private QueueDAO<TaskMessage> pollingQueue;
 
     private WorkflowQueue workflowQueue;
 
     @Inject
-    ExecutionDAOImpl(QueueDAO<Message> pollingQueue) {
+    ExecutionDAOImpl(QueueDAO<TaskMessage> pollingQueue) {
         this.pollingQueue = pollingQueue;
     }
 
@@ -38,10 +38,10 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
     @Override
     public Task getTask(String workflowId, String taskId) {
-        Workflow workflow = workflowQueue.getById(workflowId);
-        Task t = workflow.getTask(taskId);
 
-        return t;
+        Workflow workflow = workflowQueue.getById(workflowId);
+
+        return workflow.getTask(taskId);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
 
     @Override
-    public boolean createWorkflow(WorkflowDefinition workflowDef) {
+    public Workflow createWorkflow(WorkflowDefinition workflowDef) {
 
         Workflow workflow = new Workflow();
         String workflowId = IdGenerator.generate();
@@ -66,7 +66,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
         workflowQueue.add(workflow);
 
-        return false;
+        return workflow;
     }
 
     public List<Task> createTaskQueue(String workflowId, List<TaskDefinition> taskDefs) {
@@ -82,6 +82,8 @@ public class ExecutionDAOImpl implements ExecutionDAO {
             task.setPollCount(0);
             task.setTaskId(IdGenerator.generate());
             task.setRetryCount(0);
+            task.setPriority(taskDef.getPriority());
+            task.setTaskDefinition(taskDef);
 
             taskQueue.add(task);
         }

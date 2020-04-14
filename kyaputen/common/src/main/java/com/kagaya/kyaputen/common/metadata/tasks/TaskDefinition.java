@@ -4,6 +4,7 @@ import com.kagaya.kyaputen.common.runtime.PodResource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TaskDefinition {
 
@@ -26,6 +27,8 @@ public class TaskDefinition {
     private int retryDelaySeconds = 60;
 
     private long responseTimeoutSeconds = 60 * 60;
+
+    private int priority = -1;
 
     // 资源分配量
     private PodResource resource;
@@ -130,9 +133,46 @@ public class TaskDefinition {
         this.resource = resource;
     }
 
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public List<String> getPriorTasks() {
+        return priorTasks;
+    }
+
+    public void setPriorTasks(List<String> priorTasks) {
+        this.priorTasks = priorTasks;
+    }
+
+    public List<String> getNextTasks() {
+        return nextTasks;
+    }
+
+    public void setNextTasks(List<String> nextTasks) {
+        this.nextTasks = nextTasks;
+    }
+
     @Override
     public String toString() {
         return "Task name: " + taskDefName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TaskDefinition that = (TaskDefinition) o;
+        return getTaskDefName().equals(that.getTaskDefName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTaskDefName());
     }
 }
 

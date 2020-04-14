@@ -16,7 +16,7 @@ public interface ExecutionDAO {
 
     Task getTask(String workflowId, String taskId);
 
-    boolean createWorkflow(WorkflowDefinition workflowDef);
+    Workflow createWorkflow(WorkflowDefinition workflowDef);
 
     boolean updateWorkflow(Workflow workflow);
 

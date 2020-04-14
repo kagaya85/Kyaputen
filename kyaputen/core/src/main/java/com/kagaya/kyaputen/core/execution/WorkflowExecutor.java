@@ -1,25 +1,29 @@
 package com.kagaya.kyaputen.core.execution;
 
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.core.dao.ExecutionDAO;
+import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.core.dao.WorkflowQueue;
+import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.service.DecideService;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
+import com.kagaya.kyaputen.core.metadata.WorkflowMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.resource.spi.work.Work;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
 /**
- * @description 工作流执行逻辑，为其他服务提供任务队列操作函数
+ * 作流执行逻辑，为其他服务提供任务队列操作函数
  */
 public class WorkflowExecutor {
 
@@ -34,6 +38,10 @@ public class WorkflowExecutor {
      */
     private WorkflowQueue workflowQueue;
 
+    private QueueDAO<TaskMessage> pollingQueue;
+
+    private WorkflowMetadata workflowDefs;
+
     @Inject
     public WorkflowExecutor(ExecutionDAO executionDAO, DecideService decideService) {
         this.executionDAO = executionDAO;
@@ -41,16 +49,16 @@ public class WorkflowExecutor {
     }
 
     /**
-     * @description 创建工作流，进入工作流队列，设置workflowId
-     * @param workflowDef
+     * 创建工作流，进入工作流队列，设置workflowId
+     * @param workflowDef 工作流定义
      */
     public void createWorkflow(WorkflowDefinition workflowDef) {
         executionDAO.createWorkflow(workflowDef);
     }
 
     /**
-     * @description 启动指定工作流，赋值输入参数
-     * @param workflowName
+     * 启动指定工作流，赋值输入参数
+     * @param workflowName 工作流定义
      */
     public boolean startWorkflow(String workflowName, Map<String, Object> param) {
 
@@ -58,13 +66,16 @@ public class WorkflowExecutor {
 
         if(workflowList.size() == 0) {
             logger.error("No such instance of workflow: " + workflowName);
-            executionDAO.createWorkflow()
+            Workflow wf = executionDAO.createWorkflow(workflowDefs.get(workflowName));
+            workflowList.add(wf);
         }
 
-        // 找一个就绪实例
+        // find a READY workflow instance
         for (Workflow wf: workflowList) {
-            if (wf.getStartTime().equals(WorkflowStatus.READY)) {
-
+            if (wf.getStatus().equals(WorkflowStatus.READY)) {
+                wf.setInput(param);
+                decide(wf.getWorkflowId());
+                break;
             }
         }
 
@@ -73,7 +84,12 @@ public class WorkflowExecutor {
     }
 
     public void completeWorkflow(String workflowId) {
+        Workflow wf = executionDAO.getWorkflow(workflowId);
 
+        if (wf.getStatus().equals(WorkflowStatus.COMPLETED)) {
+            logger.info("Workflow: {} - {} completed successful.", wf.getName(), workflowId);
+            workflowQueue.remove(workflowId);
+        }
     }
 
 
@@ -83,27 +99,21 @@ public class WorkflowExecutor {
         }
 
         String workflowId = taskResult.getWorkflowInstanceId();
-        Workflow workflowInstance = executionDAO.getWorkflow(workflowId);
-
-//        if (workflowInstance.getWorkflowDefinition() == null) {
-//            workflowInstance = metadataMapperService.populateWorkflowWithDefinitions(workflowInstance);
-//        }
-
-        Task task = executionDAO.getTask(taskResult.getTaskId());
-
+        Workflow workflow = executionDAO.getWorkflow(workflowId);
+        Task task = workflow.getTask(taskResult.getTaskId());
         String taskQueueName = QueueUtils.getQueueName(task);
 
         if (task.getStatus().isTerminal()) {
             // Task was already updated....
-            taskQueue.remove(taskQueueName, taskResult.getTaskId());
-            logger.info("Task: {} has already finished execution with status: {} within workflow: {}. Removed task from queue: {}", task.getTaskId(), task.getStatus(), task.getWorkflowInstanceId(), taskQueueName);
+            pollingQueue.remove(taskQueueName, taskResult.getTaskId());
+            logger.info("Task: {} - {} has already finished execution with status: {} within workflow: {} - {}. Removed task from queue: {}", task.getTaskDefName(), task.getTaskId(), task.getStatus(), workflow.getName(), task.getWorkflowInstanceId(), taskQueueName);
             return;
         }
 
-        if (workflowInstance.getStatus().isTerminal()) {
+        if (workflow.getStatus().isTerminal()) {
             // Workflow is in terminal state
-            taskQueue.remove(taskQueueName, taskResult.getTaskId());
-            logger.info("Workflow: {} has already finished execution. Task update for: {} ignored and removed from Queue: {}.", workflowInstance, taskResult.getTaskId(), taskQueueName);
+            pollingQueue.remove(taskQueueName, taskResult.getTaskId());
+            logger.info("Workflow: {} - {} has already finished execution. Task update for: {} ignored and removed from Queue: {}.", workflow.getName(), taskResult.getWorkflowInstanceId(), taskResult.getTaskId(), taskQueueName);
             return;
         }
 
@@ -123,13 +133,13 @@ public class WorkflowExecutor {
         }
     }
 
-    public Task getTask(String queueName, String taskId) {
-        return taskQueue.get(queueName, taskId);
+    public Task getTask(String workflowId, String taskId) {
+        return executionDAO.getTask(workflowId, taskId);
     }
 
     /**
-     * @description 推送任务到轮询队列
-     * @param workflowId
+     * 推送任务到轮询队列
+     * @param workflowId 工作流Id
      * @return true - 工作流执行结束  false - 工作流未结束
      */
     public boolean decide(String workflowId) {
@@ -153,11 +163,13 @@ public class WorkflowExecutor {
             // 正在执行待更新任务
             List<Task> tasksToBeUpdated = outcome.tasksToBeUpdated;
 
-            // 加入对应任务队列
+            // 赋值输入参数，加入对应任务轮询队列
             for (Task task : tasksToBeScheduled) {
-                if (task.getWorkflowInstanceId() == workflowId) {
+                if (task.getWorkflowInstanceId().equals(workflowId)) {
                     task.setStatus(Task.Status.SCHEDULED);
-                    taskQueue.push(workflowId, task);
+                    populateTaskInputData(task);
+                    TaskMessage message = new TaskMessage(task.getWorkflowInstanceId(), task.getTaskId(), task.getPriority());
+                    pollingQueue.push(task.getTaskDefName(), message);
                 }
             }
 
@@ -180,6 +192,24 @@ public class WorkflowExecutor {
         // 若成功结束
         workflow.setStatus(WorkflowStatus.COMPLETED);
 
+    }
+
+    private void populateTaskInputData(Task task) {
+
+        List<String> priorTasks = task.getTaskDefinition().getPriorTasks();
+
+        Workflow workflow = executionDAO.getWorkflow(task.getWorkflowInstanceId());
+        List<Task> tasks = workflow.getTasks();
+
+        Map<String, Object> inputData = new HashMap<>();
+
+        for (Task t: tasks) {
+            if (priorTasks.contains(t.getTaskDefName())) {
+                inputData.putAll(t.getOutputData());
+            }
+        }
+
+        task.setInputData(inputData);
     }
 
 }
