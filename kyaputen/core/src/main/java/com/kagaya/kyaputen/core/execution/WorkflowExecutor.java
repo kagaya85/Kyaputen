@@ -197,16 +197,22 @@ public class WorkflowExecutor {
     private void populateTaskInputData(Task task) {
 
         List<String> priorTasks = task.getTaskDefinition().getPriorTasks();
-
-        Workflow workflow = executionDAO.getWorkflow(task.getWorkflowInstanceId());
-        List<Task> tasks = workflow.getTasks();
-
         Map<String, Object> inputData = new HashMap<>();
 
-        for (Task t: tasks) {
-            if (priorTasks.contains(t.getTaskDefName())) {
-                inputData.putAll(t.getOutputData());
+        Workflow workflow = executionDAO.getWorkflow(task.getWorkflowInstanceId());
+
+        if (priorTasks.size() == 0) {
+            // 第一个任务
+            inputData.putAll(workflow.getInput());
+        } else {
+            List<Task> tasks = workflow.getTasks();
+
+            for (Task t: tasks) {
+                if (priorTasks.contains(t.getTaskDefName())) {
+                    inputData.putAll(t.getOutputData());
+                }
             }
+
         }
 
         task.setInputData(inputData);
