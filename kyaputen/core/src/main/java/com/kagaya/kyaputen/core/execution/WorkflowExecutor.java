@@ -5,8 +5,7 @@ import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.core.dao.ExecutionDAO;
-import com.kagaya.kyaputen.core.dao.QueueDAO;
-import com.kagaya.kyaputen.core.events.Message.MessageType;
+import com.kagaya.kyaputen.core.dao.WorkflowQueue;
 import com.kagaya.kyaputen.core.service.DecideService;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
@@ -14,10 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.HashMap;
+import javax.resource.spi.work.Work;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 
 /**
@@ -27,8 +25,6 @@ public class WorkflowExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowExecutor.class);
 
-    private final QueueDAO<Task> taskQueue;
-
     private final DecideService decideService;
 
     private final ExecutionDAO executionDAO;
@@ -36,14 +32,12 @@ public class WorkflowExecutor {
     /**
      * @description 工作流队列，按workflowInstanceId保存运行中的工作流任务
      */
-    private final Map<String, Queue<Task>> workflowQueue;
+    private WorkflowQueue workflowQueue;
 
     @Inject
-    public WorkflowExecutor(QueueDAO<Task> taskQueue, ExecutionDAO executionDAO, DecideService decideService) {
-        this.taskQueue = taskQueue;
+    public WorkflowExecutor(ExecutionDAO executionDAO, DecideService decideService) {
         this.executionDAO = executionDAO;
         this.decideService = decideService;
-        this.workflowQueue = new HashMap<>();
     }
 
     /**
@@ -51,15 +45,31 @@ public class WorkflowExecutor {
      * @param workflowDef
      */
     public void createWorkflow(WorkflowDefinition workflowDef) {
-
+        executionDAO.createWorkflow(workflowDef);
     }
 
     /**
      * @description 启动指定工作流，赋值输入参数
      * @param workflowName
      */
-    public void startWorkflow(String workflowName, Map<String, Object> param) {
+    public boolean startWorkflow(String workflowName, Map<String, Object> param) {
 
+        List<Workflow> workflowList = workflowQueue.getByName(workflowName);
+
+        if(workflowList.size() == 0) {
+            logger.error("No such instance of workflow: " + workflowName);
+            executionDAO.createWorkflow()
+        }
+
+        // 找一个就绪实例
+        for (Workflow wf: workflowList) {
+            if (wf.getStartTime().equals(WorkflowStatus.READY)) {
+
+            }
+        }
+
+        logger.error("No ready status instance of workflow: " + workflowName);
+        return false;
     }
 
     public void completeWorkflow(String workflowId) {

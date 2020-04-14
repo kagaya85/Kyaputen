@@ -21,7 +21,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
     private QueueDAO<Message> pollingQueue;
 
-    private WorkflowRunQueue workflowQueue;
+    private WorkflowQueue workflowQueue;
 
     @Inject
     ExecutionDAOImpl(QueueDAO<Message> pollingQueue) {
@@ -30,7 +30,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
     @Override
     public void updateTask(Task task, TaskResult taskResult) {
-        Workflow workflow = workflowQueue.get(task.getWorkflowInstanceId());
+        Workflow workflow = workflowQueue.getById(task.getWorkflowInstanceId());
         Task t = workflow.getTask(task.getTaskId());
 
         t.setOutputData(taskResult.getOutputData());
@@ -38,7 +38,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
     @Override
     public Task getTask(String workflowId, String taskId) {
-        Workflow workflow = workflowQueue.get(workflowId);
+        Workflow workflow = workflowQueue.getById(workflowId);
         Task t = workflow.getTask(taskId);
 
         return t;
@@ -57,7 +57,8 @@ public class ExecutionDAOImpl implements ExecutionDAO {
         Workflow workflow = new Workflow();
         String workflowId = IdGenerator.generate();
 
-        workflow.setStatus(WorkflowStatus.RUNNING);
+        workflow.setName(workflowDef.getName());
+        workflow.setStatus(WorkflowStatus.READY);
         workflow.setCreateTime(System.currentTimeMillis());
         workflow.setWorkflowDefinition(workflowDef);
         workflow.setWorkflowId(workflowId);
@@ -89,14 +90,15 @@ public class ExecutionDAOImpl implements ExecutionDAO {
     }
 
     @Override
-    public void updateWorkflow(Workflow workflow) {
-        Workflow w = workflowQueue.get(workflow.getWorkflowId());
+    public boolean updateWorkflow(Workflow workflow) {
+        Workflow w = workflowQueue.getById(workflow.getWorkflowId());
 
+        return false;
     }
 
     @Override
     public Workflow getWorkflow(String workflowId) {
-        return workflowQueue.get(workflowId);
+        return workflowQueue.getById(workflowId);
     }
 
     @Override

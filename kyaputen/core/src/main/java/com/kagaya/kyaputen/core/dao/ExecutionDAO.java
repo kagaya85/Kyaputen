@@ -18,7 +18,7 @@ public interface ExecutionDAO {
 
     boolean createWorkflow(WorkflowDefinition workflowDef);
 
-    void updateWorkflow(Workflow workflow);
+    boolean updateWorkflow(Workflow workflow);
 
     Workflow getWorkflow(String workflowId);
 

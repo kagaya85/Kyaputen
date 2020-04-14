@@ -14,7 +14,10 @@ import java.util.Map;
 public class Workflow {
 
     public enum  WorkflowStatus {
-        RUNNING(false, false), COMPLETED(true, true), FAILED(true, false), TIMED_OUT(true, false), TERMINATED(true, false), PAUSED(false, true);
+        RUNNING(false, false), COMPLETED(true, true),
+        FAILED(true, false), TIMED_OUT(true, false),
+        TERMINATED(true, false), PAUSED(false, true),
+        READY(false, false);
 
         private boolean terminal;
 
@@ -33,6 +36,8 @@ public class Workflow {
             return successful;
         }
     }
+
+    private String name;
 
     private WorkflowStatus status = WorkflowStatus.RUNNING;
 
@@ -63,6 +68,14 @@ public class Workflow {
         }
 
         return null;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getStartTime() {
