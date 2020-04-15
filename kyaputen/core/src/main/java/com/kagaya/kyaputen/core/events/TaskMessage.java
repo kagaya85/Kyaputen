@@ -7,12 +7,15 @@ public class TaskMessage {
 
     private final String taskId;
 
+    private String workerId;
+
     private int priority;
 
-    public TaskMessage(String workflowInstanceId, String taskId, int priority) {
+    public TaskMessage(String workflowInstanceId, String taskId, int priority, String workerId) {
         this.workflowInstanceId = workflowInstanceId;
         this.taskId = taskId;
         this.priority = priority;
+        this.workerId = workerId;
     }
 
     /**
@@ -40,6 +43,14 @@ public class TaskMessage {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public String getWorkerId() {
+        return workerId;
+    }
+
+    public void setWorkerId(String workerId) {
+        this.workerId = workerId;
     }
 
     @Override

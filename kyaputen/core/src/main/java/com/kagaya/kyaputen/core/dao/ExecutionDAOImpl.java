@@ -19,13 +19,11 @@ import java.util.List;
  */
 public class ExecutionDAOImpl implements ExecutionDAO {
 
-    private QueueDAO<TaskMessage> pollingQueue;
-
     private WorkflowQueue workflowQueue;
 
     @Inject
-    ExecutionDAOImpl(QueueDAO<TaskMessage> pollingQueue) {
-        this.pollingQueue = pollingQueue;
+    ExecutionDAOImpl() {
+
     }
 
     @Override
@@ -84,6 +82,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
             task.setRetryCount(0);
             task.setPriority(taskDef.getPriority());
             task.setTaskDefinition(taskDef);
+            task.setStartTime(0);
 
             taskQueue.add(task);
         }

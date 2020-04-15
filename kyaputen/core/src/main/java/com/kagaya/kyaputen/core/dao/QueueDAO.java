@@ -8,6 +8,8 @@ public interface QueueDAO<T> {
 
     void push(String queueName, T Item);
 
+    void pushIfNotExists(String queueName, T item);
+
     /**
      *
      * @param queueName
@@ -15,7 +17,7 @@ public interface QueueDAO<T> {
      */
     T pop(String queueName);
 
-    T pop(String queueName, String id);
+    T pop(String queueName, String workerId);
 
     /**
      *

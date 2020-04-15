@@ -23,9 +23,9 @@ public class TaskResult {
 
     public TaskResult(Task task) {
         this.workflowInstanceId = task.getWorkflowInstanceId();
-        this.taskId = this.getTaskId();
-        this.workerId = this.getWorkerId();
-        this.outputData = this.getOutputData();
+        this.taskId = task.getTaskId();
+        this.workerId = task.getWorkerId();
+        this.outputData = task.getOutputData();
 
         switch (task.getStatus()) {
             case CANCELED:

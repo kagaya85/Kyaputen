@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class PollingQueueDAOImpl implements QueueDAO<TaskMessage> {
 
-    private String queueNamePrefix = "PollingQueue-";
+    private String queueNamePrefix = "PQ-";
 
     private static Map<String, List<TaskMessage>> taskQueueMap = new HashMap<>();
 
@@ -24,6 +24,20 @@ public class PollingQueueDAOImpl implements QueueDAO<TaskMessage> {
         }
         else
             queue.add(task);
+    }
+
+    @Override
+    public void pushIfNotExists(String queueName, TaskMessage item) {
+        queueName = queueNamePrefix + queueName;
+
+        List<TaskMessage> queue = taskQueueMap.get(queueName);
+
+        if (queue == null) {
+            taskQueueMap.put(queueName, new LinkedList<>());
+            queue.add(item);
+        } else if (!queue.contains(item))
+            queue.add(item);
+
     }
 
     @Override
@@ -42,7 +56,7 @@ public class PollingQueueDAOImpl implements QueueDAO<TaskMessage> {
     }
 
     @Override
-    public TaskMessage pop(String queueName, String id) {
+    public TaskMessage pop(String queueName, String workerId) {
         queueName = queueNamePrefix + queueName;
 
         List<TaskMessage> queue = taskQueueMap.get(queueName);
@@ -50,7 +64,7 @@ public class PollingQueueDAOImpl implements QueueDAO<TaskMessage> {
         if (queue != null) {
             for (int i = 0; i < queue.size(); i++) {
                 TaskMessage taskMessage = queue.get(i);
-                if (taskMessage.getTaskId().equals(id)) {
+                if (taskMessage.getWorkerId().equals(workerId)) {
                     queue.remove(i);
                     return taskMessage;
                 }

@@ -168,8 +168,10 @@ public class WorkflowExecutor {
                 if (task.getWorkflowInstanceId().equals(workflowId)) {
                     task.setStatus(Task.Status.SCHEDULED);
                     populateTaskInputData(task);
-                    TaskMessage message = new TaskMessage(task.getWorkflowInstanceId(), task.getTaskId(), task.getPriority());
-                    pollingQueue.push(task.getTaskDefName(), message);
+                    TaskMessage message = new TaskMessage(task.getWorkflowInstanceId(), task.getTaskId(), task.getPriority(), task.getWorkerId());
+                    String queueName = QueueUtils.getQueueName(task);
+                    task.setScheduledTime(System.currentTimeMillis());
+                    pollingQueue.push(queueName, message);
                 }
             }
 
@@ -216,6 +218,14 @@ public class WorkflowExecutor {
         }
 
         task.setInputData(inputData);
+    }
+
+    public void pauseWorkflow(String workflowId) {
+
+    }
+
+    public void terminateWorkflow(String workflowId, String reason) {
+
     }
 
 }

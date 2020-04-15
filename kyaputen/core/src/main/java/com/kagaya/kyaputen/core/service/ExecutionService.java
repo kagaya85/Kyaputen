@@ -5,6 +5,7 @@ import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
+import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.execution.ExecutionException;
 import com.kagaya.kyaputen.core.execution.WorkflowExecutor;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
@@ -27,7 +28,7 @@ public class ExecutionService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExecutionService.class);
 
-    private final QueueDAO queueDAO;
+    private final QueueDAO<TaskMessage> queueDAO;
     private final WorkflowExecutor workflowExecutor;
 
     private static final int MAX_POLL_TIMEOUT_MS = 5000;
@@ -43,66 +44,48 @@ public class ExecutionService {
         this.workflowExecutor = workflowExecutor;
     }
 
-    public Task getPollTask(String taskType, String workId) {
-        return getPollTask(taskType, workId, null);
+    public Task getPollTask(String taskName, String workerId, int count, int timeoutInMilliSecond) {
+        return getPollTask(taskName, workerId, null, count, timeoutInMilliSecond);
     }
 
-    public Task getPollTask(String taskType, String workerId, String domain) {
-        List<Task> tasks = getPollTaskList(taskType, workerId, domain, 1, 100);
-        
-        if (tasks.isEmpty()) {
-            return null;
-        }
-        else
-            return tasks.get(0);
-    }
-
-    public List<Task> getPollTaskList(String taskType, String workerId, int count, int timeoutInMilliSecond) {
-        return getPollTaskList(taskType, workerId, null, count, timeoutInMilliSecond);
-    }
-
-    public List<Task> getPollTaskList(String taskType, String workerId, String domain, int count, int timeoutMilliSecond) {
+    /**
+     * 获取就绪任务列表
+     * @param taskName 任务名称
+     * @param workerId workerId
+     * @param domain 所属domain
+     * @param count
+     * @param timeoutMilliSecond
+     * @return
+     */
+    public Task getPollTask(String taskName, String workerId, String domain, int count, int timeoutMilliSecond) {
         if (timeoutMilliSecond > MAX_POLL_TIMEOUT_MS) {
             throw new ExecutionException(ExecutionException.Code.INVALID_INPUT,
                     "Long Poll Timeout value cannot be more than 5 seconds");
         }
 
-        String queueName = QueueUtils.getQueueName(taskType, domain,null);
+        String queueName = QueueUtils.getQueueName(taskName, domain,null);
 
-        List<String> taskIds = new LinkedList<>();
-        List<Task> tasks = new LinkedList<>();
+        Task task;
+        String taskId;
 
-        /////////
-        ///////
-        //////
-
-        try {
-            taskIds = queueDAO.pop(queueName, count, timeoutMilliSecond);
-        } catch (Exception e) {
-            logger.error("Error polling for task: {} from worker: {} in domain: {}, count: {}", taskType, workerId,
-                    domain, count, e);
+        while (true) {
+            TaskMessage taskMessage = queueDAO.get(queueName, workerId);
+            if (taskMessage == null) {
+                return null;
+            }
+            taskId = taskMessage.getTaskId();
+            task = getTask(taskMessage.getWorkflowInstanceId(), taskId);
+            if (task.getStatus().isTerminal()) {
+                logger.debug("task {} was already terminated in queue: {}", taskId, queueName);
+            } else
+                break;
         }
 
-        for (String taskId : taskIds) {
-            Task task = getTask(taskId);
-            if (task == null || task.getStatus().isTerminal()) {
-                // Remove taskId(s) without a valid Task/terminal state task from the queue
-                queueDAO.remove(queueName, taskId);
-                logger.debug("Removed taskId from the queue: {}, {}", queueName, taskId);
-                continue;
-            }
+        task.setStatus(Status.IN_PROGRESS);
+        task.setStartTime(System.currentTimeMillis());
+        task.setPollCount(task.getPollCount() + 1);
 
-            task.setStatus(Status.IN_PROGRESS);
-            if (task.getStartTime() == 0) {
-                task.setStartTime(System.currentTimeMillis());
-            }
-            task.setWorkerId(workerId);
-            task.setPollCount(task.getPollCount() + 1);
-//            updateTask(task);
-            tasks.add(task);
-        }
-
-        return tasks;
+        return task;
     }
 
     public void updateTask(Task task) {
@@ -112,8 +95,31 @@ public class ExecutionService {
     public void updateTask(TaskResult taskResult) {
         workflowExecutor.updateTask(taskResult);
     }
-//
-    public Task getTask(String taskId) {
-        return workflowExecutor.getTask(taskId);
+
+    public Task getTask(String workflowId, String taskId) {
+        return workflowExecutor.getTask(workflowId, taskId);
     }
+
+    public void removeTaskFromQueue(String worflowId, String taskId) {
+
+    }
+
+    public void removeWorkflow(String workflowId, boolean finishWorkflow) {
+
+    }
+
+    public void terminateWorkflow(String workflowId) {
+
+    }
+
+    public Workflow getWorkflowInstance(String workflowName) {
+
+        return new Workflow();
+    }
+
+    public List<String> getRunningWorkflows(String workflowName) {
+
+        return new LinkedList<String>();
+    }
+
 }
