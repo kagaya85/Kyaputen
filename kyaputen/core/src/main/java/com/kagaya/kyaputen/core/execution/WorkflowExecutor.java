@@ -53,7 +53,14 @@ public class WorkflowExecutor {
      * @param workflowDef 工作流定义
      */
     public void createWorkflow(WorkflowDefinition workflowDef) {
-        executionDAO.createWorkflow(workflowDef);
+
+        Workflow workflow = executionDAO.createWorkflow(workflowDef);
+
+        // 调用资源分配算法
+
+        // 向K8s申请资源
+
+
     }
 
     /**
