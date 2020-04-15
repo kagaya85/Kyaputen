@@ -3,7 +3,6 @@ package com.kagaya.kyaputen.core.service;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
 import com.kagaya.kyaputen.common.runtime.Workflow;
-import com.kagaya.kyaputen.core.dao.ExecutionDAO;
 
 import javax.inject.Inject;
 import java.util.LinkedList;
@@ -11,21 +10,12 @@ import java.util.List;
 
 public class DecideService {
 
-    private ExecutionDAO executionDAO;
-
-    @Inject
-    public DecideService(ExecutionDAO executionDAO) {
-        this.executionDAO = executionDAO;
-    }
     /**
-     *
-     * @param workflowId
-     * @description 
+     * 返回需要执行的任务列表和需要更新的任务列表
+     * @param workflow 工作流实例对象
      * @return DecideOutcome
      */
-    public DecideOutcome decide(String workflowId) {
-        Workflow workflow = executionDAO.getWorkflow(workflowId);
-
+    public DecideOutcome decide(Workflow workflow) {
         DecideOutcome outcome = new DecideOutcome();
 
         List<Task> taskList = workflow.getTasks();
