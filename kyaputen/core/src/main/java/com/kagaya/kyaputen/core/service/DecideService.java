@@ -2,13 +2,22 @@ package com.kagaya.kyaputen.core.service;
 
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
+import com.kagaya.kyaputen.core.dao.ExecutionDAO;
 
 import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
 
 public class DecideService {
+
+    ExecutionDAO executionDAO;
+
+    @Inject
+    public DecideService(ExecutionDAO executionDAO) {
+        this.executionDAO = executionDAO;
+    }
 
     /**
      * 返回需要执行的任务列表和需要更新的任务列表
@@ -21,12 +30,37 @@ public class DecideService {
         List<Task> taskList = workflow.getTasks();
 
         for (Task task: taskList) {
-            if (task.getStatus().equals(Status.SCHEDULED)) {
+
+            if (task.getStatus().equals(Status.SCHEDULED) && checkReady(task)) {
                 outcome.tasksToBeScheduled.add(task);
             }
         }
 
         return outcome;
+    }
+
+    /**
+     * 检查任务是否就绪
+     * @param task
+     * @return
+     */
+    private boolean checkReady(Task task) {
+        TaskDefinition taskDef = task.getTaskDefinition();
+
+        List<String> priorTasks = taskDef.getPriorTasks();
+        if (priorTasks.size() == 0)
+            return true;
+
+        Workflow workflow = executionDAO.getWorkflow(task.getWorkflowInstanceId());
+        List<Task> tasks = workflow.getTasks();
+
+        for (String taskName: priorTasks) {
+            Task t = workflow.getTaskByName(taskName);
+            if (null == t || !t.getStatus().equals(Status.COMPLETED))
+                return false;
+        }
+
+        return true;
     }
 
     public static class DecideOutcome {

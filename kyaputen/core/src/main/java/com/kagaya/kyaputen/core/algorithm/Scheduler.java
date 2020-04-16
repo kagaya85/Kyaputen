@@ -2,7 +2,11 @@ package com.kagaya.kyaputen.core.algorithm;
 
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 
-public class ResourceAllocator implements ResourceAllocatorBase {
+public class Scheduler implements SchedulerBase {
+
+    public Scheduler() {
+
+    }
 
     @Override
     public void allocateResource(WorkflowDefinition workflowDef) {

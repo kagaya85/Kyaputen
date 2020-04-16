@@ -1,5 +1,8 @@
 package com.kagaya.kyaputen.common.runtime;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class VmResource {
 
     private int startTime;
@@ -9,6 +12,8 @@ public class VmResource {
     private int cpu;
 
     private int mem;
+
+    private List<PodResource> podList = new LinkedList<>();
 
     public VmResource() {}
 

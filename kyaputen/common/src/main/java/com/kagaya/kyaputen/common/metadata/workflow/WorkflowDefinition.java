@@ -19,7 +19,7 @@ public class WorkflowDefinition {
 
     private List<String> inputParameters = new LinkedList<>();
 
-    private Map<String, Object> outputParameters = new HashMap<>();
+    private List<String> outputParameters = new LinkedList<>();
 
     private long timeoutSeconds;
 
@@ -71,11 +71,11 @@ public class WorkflowDefinition {
         this.timeoutSeconds = timeoutSeconds;
     }
 
-    public Map<String, Object> getOutputParameters() {
+    public List<String> getOutputParameters() {
         return outputParameters;
     }
 
-    public void setOutputParameters(Map<String, Object> outputParameters) {
+    public void setOutputParameters(List<String> outputParameters) {
         this.outputParameters = outputParameters;
     }
 }

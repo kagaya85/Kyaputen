@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.common.runtime;
 
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 
 import java.util.HashMap;
@@ -64,6 +65,15 @@ public class Workflow {
     public Task getTask(String taskId) {
         for (Task task: tasks) {
             if (task.getTaskId().equals(taskId))
+                return task;
+        }
+
+        return null;
+    }
+
+    public Task getTaskByName(String taskName) {
+        for (Task task: tasks) {
+            if (task.getTaskDefName().equals(taskName))
                 return task;
         }
 

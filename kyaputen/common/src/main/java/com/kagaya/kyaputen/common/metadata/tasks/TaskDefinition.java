@@ -28,6 +28,8 @@ public class TaskDefinition {
 
     private long responseTimeoutSeconds = 60 * 60;
 
+    private int req;
+
     private int priority = -1;
 
     // 资源分配量
@@ -155,6 +157,14 @@ public class TaskDefinition {
 
     public void setNextTasks(List<String> nextTasks) {
         this.nextTasks = nextTasks;
+    }
+
+    public int getReq() {
+        return req;
+    }
+
+    public void setReq(int req) {
+        this.req = req;
     }
 
     @Override
