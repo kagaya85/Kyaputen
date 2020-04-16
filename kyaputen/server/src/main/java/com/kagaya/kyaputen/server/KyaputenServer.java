@@ -2,21 +2,10 @@ package com.kagaya.kyaputen.server;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.kagaya.kyaputen.core.service.ExecutionService;
-import com.kagaya.kyaputen.core.service.TaskService;
 import com.kagaya.kyaputen.server.grpc.GRPCServer;
 import com.kagaya.kyaputen.server.grpc.GRPCServerBuilder;
-import com.kagaya.kyaputen.server.grpc.service.GRPCServerConfiguration;
-import com.kagaya.kyaputen.server.grpc.service.TaskServiceImpl;
-import com.kagaya.kyaputen.grpc.TaskServiceGrpc;
-import com.kagaya.kyaputen.grpc.TaskServicePb.PollRequest;
-import com.kagaya.kyaputen.grpc.TaskServicePb.PollResponse;
-import com.kagaya.kyaputen.proto.TaskPb.Task;
-import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class KyaputenServer {
 

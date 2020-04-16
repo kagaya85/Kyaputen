@@ -3,7 +3,7 @@ package com.kagaya.kyaputen.common.runtime;
 import java.util.LinkedList;
 import java.util.List;
 
-public class VmResource {
+public class Node {
 
     private int startTime;
 
@@ -13,11 +13,11 @@ public class VmResource {
 
     private int mem;
 
-    private List<PodResource> podList = new LinkedList<>();
+    private List<Pod> podList = new LinkedList<>();
 
-    public VmResource() {}
+    public Node() {}
 
-    public VmResource(int cpu, int mem) {
+    public Node(int cpu, int mem) {
         this.cpu = cpu;
         this.mem = mem;
     }
