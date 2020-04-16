@@ -15,6 +15,8 @@ public class Pod {
 
     private String nodeId;
 
+    private long startTime;
+
     public Pod() {}
 
     public int getCpu() {
@@ -57,7 +59,15 @@ public class Pod {
         this.taskImageName = taskImageName;
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
     public enum PodStatus {
-        IDLE, BUSY
+        IDLE, BUSY, DOWN, SHUTTING_DOWN
     }
 }
