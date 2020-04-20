@@ -1,9 +1,14 @@
 package com.kagaya.kyaputen.core.service;
 
+import com.google.gson.Gson;
 import com.kagaya.kyaputen.common.runtime.Node;
 import com.kagaya.kyaputen.common.runtime.Pod;
 import io.kubernetes.client.ApiClient;
+import io.kubernetes.client.ApiException;
 import io.kubernetes.client.Configuration;
+import io.kubernetes.client.apis.CoreV1Api;
+import io.kubernetes.client.models.V1Node;
+import io.kubernetes.client.models.V1Pod;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 
@@ -35,6 +40,25 @@ public class KubernetesService {
     }
 
     public List<Pod> getPodsOnNode(String nodeId) {
+
+    }
+
+    public Object createPod(V1Pod pod, String nameSpace, String dryRun) {
+
+        String pretty = "ture";
+
+        CoreV1Api apiInstance = new CoreV1Api();
+
+        try {
+            Object result = apiInstance.createNamespacedPod(nameSpace, pod,true, pretty, dryRun);
+            // JSON
+            Gson gson= new Gson();
+            String s = gson.toJson(result);
+
+        } catch (ApiException e) {
+            System.err.println("Exception when calling CustomObjectsApi#listClusterCustomObject");
+            e.printStackTrace();
+        }
 
     }
 
