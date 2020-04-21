@@ -11,12 +11,16 @@ import io.kubernetes.client.models.V1Node;
 import io.kubernetes.client.models.V1Pod;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class KubernetesService {
 
     private ApiClient client;
+
+    private static final Logger logger = LoggerFactory.getLogger(KubernetesService.class);
 
     public KubernetesService(String apiServerAddress, String token) {
         client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false)
@@ -25,9 +29,22 @@ public class KubernetesService {
         Configuration.setDefaultApiClient(client);
     }
 
-    public Pod createPod(String taskName, String nodeId) {
+    public boolean createPod(V1Pod pod, String nameSpace, String dryRun) {
 
-        return new Pod();
+        String pretty = "ture";
+
+        CoreV1Api apiInstance = new CoreV1Api();
+
+        try {
+            Object result = apiInstance.createNamespacedPod(nameSpace, pod,true, pretty, dryRun);
+
+            return true;
+        } catch (ApiException e) {
+            logger.error("Create pod error in namespace: {}", nameSpace);
+            e.printStackTrace();
+
+            return false;
+        }
     }
 
     public Pod resizePod(String podId, int cpu, int mem) {
@@ -43,24 +60,7 @@ public class KubernetesService {
 
     }
 
-    public Object createPod(V1Pod pod, String nameSpace, String dryRun) {
 
-        String pretty = "ture";
-
-        CoreV1Api apiInstance = new CoreV1Api();
-
-        try {
-            Object result = apiInstance.createNamespacedPod(nameSpace, pod,true, pretty, dryRun);
-            // JSON
-            Gson gson= new Gson();
-            String s = gson.toJson(result);
-
-        } catch (ApiException e) {
-            System.err.println("Exception when calling CustomObjectsApi#listClusterCustomObject");
-            e.printStackTrace();
-        }
-
-    }
 
     public Node createNode() {
 
