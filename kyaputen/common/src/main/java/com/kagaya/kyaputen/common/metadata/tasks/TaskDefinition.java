@@ -35,6 +35,8 @@ public class TaskDefinition {
     // 资源分配量
     private Pod resource;
 
+    private long timeLimit;
+
     public TaskDefinition() {
 
     }
@@ -165,6 +167,14 @@ public class TaskDefinition {
 
     public void setReq(int req) {
         this.req = req;
+    }
+
+    public void setTimeLimit(long timeLimit) {
+        this.timeLimit = timeLimit;
+    }
+
+    public long getTimeLimit() {
+        return timeLimit;
     }
 
     @Override

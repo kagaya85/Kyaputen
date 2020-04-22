@@ -68,6 +68,6 @@ public class Pod {
     }
 
     public enum PodStatus {
-        IDLE, BUSY, DOWN, SHUTTING_DOWN
+        IDLE, BUSY, DOWN, ERROR
     }
 }

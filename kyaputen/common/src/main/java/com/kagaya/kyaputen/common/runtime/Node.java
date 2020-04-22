@@ -23,9 +23,10 @@ public class Node {
 
     public Node() {}
 
-    public Node(int cpu, int mem) {
+    public Node(int cpu, int mem, NodeStatus status) {
         this.cpu = cpu;
         this.mem = mem;
+        this.status = status;
     }
 
     public int getCpu() {
@@ -123,3 +124,4 @@ public class Node {
 
     }
 }
+

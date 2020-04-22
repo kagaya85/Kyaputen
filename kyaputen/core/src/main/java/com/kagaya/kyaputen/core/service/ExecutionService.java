@@ -38,7 +38,7 @@ public class ExecutionService {
     private static final int MAX_SEARCH_SIZE = 5_000;
 
     @Inject
-    public ExecutionService(QueueDAO queueDAO,
+    public ExecutionService(QueueDAO<TaskMessage> queueDAO,
                             WorkflowExecutor workflowExecutor) {
         this.queueDAO = queueDAO;
         this.workflowExecutor = workflowExecutor;
