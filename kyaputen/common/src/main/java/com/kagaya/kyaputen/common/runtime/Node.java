@@ -5,6 +5,10 @@ import java.util.List;
 
 public class Node {
 
+    private String id;
+
+    private NodeStatus status;
+
     private int price;
 
     private int cpu;
@@ -14,6 +18,8 @@ public class Node {
     private long startTime;
 
     private List<Pod> podList = new LinkedList<>();
+
+    private List<String> imageList = new LinkedList<>();
 
     public Node() {}
 
@@ -60,5 +66,60 @@ public class Node {
 
     public void setPodList(List<Pod> podList) {
         this.podList = podList;
+    }
+
+    public void setStatus(NodeStatus status) {
+        this.status = status;
+    }
+
+    public Boolean isImageLoaded(String imageName) {
+
+        return false;
+    }
+
+    public void addImage(String imageName) {
+
+    }
+
+    public Boolean isDeployed() {
+        return status.isDeployed();
+    }
+
+    public Boolean isRunning() {
+        return status.isRunning();
+    }
+
+    public Boolean isDown() {
+        return status.isDown();
+    }
+
+    public enum NodeStatus {
+        
+        NewNode(false, false, false), Running(true, true, false), Idle(true, false, false), Down(true, false, true);
+
+        private Boolean deployed;
+
+        private Boolean running;
+
+        private Boolean down;
+
+        NodeStatus(Boolean deployed, Boolean running, Boolean down) {
+            this.deployed = deployed;
+            this.running = running;
+            this.down = down;
+        }
+
+        Boolean isDeployed() {
+            return deployed;
+        }
+
+        Boolean isRunning() {
+            return running;
+        }
+
+        Boolean isDown() {
+            return down;
+        }
+
     }
 }
