@@ -13,6 +13,7 @@ import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class KubernetesService {
@@ -85,11 +86,15 @@ public class KubernetesService {
         try {
             V1PodList result = apiInstance.listNamespacedPod(namespace, includeUniinitialized, pretty, _continue, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch);
             logger.debug(result.toString());
+
+            // convert from V1Pod to Pod
         } catch (ApiException e) {
             logger.error("List pod error in namespace: {} for reason: {}, header: {}", namespace, e.getResponseBody(), e.getResponseHeaders());
-
             e.printStackTrace();
         }
+
+        ///////////////
+        return new LinkedList<Pod>();
     }
 
 

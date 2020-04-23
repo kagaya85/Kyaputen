@@ -7,6 +7,7 @@ import java.util.List;
 
 public class WorkflowQueue {
 
+    // 改成Map？？？
     private static List<Workflow> workflowQueue = new LinkedList<>();
 
     public Workflow getById(String workflowId) {

@@ -7,9 +7,9 @@ public class Pod {
 
     private String taskImageName;
 
-    private int cpu;
+    private double cpu;
 
-    private int mem;
+    private double mem;
 
     private PodStatus status;
 
@@ -19,19 +19,19 @@ public class Pod {
 
     public Pod() {}
 
-    public int getCpu() {
+    public double getCpu() {
         return cpu;
     }
 
-    public void setCpu(int cpu) {
+    public void setCpu(double cpu) {
         this.cpu = cpu;
     }
 
-    public int getMem() {
+    public double getMem() {
         return mem;
     }
 
-    public void setMem(int mem) {
+    public void setMem(double mem) {
         this.mem = mem;
     }
 

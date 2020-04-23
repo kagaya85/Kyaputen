@@ -1,5 +1,6 @@
 package com.kagaya.kyaputen.common.metadata.workflow;
 
+import com.kagaya.kyaputen.common.metadata.resource.PodResource;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 
 import java.util.HashMap;
@@ -22,6 +23,17 @@ public class WorkflowDefinition {
     private List<String> outputParameters = new LinkedList<>();
 
     private long timeoutSeconds;
+
+    private long timeLimit;
+
+    // 资源分配列表 CE
+    private Map<String, PodResource> resourceMap = new HashMap<>();
+
+    // 执行时间统计量
+    private Map<String, Double> executeTimeStatistics;
+
+    // 数据传输时间统计量
+    private Map<String, Double> transmissionTimeStatistics;
 
     public String getName() {
         return name;

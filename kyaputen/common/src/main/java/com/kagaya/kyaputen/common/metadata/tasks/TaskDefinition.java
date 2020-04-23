@@ -32,9 +32,6 @@ public class TaskDefinition {
 
     private int priority = -1;
 
-    // 资源分配量
-    private Pod resource;
-
     private long timeLimit;
 
     public TaskDefinition() {
@@ -127,14 +124,6 @@ public class TaskDefinition {
 
     public void setTimeoutSeconds(long timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
-    }
-
-    public Pod getResource() {
-        return resource;
-    }
-
-    public void setResource(Pod resource) {
-        this.resource = resource;
     }
 
     public int getPriority() {
