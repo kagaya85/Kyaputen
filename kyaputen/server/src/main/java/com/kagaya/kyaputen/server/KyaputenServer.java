@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.kagaya.kyaputen.server.grpc.GRPCServer;
 import com.kagaya.kyaputen.server.grpc.GRPCServerBuilder;
+import com.kagaya.kyaputen.server.module.ServerModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

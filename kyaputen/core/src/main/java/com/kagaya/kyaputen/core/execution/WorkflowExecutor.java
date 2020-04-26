@@ -11,7 +11,7 @@ import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.service.DecideService;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
-import com.kagaya.kyaputen.core.dao.WorkflowDAO;
+import com.kagaya.kyaputen.core.dao.WorkflowDefinitionDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,14 +32,7 @@ public class WorkflowExecutor {
 
     private final ExecutionDAO executionDAO;
 
-    /**
-     * @description 工作流队列，按workflowInstanceId保存运行中的工作流任务
-     */
-    private WorkflowQueue workflowQueue;
-
     private QueueDAO<TaskMessage> pollingQueue;
-
-    private WorkflowDAO workflowDefs;
 
     @Inject
     public WorkflowExecutor(ExecutionDAO executionDAO, DecideService decideService) {
@@ -50,43 +43,20 @@ public class WorkflowExecutor {
     /**
      * 创建工作流，进入工作流队列，设置workflowId
      * @param workflowDef 工作流定义
+     * @return workflow 工作流实例
      */
-    public void createWorkflow(WorkflowDefinition workflowDef) {
-
+    public Workflow createWorkflow(WorkflowDefinition workflowDef) {
         Workflow workflow = executionDAO.createWorkflow(workflowDef);
-
-        // 调用资源分配算法
-
-        // 向K8s申请资源
-
-
+        return workflow;
     }
 
     /**
      * 启动指定工作流，赋值输入参数
-     * @param workflowName 工作流定义
+     * @param workflow 工作流实例
      */
-    public boolean startWorkflow(String workflowName, Map<String, Object> param) {
-
-        List<Workflow> workflowList = workflowQueue.getByName(workflowName);
-
-        if(workflowList.size() == 0) {
-            logger.error("No such instance of workflow: " + workflowName);
-            Workflow wf = executionDAO.createWorkflow(workflowDefs.get(workflowName));
-            workflowList.add(wf);
-        }
-
-        // find a READY workflow instance
-        for (Workflow wf: workflowList) {
-            if (wf.getStatus().equals(WorkflowStatus.READY)) {
-                wf.setInput(param);
-                decide(wf.getWorkflowId());
-                break;
-            }
-        }
-
-        logger.error("No ready status instance of workflow: " + workflowName);
-        return false;
+    public void startWorkflow(Workflow workflow, Map<String, Object> inputParam) {
+        workflow.setInput(inputParam);
+        decide(workflow.getWorkflowId());
     }
 
     public void completeWorkflow(String workflowId) {

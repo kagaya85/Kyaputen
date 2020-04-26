@@ -2,9 +2,12 @@ package com.kagaya.kyaputen.core.service;
 
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.runtime.Workflow;
+import com.kagaya.kyaputen.core.algorithm.Scheduler;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
+import com.kagaya.kyaputen.core.dao.WorkflowDefinitionDAO;
+import com.kagaya.kyaputen.core.dao.WorkflowQueue;
 import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.execution.ExecutionException;
 import com.kagaya.kyaputen.core.execution.WorkflowExecutor;
@@ -17,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -29,7 +33,14 @@ public class ExecutionService {
     private static final Logger logger = LoggerFactory.getLogger(ExecutionService.class);
 
     private final QueueDAO<TaskMessage> queueDAO;
+    private final Scheduler scheduler;
     private final WorkflowExecutor workflowExecutor;
+    /**
+     * @description 工作流队列，按workflowInstanceId保存运行中的工作流任务
+     */
+    private WorkflowQueue workflowQueue;
+    private WorkflowDefinitionDAO workflowDefs;
+
 
     private static final int MAX_POLL_TIMEOUT_MS = 5000;
     private static final int POLL_COUNT_ONE = 1;
@@ -39,8 +50,10 @@ public class ExecutionService {
 
     @Inject
     public ExecutionService(QueueDAO<TaskMessage> queueDAO,
+                            Scheduler scheduler,
                             WorkflowExecutor workflowExecutor) {
         this.queueDAO = queueDAO;
+        this.scheduler = scheduler;
         this.workflowExecutor = workflowExecutor;
     }
 
@@ -86,6 +99,40 @@ public class ExecutionService {
         task.setPollCount(task.getPollCount() + 1);
 
         return task;
+    }
+
+    public void startWorkflow(String workflowName, Map<String, Object> inputParam) {
+        List<Workflow> workflowList = workflowQueue.getByName(workflowName);
+
+        Workflow workflow = null;
+        // find a READY workflow instance
+        for (Workflow wf: workflowList) {
+            if (wf.getStatus().equals(Workflow.WorkflowStatus.READY)) {
+                workflow = wf;
+                break;
+            }
+        }
+
+        if(workflow == null) { // 新建工作流的情况
+
+            logger.debug("No ready status instance of workflow: " + workflowName);
+
+            // 调用资源分配算法
+
+            // 向K8s申请资源
+
+            workflow = workflowExecutor.createWorkflow(workflowDefs.get(workflowName));
+        } else { // 需要对资源进行调整
+
+            // 调用资源分配算法
+
+            // 判断是否需要调整资源
+
+        }
+
+
+        // 启动任务流
+        workflowExecutor.startWorkflow(workflow, inputParam);
     }
 
     public void updateTask(Task task) {

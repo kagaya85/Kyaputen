@@ -18,9 +18,9 @@ public class WorkflowDefinition {
 
     private List<TaskDefinition> taskDefs = new LinkedList<>();
 
-    private List<String> inputParameters = new LinkedList<>();
+    private List<String> inputParameters;
 
-    private List<String> outputParameters = new LinkedList<>();
+    private List<String> outputParameters;
 
     private long timeoutSeconds;
 
@@ -30,7 +30,7 @@ public class WorkflowDefinition {
     private Map<String, PodResource> resourceMap = new HashMap<>();
 
     // 执行时间统计量
-    private Map<String, Double> executeTimeStatistics;
+    private Map<String, Double> executionTimeStatistics;
 
     // 数据传输时间统计量
     private Map<String, Double> transmissionTimeStatistics;
@@ -89,5 +89,29 @@ public class WorkflowDefinition {
 
     public void setOutputParameters(List<String> outputParameters) {
         this.outputParameters = outputParameters;
+    }
+
+    public Double getExecutionTime(String taskType) {
+        return executionTimeStatistics.get(taskType);
+    }
+
+    public void setExecutionTime(String taskType, Double time) {
+        executionTimeStatistics.put(taskType, time);
+    }
+
+    public PodResource getPodResource(String taskType) {
+        return resourceMap.get(taskType);
+    }
+
+    public void setPodResource(String taskType, double cpu, double mem) {
+        resourceMap.put(taskType, new PodResource(cpu, mem));
+    }
+
+    public long getTimeLimit() {
+        return timeLimit;
+    }
+
+    public void setTimeLimit(long timeLimit) {
+        this.timeLimit = timeLimit;
     }
 }

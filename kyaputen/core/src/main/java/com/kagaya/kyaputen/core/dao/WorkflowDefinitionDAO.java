@@ -4,7 +4,7 @@ import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 
 import java.util.Map;
 
-public class WorkflowDAO {
+public class WorkflowDefinitionDAO {
 
     private static Map<String, WorkflowDefinition> workflowMetaData;
 

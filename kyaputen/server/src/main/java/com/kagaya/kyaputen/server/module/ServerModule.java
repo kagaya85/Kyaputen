@@ -1,7 +1,6 @@
-package com.kagaya.kyaputen.server;
+package com.kagaya.kyaputen.server.module;
 
 import com.google.inject.AbstractModule;
-import com.kagaya.kyaputen.server.grpc.GRPCModule;
 
 public class ServerModule extends AbstractModule {
 
@@ -9,7 +8,6 @@ public class ServerModule extends AbstractModule {
     protected void configure() {
 
         install(new GRPCModule());
-        install(new DAOModule());
 
     }
 }
