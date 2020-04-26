@@ -1,4 +1,4 @@
-package com.kagaya.kyaputen.core.metadata;
+package com.kagaya.kyaputen.common.schedule;
 
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 

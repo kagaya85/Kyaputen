@@ -1,7 +1,7 @@
 package com.kagaya.kyaputen.common.metadata.workflow;
 
-import com.kagaya.kyaputen.common.metadata.schedule.PodResource;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
+import com.kagaya.kyaputen.common.schedule.PodResource;
 
 import java.util.HashMap;
 import java.util.LinkedList;

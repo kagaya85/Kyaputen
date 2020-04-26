@@ -1,7 +1,7 @@
 package com.kagaya.kyaputen.core.algorithm;
 
-import com.kagaya.kyaputen.core.metadata.DeploymentPlan;
-import com.kagaya.kyaputen.core.metadata.ExecutionPlan;
+import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
+import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.core.service.KubernetesService;
 

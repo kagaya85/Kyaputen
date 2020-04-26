@@ -1,6 +1,5 @@
 package com.kagaya.kyaputen.core.service;
 
-import com.google.gson.Gson;
 import com.kagaya.kyaputen.common.runtime.Node;
 import com.kagaya.kyaputen.common.runtime.Pod;
 import io.kubernetes.client.ApiClient;

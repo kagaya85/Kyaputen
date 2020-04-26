@@ -1,7 +1,6 @@
 package com.kagaya.kyaputen.core.execution;
 
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
-import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
@@ -12,7 +11,7 @@ import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.service.DecideService;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
-import com.kagaya.kyaputen.core.metadata.WorkflowMetadata;
+import com.kagaya.kyaputen.core.dao.WorkflowDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,7 @@ public class WorkflowExecutor {
 
     private QueueDAO<TaskMessage> pollingQueue;
 
-    private WorkflowMetadata workflowDefs;
+    private WorkflowDAO workflowDefs;
 
     @Inject
     public WorkflowExecutor(ExecutionDAO executionDAO, DecideService decideService) {

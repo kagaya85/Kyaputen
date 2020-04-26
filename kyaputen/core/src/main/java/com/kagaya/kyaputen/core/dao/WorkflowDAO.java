@@ -1,10 +1,10 @@
-package com.kagaya.kyaputen.core.metadata;
+package com.kagaya.kyaputen.core.dao;
 
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 
 import java.util.Map;
 
-public class WorkflowMetadata {
+public class WorkflowDAO {
 
     private static Map<String, WorkflowDefinition> workflowMetaData;
 

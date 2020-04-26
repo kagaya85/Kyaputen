@@ -1,4 +1,4 @@
-package com.kagaya.kyaputen.core.metadata;
+package com.kagaya.kyaputen.common.schedule;
 
 /**
  * 静态资源量对象，用于定义WorkflowDefinition中的资源需求
