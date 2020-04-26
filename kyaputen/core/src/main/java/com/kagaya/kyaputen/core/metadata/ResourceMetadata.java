@@ -17,4 +17,9 @@ public class ResourceMetadata {
     public ResourceMetadata() {
 
     }
+
+    public Node getNode(String nodeId) {
+
+
+    }
 }

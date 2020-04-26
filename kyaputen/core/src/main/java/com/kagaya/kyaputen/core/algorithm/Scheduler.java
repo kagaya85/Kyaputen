@@ -1,6 +1,9 @@
 package com.kagaya.kyaputen.core.algorithm;
 
+import com.kagaya.kyaputen.core.metadata.DeploymentPlan;
+import com.kagaya.kyaputen.core.metadata.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
+import com.kagaya.kyaputen.core.service.KubernetesService;
 
 public class Scheduler implements SchedulerBase {
 
@@ -19,7 +22,7 @@ public class Scheduler implements SchedulerBase {
     }
 
     /**
-     *
+     * 计算任务成本
      * @param vmType
      * @param ecu
      * @param taskSize
@@ -30,10 +33,44 @@ public class Scheduler implements SchedulerBase {
         return 0.0;
     }
 
+    /**
+     * 计算工作流成本
+     * @return
+     */
     private double calcWorkflowCost() {
         double cost = 0;
 
         return cost;
+    }
+
+    /**
+     * 生成执行方案
+     */
+    public ExecutionPlan genExecutionPlan() {
+
+        ExecutionPlan plan = new ExecutionPlan();
+
+
+        return plan;
+    }
+
+    /**
+     * 生成部署方案
+     */
+    public DeploymentPlan genDeploymentPlan() {
+
+        DeploymentPlan plan = new DeploymentPlan();
+
+
+        return plan;
+    }
+
+    /**
+     * 应用调度方案，包括申请资源
+     */
+    public void apply(ExecutionPlan executionPlan, DeploymentPlan deploymentPlan) {
+
+        KubernetesService k8s = new KubernetesService();
     }
 
 

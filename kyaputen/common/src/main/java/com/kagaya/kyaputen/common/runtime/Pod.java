@@ -11,6 +11,8 @@ public class Pod {
 
     private double mem;
 
+    private double computeUnit;
+
     private PodStatus status;
 
     private String nodeId;
@@ -33,6 +35,14 @@ public class Pod {
 
     public void setMem(double mem) {
         this.mem = mem;
+    }
+
+    public double getComputeUnit() {
+        return computeUnit;
+    }
+
+    public void setComputeUnit(double computeUnit) {
+        this.computeUnit = computeUnit;
     }
 
     public void setNodeId(String nodeId) {
@@ -68,6 +78,6 @@ public class Pod {
     }
 
     public enum PodStatus {
-        IDLE, BUSY, DOWN, ERROR
+        IDLE, RUNNING, DOWN, ERROR
     }
 }

@@ -9,11 +9,13 @@ public class Node {
 
     private NodeStatus status;
 
-    private int price;
+    private double price;
 
-    private int cpu;
+    private double cpu;
 
-    private int mem;
+    private double mem;
+
+    private double totalComputeUnit;
 
     private long startTime;
 
@@ -29,19 +31,19 @@ public class Node {
         this.status = status;
     }
 
-    public int getCpu() {
+    public double getCpu() {
         return cpu;
     }
 
-    public void setCpu(int cpu) {
+    public void setCpu(double cpu) {
         this.cpu = cpu;
     }
 
-    public int getMem() {
+    public double getMem() {
         return mem;
     }
 
-    public void setMem(int mem) {
+    public void setMem(double mem) {
         this.mem = mem;
     }
 
@@ -53,11 +55,11 @@ public class Node {
         this.startTime = startTime;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -74,12 +76,39 @@ public class Node {
     }
 
     public Boolean isImageLoaded(String imageName) {
-
-        return false;
+        return imageList.contains(imageName);
     }
 
     public void addImage(String imageName) {
+        imageList.add(imageName);
+    }
 
+    public int getRunningPodNum() {
+
+        int num = 0;
+
+        for (Pod pod: podList) {
+            if (pod.getStatus().equals(Pod.PodStatus.RUNNING))
+                num++;
+        }
+
+        return num;
+    }
+
+    public double getAllocatedComputeUnit() {
+        double cu = 0.0;
+
+        for (Pod pod: podList) {
+            if (pod.getStatus().equals(Pod.PodStatus.RUNNING)) {
+                cu += pod.getComputeUnit();
+            }
+        }
+
+        return cu;
+    }
+
+    public double getRemainComputeUnit() {
+        return totalComputeUnit - getAllocatedComputeUnit();
     }
 
     public Boolean isDeployed() {
