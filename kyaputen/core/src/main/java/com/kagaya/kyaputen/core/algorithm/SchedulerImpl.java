@@ -8,9 +8,6 @@ import com.kagaya.kyaputen.core.service.KubernetesService;
 
 public class SchedulerImpl implements Scheduler {
 
-    public SchedulerImpl() {
-
-    }
 
     /**
      * 计算工作流中每个任务的资源需求量

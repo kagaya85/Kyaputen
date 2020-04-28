@@ -83,6 +83,10 @@ public class Node {
         imageList.add(imageName);
     }
 
+    public void removeImage(String imageName) {
+        imageList.remove(imageName);
+    }
+
     public int getRunningPodNum() {
 
         int num = 0;
@@ -105,6 +109,14 @@ public class Node {
         }
 
         return cu;
+    }
+
+    public double getTotalComputeUnit() {
+        return totalComputeUnit;
+    }
+
+    public void setTotalComputeUnit(double totalComputeUnit) {
+        this.totalComputeUnit = totalComputeUnit;
     }
 
     public double getRemainComputeUnit() {

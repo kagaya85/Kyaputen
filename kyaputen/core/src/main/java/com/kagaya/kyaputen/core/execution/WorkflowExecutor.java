@@ -34,6 +34,8 @@ public class WorkflowExecutor {
 
     private QueueDAO<TaskMessage> pollingQueue;
 
+    private WorkflowQueue workflowQueue;
+
     @Inject
     public WorkflowExecutor(ExecutionDAO executionDAO, DecideService decideService) {
         this.executionDAO = executionDAO;
