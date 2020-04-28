@@ -16,7 +16,7 @@ public class WorkflowDefinition {
 
     private int version = 1;
 
-    private List<TaskDefinition> taskDefs = new LinkedList<>();
+    private Map<String, TaskDefinition> taskDefs = new HashMap<>();
 
     private List<String> inputParameters;
 
@@ -67,11 +67,32 @@ public class WorkflowDefinition {
         this.inputParameters = inputParameters;
     }
 
-    public List<TaskDefinition> getTaskDefs() {
+    public Map<String, Integer> getTaskTypeNums() {
+        Map<String, Integer> taskTypeNum = new HashMap<>();
+
+        for (TaskDefinition td: taskDefs.values()) {
+            String taskType = td.getTaskType();
+            Integer num = taskTypeNum.get(taskType);
+            if (num == null) {
+                taskTypeNum.put(taskType, 1);
+            } else {
+                num++;
+                taskTypeNum.put(taskType, num);
+            }
+        }
+
+        return taskTypeNum;
+    }
+
+    public TaskDefinition getTaskDef(String taskName) {
+        return taskDefs.get(taskName);
+    }
+
+    public Map<String, TaskDefinition> getTaskDefs() {
         return taskDefs;
     }
 
-    public void setTaskDefs(List<TaskDefinition> tasks) {
+    public void setTaskDefs(Map<String, TaskDefinition> tasks) {
         this.taskDefs = tasks;
     }
 

@@ -43,6 +43,10 @@ public class Monitor {
         return time;
     }
 
+    public static void resetTaskExecutionTime(String taskType) {
+        taskExecutionTimeMap.remove(taskType);
+    }
+
     /**
      * 记录node节点网络延时的最新值
      * @param nodeId Id

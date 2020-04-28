@@ -4,18 +4,30 @@ package com.kagaya.kyaputen.core.algorithm;
 import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
+import com.kagaya.kyaputen.common.schedule.PodResource;
 import com.kagaya.kyaputen.core.service.KubernetesService;
+import com.kagaya.kyaputen.core.metrics.Monitor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SchedulerImpl implements Scheduler {
 
 
     /**
-     * 计算工作流中每个任务的资源需求量
+     * 计算工作流中每个任务的资源需求量CE，写入工作流定义
      * @param workflowDef - 工作流定义
      * @param deadlineFactor - 最后期限管理严格成都
      */
     @Override
-    public void calcResource(WorkflowDefinition workflowDef, double deadlineFactor) {
+    public void calcWorkflowResource(WorkflowDefinition workflowDef, double deadlineFactor) {
+        Map<String, PodResource> ce = new HashMap<>();
+        Map<String, Integer> taskNum = new HashMap<>();
+
+        Map<String, Integer> typeList = workflowDef.getTaskTypeNums();
+
+
 
     }
 

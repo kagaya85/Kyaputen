@@ -10,6 +10,8 @@ public class TaskDefinition {
 
     private String taskDefName;
 
+    private String taskType;
+
     private String description;
 
     private int retryCount = 3;
@@ -164,6 +166,14 @@ public class TaskDefinition {
 
     public long getTimeLimit() {
         return timeLimit;
+    }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
     }
 
     @Override
