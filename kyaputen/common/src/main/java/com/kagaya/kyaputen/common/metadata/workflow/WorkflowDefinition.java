@@ -1,10 +1,8 @@
 package com.kagaya.kyaputen.common.metadata.workflow;
 
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
-import com.kagaya.kyaputen.common.schedule.PodResource;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +25,7 @@ public class WorkflowDefinition {
     private long timeLimit;
 
     // 资源分配列表 CE
-    private Map<String, PodResource> resourceMap = new HashMap<>();
+    private Map<String, Double> resourceMap = new HashMap<>();
 
     // 执行时间统计量
     private Map<String, Double> executionTimeStatistics;
@@ -120,12 +118,12 @@ public class WorkflowDefinition {
         executionTimeStatistics.put(taskType, time);
     }
 
-    public PodResource getPodResource(String taskType) {
+    public Double getPodResource(String taskType) {
         return resourceMap.get(taskType);
     }
 
-    public void setPodResource(String taskType, double cpu, double mem) {
-        resourceMap.put(taskType, new PodResource(cpu, mem));
+    public void setPodResource(String taskType, double cu) {
+        resourceMap.put(taskType, cu);
     }
 
     public long getTimeLimit() {

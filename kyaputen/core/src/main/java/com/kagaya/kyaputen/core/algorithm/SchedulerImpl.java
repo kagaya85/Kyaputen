@@ -1,15 +1,14 @@
 package com.kagaya.kyaputen.core.algorithm;
 
 
+import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
-import com.kagaya.kyaputen.common.schedule.PodResource;
+import com.kagaya.kyaputen.core.config.Constant;
 import com.kagaya.kyaputen.core.service.KubernetesService;
-import com.kagaya.kyaputen.core.metrics.Monitor;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SchedulerImpl implements Scheduler {
@@ -22,14 +21,31 @@ public class SchedulerImpl implements Scheduler {
      */
     @Override
     public void calcWorkflowResource(WorkflowDefinition workflowDef, double deadlineFactor) {
-        Map<String, PodResource> ce = new HashMap<>();
+        Map<String, Double> ce = new HashMap<>();
         Map<String, Integer> taskNum = new HashMap<>();
-
         Map<String, Integer> typeList = workflowDef.getTaskTypeNums();
 
 
+        for (String type: typeList.keySet()) {
+            ce.put(type, Constant.POD_MIN_CU);
+        }
+
+        // 调整cu，计算性价比
+        while(true) {
+            long oldExpectedTime = calcExpectedExecutionTime(workflowDef, ce);
+
+
+        }
+
 
     }
+
+    private long calcExpectedExecutionTime(WorkflowDefinition workflowDef, Map<String, Double> ce) {
+
+
+        return 0L;
+    }
+
 
     /**
      * 计算任务成本
@@ -45,7 +61,7 @@ public class SchedulerImpl implements Scheduler {
 
     /**
      * 计算工作流成本
-     * @return
+     * @return 工作流总成本
      */
     private double calcWorkflowCost() {
         double cost = 0;
