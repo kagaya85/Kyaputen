@@ -45,6 +45,12 @@
             <groupId>com.kagaya.kyaputen</groupId>
             <artifactId>core</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.4.28.v20200408</version>
+        </dependency>
     </dependencies>
 
 </project>

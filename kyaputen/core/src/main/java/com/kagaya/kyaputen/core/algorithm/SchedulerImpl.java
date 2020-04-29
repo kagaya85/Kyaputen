@@ -165,7 +165,7 @@ public class SchedulerImpl implements Scheduler {
      * @param workflowDef 工作流定义
      * @param startTime 工作流计划开始时间
      */
-    private void devideSubDeadline(WorkflowDefinition workflowDef, long startTime) {
+    private void divideSubDeadline(WorkflowDefinition workflowDef, long startTime) {
 
     }
 
