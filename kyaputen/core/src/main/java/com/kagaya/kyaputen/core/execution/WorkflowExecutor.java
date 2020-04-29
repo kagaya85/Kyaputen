@@ -174,6 +174,10 @@ public class WorkflowExecutor {
 
     }
 
+    /**
+     * 填充输入参数
+     * @param task
+     */
     private void populateTaskInputData(Task task) {
 
         List<String> priorTasks = task.getTaskDefinition().getPriorTasks();
@@ -185,14 +189,10 @@ public class WorkflowExecutor {
             // 第一个任务
             inputData.putAll(workflow.getInput());
         } else {
-            List<Task> tasks = workflow.getTasks();
-
-            for (Task t: tasks) {
-                if (priorTasks.contains(t.getTaskDefName())) {
-                    inputData.putAll(t.getOutputData());
-                }
+            for (String taskName: priorTasks) {
+                Task t = workflow.getTask(taskName);
+                inputData.putAll(t.getOutputData());
             }
-
         }
 
         task.setInputData(inputData);

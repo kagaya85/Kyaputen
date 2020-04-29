@@ -52,7 +52,7 @@ public class Workflow {
 
     private String workflowId;
 
-    private List<Task> tasks = new LinkedList<>();
+    private Map<String, Task> tasks = new HashMap<>();
 
     private Map<String, Object> input = new HashMap<>();
 
@@ -62,8 +62,8 @@ public class Workflow {
 
     private int priority;
 
-    public Task getTask(String taskId) {
-        for (Task task: tasks) {
+    public Task getTaskById(String taskId) {
+        for (Task task: tasks.values()) {
             if (task.getTaskId().equals(taskId))
                 return task;
         }
@@ -71,13 +71,8 @@ public class Workflow {
         return null;
     }
 
-    public Task getTaskByName(String taskName) {
-        for (Task task: tasks) {
-            if (task.getTaskDefName().equals(taskName))
-                return task;
-        }
-
-        return null;
+    public Task getTask(String taskName) {
+        return tasks.get(taskName);
     }
 
     public String getName() {
@@ -118,14 +113,6 @@ public class Workflow {
 
     public void setPriority(int priority) {
         this.priority = priority;
-    }
-
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
     }
 
     public Long getCreateTime() {

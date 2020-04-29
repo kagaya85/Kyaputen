@@ -1,18 +1,24 @@
 package com.kagaya.kyaputen.core.algorithm;
 
 
+import com.kagaya.kyaputen.common.metadata.tasks.Task;
+import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.core.config.Constant;
+import com.kagaya.kyaputen.core.execution.WorkflowExecutor;
+import com.kagaya.kyaputen.core.metrics.Monitor;
 import com.kagaya.kyaputen.core.service.KubernetesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SchedulerImpl implements Scheduler {
 
+    private static final Logger logger = LoggerFactory.getLogger(SchedulerImpl.class);
 
     /**
      * 计算工作流中每个任务的资源需求量CE，写入工作流定义
@@ -40,10 +46,47 @@ public class SchedulerImpl implements Scheduler {
 
     }
 
+    /**
+     * 计算工作流的期望执行时间，同时更新每个任务定义的期望开始时间与期望完成时间
+     * @param workflowDef
+     * @param ce
+     * @return
+     */
     private long calcExpectedExecutionTime(WorkflowDefinition workflowDef, Map<String, Double> ce) {
 
+        long expectedExecutionTime = 0;
+        List<String> taskQueue = new LinkedList<>();
+        TaskDefinition td = workflowDef.getStartTaskDefinition();
+        taskQueue.add(td.getTaskDefName());
 
-        return 0L;
+        // BFS
+        while (!taskQueue.isEmpty()) {
+            td = workflowDef.getTaskDef(taskQueue.get(0));
+            taskQueue.remove(0);
+            List<String> priorTasks = td.getPriorTasks();
+
+            long arrivalTime = 0;
+            long expectedStartTime = 0;
+            for (String taskName: priorTasks) {
+                arrivalTime = workflowDef.getTaskDef(taskName).getExpectedFinishTime();
+                arrivalTime += Monitor.getTaskRecentLatencyTime(workflowDef.getTaskDef(taskName).getTaskType());
+                expectedStartTime = Math.max(expectedStartTime, arrivalTime);
+            }
+
+            double cu = ce.get(td.getTaskType());
+            long executionTime = (long)(td.getTaskSize() / cu);
+            long finishTime = expectedStartTime + executionTime;
+            td.setExpectedFinishTime(finishTime);
+            expectedExecutionTime = Math.max(expectedExecutionTime, finishTime);
+
+            for (String tn: td.getNextTasks()) {
+                if (!taskQueue.contains(tn))
+                    taskQueue.add(tn);
+            }
+        }
+
+        logger.debug("Calculate Expected Execution Time of workflow: {}", workflowDef.getName());
+        return expectedExecutionTime;
     }
 
 

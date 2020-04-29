@@ -53,6 +53,8 @@ public class Task {
     // not include in proto
     private TaskDefinition taskDefinition;
 
+    private String nodeId;
+
     public Task() {
 
     }
@@ -239,6 +241,14 @@ public class Task {
 
     public void setTaskDefinition(TaskDefinition taskDefinition) {
         this.taskDefinition = taskDefinition;
+    }
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     public enum Status {

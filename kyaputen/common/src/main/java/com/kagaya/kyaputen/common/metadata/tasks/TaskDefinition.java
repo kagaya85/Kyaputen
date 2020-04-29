@@ -1,10 +1,6 @@
 package com.kagaya.kyaputen.common.metadata.tasks;
 
-import com.kagaya.kyaputen.common.runtime.Pod;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class TaskDefinition {
 
@@ -26,6 +22,8 @@ public class TaskDefinition {
 
     private List<String> nextTasks = new ArrayList<>();
 
+    private Map<String, Long> dataTransSizeMap = new HashMap<>();
+
     private int retryDelaySeconds = 60;
 
     private long responseTimeoutSeconds = 60 * 60;
@@ -35,6 +33,15 @@ public class TaskDefinition {
     private int priority = -1;
 
     private long timeLimit;
+
+    // 任务尺寸，即一个cu单位下执行所需的时间，单位ms
+    private double taskSize = 1000;
+
+    // 期待启动时间，以0时刻为起点的绝对时间
+    private long expectedStartTime;
+
+    // 期望完成时间，与ce有关
+    private long expectedFinishTime;
 
     public TaskDefinition() {
 
@@ -174,6 +181,54 @@ public class TaskDefinition {
 
     public void setTaskType(String taskType) {
         this.taskType = taskType;
+    }
+
+    public double getTaskSize() {
+        return taskSize;
+    }
+
+    public void setTaskSize(double taskSize) {
+        this.taskSize = taskSize;
+    }
+
+    public void updateTaskSize(double cu, long executionTimeMs) {
+        this.taskSize = executionTimeMs / cu;
+    }
+
+    public long getExpectedStartTime() {
+        return expectedStartTime;
+    }
+
+    public void setExpectedStartTime(long expectedStartTime) {
+        this.expectedStartTime = expectedStartTime;
+    }
+
+    public long getExpectedFinishTime() {
+        return expectedFinishTime;
+    }
+
+    public void setExpectedFinishTime(long expectedFinishTime) {
+        this.expectedFinishTime = expectedFinishTime;
+    }
+
+    /**
+     * 获取与目标任务间的数据传输量
+     * @param taskDefName 目标任务名
+     * @return
+     */
+    public long getDataSize(String taskDefName) {
+
+        Long size = dataTransSizeMap.get(taskDefName);
+
+        if (size == null) {
+            return 0;
+        } else {
+            return size;
+        }
+    }
+
+    public void setDataTransSize(String taskDefName, long dataSize) {
+        dataTransSizeMap.put(taskDefName, dataSize);
     }
 
     @Override

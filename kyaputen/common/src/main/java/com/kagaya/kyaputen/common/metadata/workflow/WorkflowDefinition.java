@@ -14,6 +14,8 @@ public class WorkflowDefinition {
 
     private int version = 1;
 
+    private TaskDefinition startTaskDefinition;
+
     private Map<String, TaskDefinition> taskDefs = new HashMap<>();
 
     private List<String> inputParameters;
@@ -27,11 +29,6 @@ public class WorkflowDefinition {
     // 资源分配列表 CE
     private Map<String, Double> resourceMap = new HashMap<>();
 
-    // 执行时间统计量
-    private Map<String, Double> executionTimeStatistics;
-
-    // 数据传输时间统计量
-    private Map<String, Double> transmissionTimeStatistics;
 
     public String getName() {
         return name;
@@ -86,6 +83,14 @@ public class WorkflowDefinition {
         return taskDefs.get(taskName);
     }
 
+    public TaskDefinition getStartTaskDefinition() {
+        return startTaskDefinition;
+    }
+
+    public void setStartTaskDefinition(TaskDefinition startTaskDefinition) {
+        this.startTaskDefinition = startTaskDefinition;
+    }
+
     public Map<String, TaskDefinition> getTaskDefs() {
         return taskDefs;
     }
@@ -108,14 +113,6 @@ public class WorkflowDefinition {
 
     public void setOutputParameters(List<String> outputParameters) {
         this.outputParameters = outputParameters;
-    }
-
-    public Double getExecutionTime(String taskType) {
-        return executionTimeStatistics.get(taskType);
-    }
-
-    public void setExecutionTime(String taskType, Double time) {
-        executionTimeStatistics.put(taskType, time);
     }
 
     public Double getPodResource(String taskType) {
