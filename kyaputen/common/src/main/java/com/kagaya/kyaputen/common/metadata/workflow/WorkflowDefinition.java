@@ -27,8 +27,7 @@ public class WorkflowDefinition {
     private long timeLimit;
 
     // 资源分配列表 CE
-    private Map<String, Double> resourceMap = new HashMap<>();
-
+    private Map<String, Double> CostEfficientMap = new HashMap<>();
 
     public String getName() {
         return name;
@@ -83,6 +82,20 @@ public class WorkflowDefinition {
         return taskDefs.get(taskName);
     }
 
+    /**
+     *
+     * @param taskType
+     * @return taskSize if exists, or 0;
+     */
+    public long getTaskSize(String taskType) {
+        for (TaskDefinition taskDef: taskDefs.values()) {
+            if (taskDef.getTaskType().equals(taskType))
+                return taskDef.getTaskSize();
+        }
+
+        return 0L;
+    }
+
     public TaskDefinition getStartTaskDefinition() {
         return startTaskDefinition;
     }
@@ -115,12 +128,12 @@ public class WorkflowDefinition {
         this.outputParameters = outputParameters;
     }
 
-    public Double getPodResource(String taskType) {
-        return resourceMap.get(taskType);
+    public Double getCeBuType(String taskType) {
+        return CostEfficientMap.get(taskType);
     }
 
-    public void setPodResource(String taskType, double cu) {
-        resourceMap.put(taskType, cu);
+    public void setCEMap(Map<String, Double> CostEfficientMap) {
+        this.CostEfficientMap = CostEfficientMap;
     }
 
     public long getTimeLimit() {

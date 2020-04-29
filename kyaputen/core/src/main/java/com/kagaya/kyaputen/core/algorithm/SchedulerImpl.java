@@ -8,6 +8,7 @@ import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.core.config.Constant;
+import com.kagaya.kyaputen.core.config.Price;
 import com.kagaya.kyaputen.core.execution.WorkflowExecutor;
 import com.kagaya.kyaputen.core.metrics.Monitor;
 import com.kagaya.kyaputen.core.service.KubernetesService;
@@ -26,7 +27,7 @@ public class SchedulerImpl implements Scheduler {
      * @param deadlineFactor - 最后期限管理严格成都
      */
     @Override
-    public void calcWorkflowResource(WorkflowDefinition workflowDef, double deadlineFactor) {
+    public void calcWorkflowCostEfficient(WorkflowDefinition workflowDef, double deadlineFactor) {
         Map<String, Double> ce = new HashMap<>();
         Map<String, Integer> taskNum = new HashMap<>();
         Map<String, Integer> typeList = workflowDef.getTaskTypeNums();
@@ -36,14 +37,62 @@ public class SchedulerImpl implements Scheduler {
             ce.put(type, Constant.POD_MIN_CU);
         }
 
+        // 原始执行时间
+        long expectedExecutionTime = calcExpectedExecutionTime(workflowDef, ce);
+        Map<String, Integer> taskTypeNum = workflowDef.getTaskTypeNums();
+
         // 调整cu，计算性价比
         while(true) {
-            long oldExpectedTime = calcExpectedExecutionTime(workflowDef, ce);
 
+            if (expectedExecutionTime < workflowDef.getTimeLimit())
+                break;
 
+            String speedupType = null;
+            double maxGain = 0.0;
+
+            // 调整单个cu，搜索加速比最高的任务类型
+            for (String taskType: ce.keySet()) {
+                double oldCU = ce.get(taskType);
+                long oldExeTime = (long)Math.ceil(workflowDef.getTaskSize(taskType) / oldCU);
+                double oldCost = calcTaskCost(ce.get(taskType), workflowDef.getTaskSize(taskType), taskTypeNum.get(taskType));
+
+                if (oldCU >= Constant.MAX_CU)
+                    continue;
+
+                double newCU = oldCU + Constant.CU_INTERVAL;
+                long newExeTime = (long)Math.ceil(workflowDef.getTaskSize(taskType) / newCU);
+                double newCost = calcTaskCost(newCU, workflowDef.getTaskSize(taskType), taskTypeNum.get(taskType));
+                ce.put(taskType, newCU);
+
+                double gain;
+                if (Math.abs(newCost - oldCost) < 1.0e-7) {
+                    // 费用相等
+                    gain = oldExeTime - newExeTime;
+                }
+                else if (newCost - oldCost < 0) {
+                    // 费用减少
+                    gain = oldCost - newCost;
+
+                }
+                else {
+                    // 费用减少
+                    gain = (oldExeTime - newExeTime) / (newCost - oldCost);
+
+                }
+
+            } // for end
+
+            if (speedupType == null) {
+                break;
+            } else {
+                double oldCU = ce.get(speedupType);
+                if (oldCU < Constant.MAX_CU) {
+                    ce.put(speedupType, oldCU + Constant.CU_INTERVAL);
+                }
+            }
         }
 
-
+        workflowDef.setCEMap(ce);
     }
 
     /**
@@ -74,7 +123,7 @@ public class SchedulerImpl implements Scheduler {
             }
 
             double cu = ce.get(td.getTaskType());
-            long executionTime = (long)(td.getTaskSize() / cu);
+            long executionTime = (long)Math.ceil(td.getTaskSize() / cu);
             long finishTime = expectedStartTime + executionTime;
             td.setExpectedFinishTime(finishTime);
             expectedExecutionTime = Math.max(expectedExecutionTime, finishTime);
@@ -92,14 +141,13 @@ public class SchedulerImpl implements Scheduler {
 
     /**
      * 计算任务成本
-     * @param vmType
-     * @param ecu
-     * @param taskSize
+     * @param cu 计算资源量
+     * @param taskSize 任务量
+     * @param num 任务数量
      * @return
      */
-    private double calcTaskCost(String vmType, double ecu, double taskSize) {
-
-        return 0.0;
+    private double calcTaskCost(double cu, long taskSize, int num) {
+        return Price.getNodeUnitPrice("Test_Node") * cu * Math.ceil(taskSize / cu / Constant.PRICE_INTERVAL) * num;
     }
 
     /**

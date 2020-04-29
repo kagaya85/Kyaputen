@@ -35,7 +35,7 @@ public class TaskDefinition {
     private long timeLimit;
 
     // 任务尺寸，即一个cu单位下执行所需的时间，单位ms
-    private double taskSize = 1000;
+    private long taskSize = 1000;
 
     // 期待启动时间，以0时刻为起点的绝对时间
     private long expectedStartTime;
@@ -183,16 +183,16 @@ public class TaskDefinition {
         this.taskType = taskType;
     }
 
-    public double getTaskSize() {
+    public long getTaskSize() {
         return taskSize;
     }
 
-    public void setTaskSize(double taskSize) {
+    public void setTaskSize(long taskSize) {
         this.taskSize = taskSize;
     }
 
     public void updateTaskSize(double cu, long executionTimeMs) {
-        this.taskSize = executionTimeMs / cu;
+        this.taskSize = (long)Math.ceil(executionTimeMs / cu);
     }
 
     public long getExpectedStartTime() {

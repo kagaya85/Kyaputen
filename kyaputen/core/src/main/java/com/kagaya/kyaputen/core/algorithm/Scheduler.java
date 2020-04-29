@@ -4,7 +4,7 @@ import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 
 public interface Scheduler {
 
-    void calcWorkflowResource(WorkflowDefinition workflowDef, double deadlineFactor);
+    void calcWorkflowCostEfficient(WorkflowDefinition workflowDef, double deadlineFactor);
 
 
 }
