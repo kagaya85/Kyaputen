@@ -231,6 +231,14 @@ public class TaskDefinition {
         dataTransSizeMap.put(taskDefName, dataSize);
     }
 
+    public boolean isStartTask() {
+        return priorTasks.isEmpty();
+    }
+
+    public boolean isEndTask() {
+        return nextTasks.isEmpty();
+    }
+
     @Override
     public String toString() {
         return "Task name: " + taskDefName;
