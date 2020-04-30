@@ -10,4 +10,6 @@ public class Constant {
     public final static double MAX_CU = 60.0;
 
     public final static long NODE_LUNCH_TIME_MS = 1000;
+
+    public final static double E = 1.0e-7;
 }

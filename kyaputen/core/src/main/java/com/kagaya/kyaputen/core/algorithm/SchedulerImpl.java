@@ -49,7 +49,8 @@ public class SchedulerImpl implements Scheduler {
 
             String speedupType = null;
             double maxGain = 0.0;
-
+            long maxReduceExeTime = 0;
+            int costFlag = 1;   // 1 - 增长， 0 - 不变， -1 - 减少
             // 调整单个cu，搜索加速比最高的任务类型
             for (String taskType: ce.keySet()) {
                 double oldCU = ce.get(taskType);
@@ -62,27 +63,48 @@ public class SchedulerImpl implements Scheduler {
                 double newCU = oldCU + Constant.CU_INTERVAL;
                 long newExeTime = (long)Math.ceil(workflowDef.getTaskSize(taskType) / newCU);
                 double newCost = calcTaskCost(newCU, workflowDef.getTaskSize(taskType), taskTypeNum.get(taskType));
-                ce.put(taskType, newCU);
 
                 double gain;
-                if (Math.abs(newCost - oldCost) < 1.0e-7) {
+                long reduceExeTime;
+
+                if (newCost - oldCost < 0) {
+                    // 费用减少
+                    costFlag = -1;
+                    gain = oldCost - newCost;
+                    reduceExeTime = oldExeTime - newExeTime;
+                    if (gain > maxGain + Constant.E || costFlag >= 0) {
+                        maxGain = gain;
+                        speedupType = taskType;
+                        maxReduceExeTime = reduceExeTime;
+                    } else if (Math.abs(gain - maxGain) < Constant.E) {
+                        if (reduceExeTime > maxReduceExeTime) {
+                            maxGain = gain;
+                            speedupType = taskType;
+                            maxReduceExeTime = reduceExeTime;
+                        }
+                    }
+                }
+                else if (costFlag >=0 && Math.abs(newCost - oldCost) < Constant.E) {
                     // 费用相等
                     gain = oldExeTime - newExeTime;
+                    if (gain > maxGain + Constant.E || costFlag == 1) {
+                        maxGain = gain;
+                        speedupType = taskType;
+                    }
                 }
-                else if (newCost - oldCost < 0) {
-                    // 费用减少
-                    gain = oldCost - newCost;
-
-                }
-                else {
+                else if (costFlag > 0) {
                     // 费用减少
                     gain = (oldExeTime - newExeTime) / (newCost - oldCost);
-
+                    if (gain > maxGain + Constant.E) {
+                        maxGain = gain;
+                        speedupType = taskType;
+                    }
                 }
 
             } // for end
 
             if (speedupType == null) {
+                // 没有满足的taskType，本次搜索结束
                 break;
             } else {
                 double oldCU = ce.get(speedupType);
@@ -151,22 +173,12 @@ public class SchedulerImpl implements Scheduler {
     }
 
     /**
-     * 计算工作流成本
-     * @return 工作流总成本
-     */
-    private double calcWorkflowCost() {
-        double cost = 0;
-
-        return cost;
-    }
-
-    /**
      * 划分子截止时间
      * @param workflowDef 工作流定义
      * @param startTime 工作流计划开始时间
      */
     private void divideSubDeadline(WorkflowDefinition workflowDef, long startTime) {
-
+        
     }
 
     /**
