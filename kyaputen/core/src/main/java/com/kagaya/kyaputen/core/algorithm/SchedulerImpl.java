@@ -220,7 +220,7 @@ public class SchedulerImpl implements Scheduler {
         long totRank = workflowDef.getStartTaskDefinition().getRankTime();
 
         for (TaskDefinition td: workflowDef.getTaskDefs().values()) {
-            long executionTime = (long)Math.ceil(td.getTaskSize() / workflowDef.getCeByType(td.getTaskType()))
+            long executionTime = (long)Math.ceil(td.getTaskSize() / workflowDef.getCeByType(td.getTaskType()));
             long timeLimit = totTimeLimit * (totRank - td.getRankTime() + executionTime) / totRank;
             td.setTimeLimit(timeLimit);
         }
