@@ -8,6 +8,7 @@ import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.core.config.Constant;
+import com.kagaya.kyaputen.core.config.K8sConfig;
 import com.kagaya.kyaputen.core.config.Price;
 import com.kagaya.kyaputen.core.execution.WorkflowExecutor;
 import com.kagaya.kyaputen.core.metrics.Monitor;
@@ -256,7 +257,7 @@ public class SchedulerImpl implements Scheduler {
         String apiServerAddr = "";
         String token = "";
 
-        KubernetesService k8s = new KubernetesService(apiServerAddr, token);
+        KubernetesService k8s = new KubernetesService(K8sConfig.getApiServerAddress(), K8sConfig.getToken());
 
 
     }
