@@ -32,6 +32,7 @@ public class TaskDefinition {
 
     private int priority = -1;
 
+    // 执行时间期限 - 子截止时间
     private long timeLimit;
 
     // 任务尺寸，即一个cu单位下执行所需的时间，单位ms
@@ -42,6 +43,9 @@ public class TaskDefinition {
 
     // 期望完成时间，与ce有关
     private long expectedFinishTime;
+
+    // rank - 从任务开始到工作流结束的期望时间
+    private long rankTime;
 
     public TaskDefinition() {
 
@@ -237,6 +241,14 @@ public class TaskDefinition {
 
     public boolean isEndTask() {
         return nextTasks.isEmpty();
+    }
+
+    public long getRankTime() {
+        return rankTime;
+    }
+
+    public void setRankTime(long rankTime) {
+        this.rankTime = rankTime;
     }
 
     @Override

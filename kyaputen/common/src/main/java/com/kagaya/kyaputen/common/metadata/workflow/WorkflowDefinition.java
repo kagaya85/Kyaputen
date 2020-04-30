@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 工作流定义
+ * - 单输入节点单输出节点
+ */
 public class WorkflowDefinition {
 
     private String name;
@@ -13,8 +17,6 @@ public class WorkflowDefinition {
     private String description;
 
     private int version = 1;
-
-    private TaskDefinition startTaskDefinition;
 
     private Map<String, TaskDefinition> taskDefs = new HashMap<>();
 
@@ -97,11 +99,22 @@ public class WorkflowDefinition {
     }
 
     public TaskDefinition getStartTaskDefinition() {
-        return startTaskDefinition;
+        
+        for (TaskDefinition td: taskDefs.values()) {
+            if (td.getPriorTasks().isEmpty())
+            return td;
+        }
+
+        return null;
     }
 
-    public void setStartTaskDefinition(TaskDefinition startTaskDefinition) {
-        this.startTaskDefinition = startTaskDefinition;
+    public TaskDefinition getEndTaskDefinition() {
+        for (TaskDefinition td: taskDefs.values()) {
+            if (td.getNextTasks().isEmpty())
+            return td;
+        }
+
+        return null;
     }
 
     public Map<String, TaskDefinition> getTaskDefs() {
@@ -128,7 +141,7 @@ public class WorkflowDefinition {
         this.outputParameters = outputParameters;
     }
 
-    public Double getCeBuType(String taskType) {
+    public Double getCeByType(String taskType) {
         return CostEfficientMap.get(taskType);
     }
 

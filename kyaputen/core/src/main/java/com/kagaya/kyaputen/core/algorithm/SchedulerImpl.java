@@ -29,17 +29,14 @@ public class SchedulerImpl implements Scheduler {
     @Override
     public void calcWorkflowCostEfficient(WorkflowDefinition workflowDef, double deadlineFactor) {
         Map<String, Double> ce = new HashMap<>();
-        Map<String, Integer> taskNum = new HashMap<>();
-        Map<String, Integer> typeList = workflowDef.getTaskTypeNums();
+        Map<String, Integer> taskTypeNum = workflowDef.getTaskTypeNums();
 
-
-        for (String type: typeList.keySet()) {
+        for (String type: taskTypeNum.keySet()) {
             ce.put(type, Constant.POD_MIN_CU);
         }
 
         // 原始执行时间
         long expectedExecutionTime = calcExpectedExecutionTime(workflowDef, ce);
-        Map<String, Integer> taskTypeNum = workflowDef.getTaskTypeNums();
 
         // 调整cu，计算性价比
         while(true) {
@@ -150,9 +147,9 @@ public class SchedulerImpl implements Scheduler {
             td.setExpectedFinishTime(finishTime);
             expectedExecutionTime = Math.max(expectedExecutionTime, finishTime);
 
-            for (String tn: td.getNextTasks()) {
-                if (!taskQueue.contains(tn))
-                    taskQueue.add(tn);
+            for (String nt: td.getNextTasks()) {
+                if (!taskQueue.contains(nt))
+                    taskQueue.add(nt);
             }
         }
 
@@ -176,9 +173,57 @@ public class SchedulerImpl implements Scheduler {
      * 划分子截止时间
      * @param workflowDef 工作流定义
      * @param startTime 工作流计划开始时间
+     * @param deadline 工作流截止日期
      */
-    private void divideSubDeadline(WorkflowDefinition workflowDef, long startTime) {
+    private void divideSubDeadline(WorkflowDefinition workflowDef, long startTime, long deadline) {
         
+        List<String> taskQueue = new LinkedList<>();
+
+        TaskDefinition taskDef = workflowDef.getEndTaskDefinition();
+
+        double ce = workflowDef.getCeByType(taskDef.getTaskType());
+        long rankTime = (long)Math.ceil(taskDef.getTaskSize() / ce);
+        taskDef.setRankTime(rankTime);
+        taskQueue.addAll(taskDef.getPriorTasks());
+
+        // BFS 计算Rank
+        while (!taskQueue.isEmpty()) {
+            long maxRank = 0;
+            taskDef = workflowDef.getTaskDef(taskQueue.get(0));
+            taskQueue.remove(0);
+
+            ce = workflowDef.getCeByType(taskDef.getTaskType());
+
+            for (String nextTask: taskDef.getNextTasks()) {
+                TaskDefinition td = workflowDef.getTaskDef(nextTask);
+                long latencyTime = Monitor.getTaskRecentLatencyTime(nextTask);
+                long nextRank = td.getRankTime();
+
+                maxRank = Math.max(maxRank, nextRank + latencyTime);
+            }
+
+            rankTime = maxRank + (long)Math.ceil(taskDef.getTaskSize() / ce);
+            taskDef.setRankTime(rankTime);
+
+            for (String pt: taskDef.getPriorTasks()) {
+                if (!taskQueue.contains(pt)) {
+                    taskQueue.add(pt);
+                }
+            }
+        } // while end
+
+        // 划分子截止时间
+        long totTimeLimit = deadline - startTime;
+        if (totTimeLimit < 0) {
+            logger.error("Deadline before the startTime in divide subdeadline");
+        }
+        long totRank = workflowDef.getStartTaskDefinition().getRankTime();
+
+        for (TaskDefinition td: workflowDef.getTaskDefs().values()) {
+            long executionTime = (long)Math.ceil(td.getTaskSize() / workflowDef.getCeByType(td.getTaskType()))
+            long timeLimit = totTimeLimit * (totRank - td.getRankTime() + executionTime) / totRank;
+            td.setTimeLimit(timeLimit);
+        }
     }
 
     /**
