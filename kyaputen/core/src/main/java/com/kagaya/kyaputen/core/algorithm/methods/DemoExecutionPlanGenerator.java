@@ -9,4 +9,6 @@ public class DemoExecutionPlanGenerator implements Method {
     public ExecutionPlan schedule(long startTime, WorkflowDefinition workflowDef) {
         return null;
     }
+
+    private
 }
