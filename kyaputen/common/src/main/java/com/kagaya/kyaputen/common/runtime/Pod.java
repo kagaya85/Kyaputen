@@ -5,6 +5,8 @@ package com.kagaya.kyaputen.common.runtime;
  */
 public class Pod {
 
+    private String podId;
+
     private String taskImageName;
 
     private double cpu;
@@ -20,6 +22,14 @@ public class Pod {
     private long startTime;
 
     public Pod() {}
+
+    public String getPodId() {
+        return podId;
+    }
+
+    public void setPodId(String podId) {
+        this.podId = podId;
+    }
 
     public double getCpu() {
         return cpu;

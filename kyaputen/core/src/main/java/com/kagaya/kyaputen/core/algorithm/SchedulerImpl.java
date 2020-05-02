@@ -7,6 +7,8 @@ import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
+import com.kagaya.kyaputen.core.algorithm.methods.DemoExecutionPlanGenerator;
+import com.kagaya.kyaputen.core.algorithm.methods.Method;
 import com.kagaya.kyaputen.core.config.Constant;
 import com.kagaya.kyaputen.core.config.K8sConfig;
 import com.kagaya.kyaputen.core.config.Price;
@@ -67,18 +69,19 @@ public class SchedulerImpl implements Scheduler {
 
                 if (newCost - oldCost < 0) {
                     // 费用减少
-                    costFlag = -1;
                     gain = oldCost - newCost;
                     reduceExeTime = oldExeTime - newExeTime;
                     if (gain > maxGain + Constant.E || costFlag >= 0) {
                         maxGain = gain;
                         speedupType = taskType;
                         maxReduceExeTime = reduceExeTime;
+                        costFlag = -1;
                     } else if (Math.abs(gain - maxGain) < Constant.E) {
                         if (reduceExeTime > maxReduceExeTime) {
                             maxGain = gain;
                             speedupType = taskType;
                             maxReduceExeTime = reduceExeTime;
+                            costFlag = -1;
                         }
                     }
                 }
@@ -88,10 +91,11 @@ public class SchedulerImpl implements Scheduler {
                     if (gain > maxGain + Constant.E || costFlag == 1) {
                         maxGain = gain;
                         speedupType = taskType;
+                        costFlag = 0;
                     }
                 }
                 else if (costFlag > 0) {
-                    // 费用减少
+                    // 费用增加
                     gain = (oldExeTime - newExeTime) / (newCost - oldCost);
                     if (gain > maxGain + Constant.E) {
                         maxGain = gain;
@@ -230,12 +234,13 @@ public class SchedulerImpl implements Scheduler {
     /**
      * 生成执行方案
      */
-    public ExecutionPlan genExecutionPlan() {
+    public ExecutionPlan genExecutionPlan(long startTime, WorkflowDefinition workflowDef) {
+
+        Method method = new DemoExecutionPlanGenerator();
 
         ExecutionPlan plan = new ExecutionPlan();
 
-
-        return plan;
+        return method.schedule(startTime, workflowDef);
     }
 
     /**

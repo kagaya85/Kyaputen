@@ -17,6 +17,10 @@ public class NodeResourceDAO {
 
     }
 
+    public static void setNodeMap(Map<String, Node> nodeMap) {
+        NodeResourceDAO.nodeMap = nodeMap;
+    }
+
     public static Node getNode(String nodeId) {
         return nodeMap.get(nodeId);
     }

@@ -19,9 +19,11 @@ public class Node {
 
     private double totalComputeUnit;
 
+    private double allocatedComputeUnit;
+
     private long startTime;
 
-    private List<Pod> podList = new LinkedList<>();
+    private List<String> podList = new LinkedList<>();
 
     private List<String> imageList = new LinkedList<>();
 
@@ -81,13 +83,15 @@ public class Node {
         this.price = price;
     }
 
-    public List<Pod> getPodList() {
+    public List<String> getPodList() {
         return podList;
     }
 
-    public void setPodList(List<Pod> podList) {
+    public void setPodList(List<String> podList) {
         this.podList = podList;
     }
+
+    public void addPod(String podId) { this.podList.add(podId); }
 
     public void setStatus(NodeStatus status) {
         this.status = status;
@@ -105,30 +109,6 @@ public class Node {
         imageList.remove(imageName);
     }
 
-    public int getRunningPodNum() {
-
-        int num = 0;
-
-        for (Pod pod: podList) {
-            if (pod.getStatus().equals(Pod.PodStatus.RUNNING))
-                num++;
-        }
-
-        return num;
-    }
-
-    public double getAllocatedComputeUnit() {
-        double cu = 0.0;
-
-        for (Pod pod: podList) {
-            if (pod.getStatus().equals(Pod.PodStatus.RUNNING)) {
-                cu += pod.getComputeUnit();
-            }
-        }
-
-        return cu;
-    }
-
     public double getTotalComputeUnit() {
         return totalComputeUnit;
     }
@@ -138,7 +118,15 @@ public class Node {
     }
 
     public double getRemainComputeUnit() {
-        return totalComputeUnit - getAllocatedComputeUnit();
+        return totalComputeUnit - allocatedComputeUnit;
+    }
+
+    public double getAllocatedComputeUnit() {
+        return allocatedComputeUnit;
+    }
+
+    public void setAllocatedComputeUnit(double allocatedComputeUnit) {
+        this.allocatedComputeUnit = allocatedComputeUnit;
     }
 
     public Boolean isDeployed() {

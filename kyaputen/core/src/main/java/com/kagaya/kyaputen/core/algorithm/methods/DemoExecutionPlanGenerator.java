@@ -3,10 +3,10 @@ package com.kagaya.kyaputen.core.algorithm.methods;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 
-/**
- * 算法接口
- */
-public interface Method {
+public class DemoExecutionPlanGenerator implements Method {
 
-    ExecutionPlan schedule(long startTime, WorkflowDefinition workflowDef);
+    @Override
+    public ExecutionPlan schedule(long startTime, WorkflowDefinition workflowDef) {
+        return null;
+    }
 }
