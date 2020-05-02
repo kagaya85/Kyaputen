@@ -25,6 +25,19 @@ public class SchedulerImpl implements Scheduler {
     private static final Logger logger = LoggerFactory.getLogger(SchedulerImpl.class);
 
     /**
+     * 利用统计信息更新任务量预测
+     * @param workflowDef
+     */
+    public void updateTaskSize(WorkflowDefinition workflowDef) {
+
+        for (String tdn: workflowDef.getTaskDefNames()) {
+            TaskDefinition td = workflowDef.getTaskDef(tdn);
+            long taskSize = (long)(Monitor.getTaskExecutionTime(td.getTaskType()) * workflowDef.getCeByType(td.getTaskType()));
+            td.setTaskSize(taskSize);
+        }
+    }
+
+    /**
      * 计算工作流中每个任务的资源需求量CE，写入工作流定义
      * @param workflowDef - 工作流定义
      * @param deadlineFactor - 最后期限管理严格成都
@@ -162,6 +175,41 @@ public class SchedulerImpl implements Scheduler {
         return expectedExecutionTime;
     }
 
+    private void updateExpectedExecutionTime(WorkflowDefinition workflowDef) {
+
+        long expectedExecutionTime = 0;
+        List<String> taskQueue = new LinkedList<>();
+        TaskDefinition td = workflowDef.getStartTaskDefinition();
+        taskQueue.add(td.getTaskDefName());
+
+        // BFS
+        while (!taskQueue.isEmpty()) {
+            td = workflowDef.getTaskDef(taskQueue.get(0));
+            taskQueue.remove(0);
+            List<String> priorTasks = td.getPriorTasks();
+
+            long arrivalTime = 0;
+            long expectedStartTime = 0;
+            for (String taskName: priorTasks) {
+                arrivalTime = workflowDef.getTaskDef(taskName).getExpectedFinishTime();
+                arrivalTime += Monitor.getTaskRecentLatencyTime(workflowDef.getTaskDef(taskName).getTaskType());
+                expectedStartTime = Math.max(expectedStartTime, arrivalTime);
+            }
+
+            double cu = workflowDef.getCeByType(td.getTaskType());
+            long executionTime = (long)Math.ceil(td.getTaskSize() / cu);
+            long finishTime = expectedStartTime + executionTime;
+            td.setExpectedFinishTime(finishTime);
+            expectedExecutionTime = Math.max(expectedExecutionTime, finishTime);
+
+            for (String nt: td.getNextTasks()) {
+                if (!taskQueue.contains(nt))
+                    taskQueue.add(nt);
+            }
+        }
+
+        logger.debug("Update Expected Execution Time of workflow: {}", workflowDef.getName());
+    }
 
     /**
      * 计算任务成本
@@ -224,7 +272,8 @@ public class SchedulerImpl implements Scheduler {
         }
         long totRank = workflowDef.getStartTaskDefinition().getRankTime();
 
-        for (TaskDefinition td: workflowDef.getTaskDefs().values()) {
+        for (String tdn: workflowDef.getTaskDefNames()) {
+            TaskDefinition td = workflowDef.getTaskDef(tdn);
             long executionTime = (long)Math.ceil(td.getTaskSize() / workflowDef.getCeByType(td.getTaskType()));
             long timeLimit = totTimeLimit * (totRank - td.getRankTime() + executionTime) / totRank;
             td.setTimeLimit(timeLimit);
@@ -236,11 +285,12 @@ public class SchedulerImpl implements Scheduler {
      */
     public ExecutionPlan genExecutionPlan(long startTime, WorkflowDefinition workflowDef) {
 
-        Method method = new DemoExecutionPlanGenerator();
+        Method method = new DemoExecutionPlanGenerator(workflowDef);
 
-        ExecutionPlan plan = new ExecutionPlan();
+        // 用新的CE配置更新下每个任务的执行时间，用于估计实际执行时间，计算紧急程度
+        updateExpectedExecutionTime(workflowDef);
 
-        return method.schedule(startTime, workflowDef);
+        return method.schedule(startTime);
     }
 
     /**

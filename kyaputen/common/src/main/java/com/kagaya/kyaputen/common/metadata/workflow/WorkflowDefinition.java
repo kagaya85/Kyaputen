@@ -2,6 +2,7 @@ package com.kagaya.kyaputen.common.metadata.workflow;
 
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,8 +118,13 @@ public class WorkflowDefinition {
         return null;
     }
 
+    @Deprecated
     public Map<String, TaskDefinition> getTaskDefs() {
         return taskDefs;
+    }
+
+    public List<String> getTaskDefNames() {
+        return new ArrayList<>(taskDefs.keySet());
     }
 
     public void setTaskDefs(Map<String, TaskDefinition> tasks) {
@@ -142,7 +148,13 @@ public class WorkflowDefinition {
     }
 
     public Double getCeByType(String taskType) {
-        return CostEfficientMap.get(taskType);
+        Double ce = CostEfficientMap.get(taskType);
+
+        if (ce == null) {
+            return 1.0;
+        }
+
+        return ce;
     }
 
     public void setCEMap(Map<String, Double> CostEfficientMap) {

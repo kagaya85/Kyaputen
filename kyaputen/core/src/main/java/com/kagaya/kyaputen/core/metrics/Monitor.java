@@ -18,7 +18,7 @@ public class Monitor {
     private static Map<String, String> taskRecentExecutionNodeMap = new HashMap<>();
 
     /**
-     * 记录任务执行时间的平均值
+     * 记录任务执行时间的平均值，用于代表任务大小
      * @param taskType 任务类型
      * @param timeMs 任务执行时间 单位ms
      */
@@ -37,13 +37,14 @@ public class Monitor {
         }
 
         taskExecutionTimeMap.put(taskType, t);
+
     }
 
     public static long getTaskExecutionTime(String taskType) {
         Long time = taskExecutionTimeMap.get(taskType);
 
         if (time == null) {
-            time = 0L;
+            time = 1000L;
         }
 
         return time;

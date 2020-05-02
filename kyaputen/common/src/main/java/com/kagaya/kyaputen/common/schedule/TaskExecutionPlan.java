@@ -4,7 +4,9 @@ import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 
 public class TaskExecutionPlan {
 
-    private TaskDefinition taskDef;
+    private String taskName;
+
+    private String taskType;
 
     private String podId;
 
@@ -15,6 +17,11 @@ public class TaskExecutionPlan {
     private long finishTime;
 
     private double urgencyLevel;
+
+    public TaskExecutionPlan(String taskName, String taskType) {
+        this.taskName = taskName;
+        this.taskType = taskType;
+    }
 
     public String getNodeId() {
         return nodeId;
@@ -48,12 +55,20 @@ public class TaskExecutionPlan {
         this.startTime = startTime;
     }
 
-    public TaskDefinition getTaskDef() {
-        return taskDef;
+    public String getTaskName() {
+        return taskName;
     }
 
-    public void setTaskDef(TaskDefinition taskDef) {
-        this.taskDef = taskDef;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
     }
 
     public double getUrgencyLevel() {

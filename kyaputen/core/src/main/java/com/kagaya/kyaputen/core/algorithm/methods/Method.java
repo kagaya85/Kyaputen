@@ -1,5 +1,6 @@
 package com.kagaya.kyaputen.core.algorithm.methods;
 
+import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 
@@ -8,5 +9,5 @@ import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
  */
 public interface Method {
 
-    ExecutionPlan schedule(long startTime, WorkflowDefinition workflowDef);
+    ExecutionPlan schedule(long startTime);
 }

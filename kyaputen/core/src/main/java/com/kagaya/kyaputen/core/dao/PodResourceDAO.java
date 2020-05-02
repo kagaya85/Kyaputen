@@ -3,10 +3,7 @@ package com.kagaya.kyaputen.core.dao;
 import com.kagaya.kyaputen.common.runtime.Pod;
 import com.kagaya.kyaputen.common.runtime.Pod.PodStatus;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PodResourceDAO {
 
@@ -18,6 +15,10 @@ public class PodResourceDAO {
 
     public Pod getPod(String podId) {
         return podResourceMap.get(podId);
+    }
+
+    public List<String> getPodIdList() {
+        return new ArrayList<>(podResourceMap.keySet());
     }
 
     public List<Pod> getRunningList() {
