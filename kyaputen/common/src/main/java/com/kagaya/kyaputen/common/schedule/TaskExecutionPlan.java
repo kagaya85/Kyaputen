@@ -14,6 +14,8 @@ public class TaskExecutionPlan {
 
     private long finishTime;
 
+    private double urgencyLevel;
+
     public String getNodeId() {
         return nodeId;
     }
@@ -52,5 +54,13 @@ public class TaskExecutionPlan {
 
     public void setTaskDef(TaskDefinition taskDef) {
         this.taskDef = taskDef;
+    }
+
+    public double getUrgencyLevel() {
+        return urgencyLevel;
+    }
+
+    public void setUrgencyLevel(double urgencyLevel) {
+        this.urgencyLevel = urgencyLevel;
     }
 }
