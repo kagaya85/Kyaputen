@@ -4,10 +4,12 @@ import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
+import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.core.dao.ExecutionDAO;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.core.dao.WorkflowQueue;
 import com.kagaya.kyaputen.core.events.TaskMessage;
+import com.kagaya.kyaputen.core.metrics.Monitor;
 import com.kagaya.kyaputen.core.service.DecideService;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
@@ -47,8 +49,8 @@ public class WorkflowExecutor {
      * @param workflowDef 工作流定义
      * @return workflow 工作流实例
      */
-    public Workflow createWorkflow(WorkflowDefinition workflowDef) {
-        Workflow workflow = executionDAO.createWorkflow(workflowDef);
+    public Workflow createWorkflow(WorkflowDefinition workflowDef, ExecutionPlan plan) {
+        Workflow workflow = executionDAO.createWorkflow(workflowDef, plan);
         return workflow;
     }
 
@@ -104,10 +106,10 @@ public class WorkflowExecutor {
         decide(workflowId);
 
         if (task.getStatus().isTerminal()) {
-            long duration = getTaskDuration(0, task);
-            long lastDuration = task.getEndTime() - task.getStartTime();
-            // Monitors.recordTaskExecutionTime(task.getTaskDefName(), duration, true, task.getStatus());
-            // Monitors.recordTaskExecutionTime(task.getTaskDefName(), lastDuration, false, task.getStatus());
+            long duration = getTaskDuration(task);
+            long latency = System.currentTimeMillis() - task.getEndTime();
+            Monitor.logTaskExecutionTime(task.getTaskType(), duration);
+            Monitor.logTaskLatencyTime(task, latency);
         }
     }
 
@@ -161,10 +163,8 @@ public class WorkflowExecutor {
         return false;
     }
 
-    private long getTaskDuration(long s, Task task) {
-        long duration = task.getEndTime() - task.getStartTime();
-
-        return s + duration;
+    private long getTaskDuration(Task task) {
+        return task.getEndTime() - task.getStartTime();
     }
 
     private void completeWorkflow(Workflow workflow) {

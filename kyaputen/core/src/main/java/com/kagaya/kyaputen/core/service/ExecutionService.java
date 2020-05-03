@@ -2,6 +2,7 @@ package com.kagaya.kyaputen.core.service;
 
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.runtime.Workflow;
+import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.core.algorithm.Scheduler;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
@@ -118,10 +119,10 @@ public class ExecutionService {
             logger.debug("No ready status instance of workflow: " + workflowName);
 
             // 调用资源分配算法
-
+            ExecutionPlan plan;
             // 向K8s申请资源
 
-            workflow = workflowExecutor.createWorkflow(workflowDefs.get(workflowName));
+            workflow = workflowExecutor.createWorkflow(workflowDefs.get(workflowName), plan);
         } else { // 需要对资源进行调整
 
             // 调用资源分配算法

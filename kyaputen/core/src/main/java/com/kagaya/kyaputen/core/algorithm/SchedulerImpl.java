@@ -149,19 +149,23 @@ public class SchedulerImpl implements Scheduler {
         while (!taskQueue.isEmpty()) {
             td = workflowDef.getTaskDef(taskQueue.get(0));
             taskQueue.remove(0);
-            List<String> priorTasks = td.getPriorTasks();
 
+            List<String> priorTasks = td.getPriorTasks();
             long arrivalTime = 0;
             long expectedStartTime = 0;
-            for (String taskName: priorTasks) {
-                arrivalTime = workflowDef.getTaskDef(taskName).getExpectedFinishTime();
-                arrivalTime += Monitor.getTaskRecentLatencyTime(workflowDef.getTaskDef(taskName).getTaskType());
-                expectedStartTime = Math.max(expectedStartTime, arrivalTime);
+
+            if (priorTasks.size() != 0) {
+                for (String taskName: priorTasks) {
+                    arrivalTime = workflowDef.getTaskDef(taskName).getExpectedFinishTime();
+                    arrivalTime += Monitor.getTaskRecentLatencyTime(workflowDef.getTaskDef(taskName).getTaskType());
+                    expectedStartTime = Math.max(expectedStartTime, arrivalTime);
+                }
             }
 
             double cu = ce.get(td.getTaskType());
             long executionTime = (long)Math.ceil(td.getTaskSize() / cu);
             long finishTime = expectedStartTime + executionTime;
+            td.setExpectedStartTime(expectedStartTime);
             td.setExpectedFinishTime(finishTime);
             expectedExecutionTime = Math.max(expectedExecutionTime, finishTime);
 
@@ -190,15 +194,18 @@ public class SchedulerImpl implements Scheduler {
 
             long arrivalTime = 0;
             long expectedStartTime = 0;
-            for (String taskName: priorTasks) {
-                arrivalTime = workflowDef.getTaskDef(taskName).getExpectedFinishTime();
-                arrivalTime += Monitor.getTaskRecentLatencyTime(workflowDef.getTaskDef(taskName).getTaskType());
-                expectedStartTime = Math.max(expectedStartTime, arrivalTime);
-            }
+
+            if (priorTasks.size() != 0)
+                for (String taskName: priorTasks) {
+                    arrivalTime = workflowDef.getTaskDef(taskName).getExpectedFinishTime();
+                    arrivalTime += Monitor.getTaskRecentLatencyTime(workflowDef.getTaskDef(taskName).getTaskType());
+                    expectedStartTime = Math.max(expectedStartTime, arrivalTime);
+                }
 
             double cu = workflowDef.getCeByType(td.getTaskType());
             long executionTime = (long)Math.ceil(td.getTaskSize() / cu);
             long finishTime = expectedStartTime + executionTime;
+            td.setExpectedStartTime(expectedStartTime);
             td.setExpectedFinishTime(finishTime);
             expectedExecutionTime = Math.max(expectedExecutionTime, finishTime);
 
@@ -229,15 +236,13 @@ public class SchedulerImpl implements Scheduler {
      * @param deadline 工作流截止日期
      */
     private void divideSubDeadline(WorkflowDefinition workflowDef, long startTime, long deadline) {
-        
-        List<String> taskQueue = new LinkedList<>();
 
         TaskDefinition taskDef = workflowDef.getEndTaskDefinition();
+        List<String> taskQueue = new LinkedList<>(taskDef.getPriorTasks());
 
         double ce = workflowDef.getCeByType(taskDef.getTaskType());
         long rankTime = (long)Math.ceil(taskDef.getTaskSize() / ce);
         taskDef.setRankTime(rankTime);
-        taskQueue.addAll(taskDef.getPriorTasks());
 
         // BFS 计算Rank
         while (!taskQueue.isEmpty()) {

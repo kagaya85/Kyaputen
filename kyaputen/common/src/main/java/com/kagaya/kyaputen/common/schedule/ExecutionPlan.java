@@ -14,9 +14,9 @@ public class ExecutionPlan {
 
     private List<String> urgentLevelQueue = new LinkedList<>();
 
-    public ExecutionPlan(WorkflowDefinition worflowDef) {
-        for (String name: worflowDef.getTaskDefNames()) {
-            TaskDefinition taskDef = worflowDef.getTaskDef(name);
+    public ExecutionPlan(WorkflowDefinition workflowDef) {
+        for (String name: workflowDef.getTaskDefNames()) {
+            TaskDefinition taskDef = workflowDef.getTaskDef(name);
             executionPlanMap.put(name, new TaskExecutionPlan(name, taskDef.getTaskType()));
         }
     }

@@ -6,6 +6,7 @@ import com.kagaya.kyaputen.common.runtime.Pod;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
 import com.kagaya.kyaputen.core.dao.PodResourceDAO;
+import com.kagaya.kyaputen.core.utils.IdGenerator;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,8 +21,12 @@ public class DemoExecutionPlanGenerator implements Method {
 
     private PodResourceDAO podResource = new PodResourceDAO();
 
-    public DemoExecutionPlanGenerator(WorkflowDefinition workflowDef) {
+    // 工作流开始的现实时间
+    private long startTime;
+
+    public DemoExecutionPlanGenerator(WorkflowDefinition workflowDef, long startTime) {
         this.workflowDef = workflowDef;
+        this.startTime = startTime;
     }
 
     @Override
@@ -44,8 +49,13 @@ public class DemoExecutionPlanGenerator implements Method {
         while (!taskQueue.isEmpty()) {
             String taskName = taskQueue.get(0);
             taskQueue.remove(0);
+
+            TaskDefinition taskDef = workflowDef.getTaskDef(taskName);
             TaskExecutionPlan taskExecutionPlan = exePlan.getTaskExecutionPlan(taskName);
 
+            // 设置task基础属性
+            taskExecutionPlan.setExecutionTime(taskDef.getExpectedFinishTime() - taskDef.getExpectedStartTime());
+            taskExecutionPlan.setTaskId(IdGenerator.generate());
 
             String podId = allocatePod(taskExecutionPlan);
 
@@ -67,7 +77,8 @@ public class DemoExecutionPlanGenerator implements Method {
      */
     private String allocatePod(TaskExecutionPlan plan) {
         String podId = null;
-
+        TaskDefinition taskDef = workflowDef.getTaskDef(plan.getTaskName());
+        long executionTime, finishTime;
         for (String pid: podResource.getPodIdList()) {
             Pod pod = podResource.getPod(pid);
 
@@ -75,9 +86,20 @@ public class DemoExecutionPlanGenerator implements Method {
             if (!pod.getTaskImageName().equals(plan.getTaskType()) || pod.getStatus().equals(Pod.PodStatus.DOWN) || pod.getStatus().equals(Pod.PodStatus.ERROR))
                 continue;
 
+            executionTime = (long)Math.ceil(taskDef.getTaskSize() / pod.getComputeUnit());
+            long deadline = startTime + taskDef.getExpectedStartTime() + taskDef.getTimeLimit();
 
+            if (pod.getEarliestStartTime() + executionTime < deadline) {
+                // 满足时间需求的情况下，选择最优pod
 
+                podId = pid;
+            }
 
+        }
+
+        // 需要新建pod
+        if (podId == null) {
+            podId = IdGenerator.generate();
         }
 
         // 更新pod分配map
@@ -87,7 +109,6 @@ public class DemoExecutionPlanGenerator implements Method {
     }
 
     private void calcUrgencyLevel() {
-
         for (String tdn: workflowDef.getTaskDefNames()) {
             TaskDefinition td = workflowDef.getTaskDef(tdn);
             TaskExecutionPlan plan = exePlan.getTaskExecutionPlan(tdn);

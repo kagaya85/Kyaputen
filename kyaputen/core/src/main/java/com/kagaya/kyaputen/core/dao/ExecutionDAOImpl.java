@@ -7,12 +7,15 @@ import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
+import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.utils.IdGenerator;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 队列操作工具类
@@ -50,7 +53,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
 
     @Override
-    public Workflow createWorkflow(WorkflowDefinition workflowDef) {
+    public Workflow createWorkflow(WorkflowDefinition workflowDef, ExecutionPlan plan) {
 
         Workflow workflow = new Workflow();
         String workflowId = IdGenerator.generate();
@@ -60,34 +63,37 @@ public class ExecutionDAOImpl implements ExecutionDAO {
         workflow.setCreateTime(System.currentTimeMillis());
         workflow.setWorkflowDefinition(workflowDef);
         workflow.setWorkflowId(workflowId);
-        workflow.setTasks(createTaskQueue(workflowId, workflowDef.getTaskDefs()));
+        workflow.setTasks(createTaskMap(workflowId, workflowDef, plan));
 
         workflowQueue.add(workflow);
 
         return workflow;
     }
 
-    public List<Task> createTaskQueue(String workflowId, List<TaskDefinition> taskDefs) {
+    public Map<String, Task> createTaskMap(String workflowId, WorkflowDefinition workflowDef, ExecutionPlan plan) {
 
-        List<Task> taskQueue = new LinkedList<>();
+        Map<String, Task> taskMap = new HashMap<>();
+        List<String> taskDefNames = workflowDef.getTaskDefNames();
 
-        for (TaskDefinition taskDef: taskDefs) {
+        for (String tdn: taskDefNames) {
+            TaskDefinition taskDef = workflowDef.getTaskDef(tdn);
             Task task = new Task();
+            String taskName = taskDef.getTaskDefName();
 
             task.setWorkflowInstanceId(workflowId);
-            task.setTaskDefName(taskDef.getTaskDefName());
+            task.setTaskDefName(taskName);
             task.setExecuted(false);
             task.setPollCount(0);
-            task.setTaskId(IdGenerator.generate());
+            task.setTaskId(plan.getTaskExecutionPlan(taskName).getTaskId());
             task.setRetryCount(0);
             task.setPriority(taskDef.getPriority());
             task.setTaskDefinition(taskDef);
             task.setStartTime(0);
 
-            taskQueue.add(task);
+            taskMap.put(taskName, task);
         }
 
-        return taskQueue;
+        return taskMap;
     }
 
     @Override

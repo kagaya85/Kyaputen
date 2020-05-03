@@ -6,15 +6,18 @@ public class TaskExecutionPlan {
 
     private String taskName;
 
+    private String taskId;
+
     private String taskType;
 
     private String podId;
 
     private String nodeId;
 
-    private long startTime;
+    private String expectedStartTime;
 
-    private long finishTime;
+    // 预期执行时间 ms
+    private long executionTime;
 
     private double urgencyLevel;
 
@@ -39,20 +42,12 @@ public class TaskExecutionPlan {
         this.podId = podId;
     }
 
-    public long getFinishTime() {
-        return finishTime;
+    public long getExecutionTime() {
+        return executionTime;
     }
 
-    public void setFinishTime(long finishTime) {
-        this.finishTime = finishTime;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
+    public void setExecutionTime(long executionTime) {
+        this.executionTime = executionTime;
     }
 
     public String getTaskName() {
@@ -77,5 +72,21 @@ public class TaskExecutionPlan {
 
     public void setUrgencyLevel(double urgencyLevel) {
         this.urgencyLevel = urgencyLevel;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public void setExpectedStartTime(String expectedStartTime) {
+        this.expectedStartTime = expectedStartTime;
+    }
+
+    public String getExpectedStartTime() {
+        return expectedStartTime;
     }
 }

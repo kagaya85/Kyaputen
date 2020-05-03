@@ -75,6 +75,10 @@ public class Workflow {
         return tasks.get(taskName);
     }
 
+    public void setTasks(Map<String, Task> tasks) {
+        this.tasks = tasks;
+    }
+
     public String getName() {
         return name;
     }
