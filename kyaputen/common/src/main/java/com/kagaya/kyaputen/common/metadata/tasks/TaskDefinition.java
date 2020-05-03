@@ -38,11 +38,11 @@ public class TaskDefinition {
     // 任务尺寸，即一个cu单位下执行所需的时间，单位ms，由统计量决定
     private long taskSize = 1000;
 
-    // 期待启动时间，以0时刻为起点的绝对时间
-    private long expectedStartTime;
+    // 绝对启动时间，以0时刻为起点的绝对时间
+    private long absoluteStartTime;
 
-    // 期望完成时间，与ce有关
-    private long expectedFinishTime;
+    // 绝对完成时间，与ce有关
+    private long absoluteFinishTime;
 
     // rank - 从任务开始到工作流结束的期望时间
     private long rankTime;
@@ -195,20 +195,20 @@ public class TaskDefinition {
         this.taskSize = taskSize;
     }
 
-    public long getExpectedStartTime() {
-        return expectedStartTime;
+    public long getAbsoluteStartTime() {
+        return absoluteStartTime;
     }
 
-    public void setExpectedStartTime(long expectedStartTime) {
-        this.expectedStartTime = expectedStartTime;
+    public void setAbsoluteStartTime(long absoluteStartTime) {
+        this.absoluteStartTime = absoluteStartTime;
     }
 
-    public long getExpectedFinishTime() {
-        return expectedFinishTime;
+    public long getAbsoluteFinishTime() {
+        return absoluteFinishTime;
     }
 
-    public void setExpectedFinishTime(long expectedFinishTime) {
-        this.expectedFinishTime = expectedFinishTime;
+    public void setAbsoluteFinishTime(long absolutedFinishTime) {
+        this.absoluteFinishTime = absolutedFinishTime;
     }
 
     /**

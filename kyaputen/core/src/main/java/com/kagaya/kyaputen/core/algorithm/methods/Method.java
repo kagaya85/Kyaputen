@@ -9,5 +9,5 @@ import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
  */
 public interface Method {
 
-    ExecutionPlan schedule(long startTime);
+    ExecutionPlan schedule();
 }

@@ -1,9 +1,7 @@
 package com.kagaya.kyaputen.core.algorithm;
 
 
-import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
-import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
@@ -12,7 +10,6 @@ import com.kagaya.kyaputen.core.algorithm.methods.Method;
 import com.kagaya.kyaputen.core.config.Constant;
 import com.kagaya.kyaputen.core.config.K8sConfig;
 import com.kagaya.kyaputen.core.config.Price;
-import com.kagaya.kyaputen.core.execution.WorkflowExecutor;
 import com.kagaya.kyaputen.core.metrics.Monitor;
 import com.kagaya.kyaputen.core.service.KubernetesService;
 import org.slf4j.Logger;
@@ -152,22 +149,22 @@ public class SchedulerImpl implements Scheduler {
 
             List<String> priorTasks = td.getPriorTasks();
             long arrivalTime = 0;
-            long expectedStartTime = 0;
+            long absoluteStartTime = 0;
 
             if (priorTasks.size() != 0) {
                 for (String taskName: priorTasks) {
-                    arrivalTime = workflowDef.getTaskDef(taskName).getExpectedFinishTime();
+                    arrivalTime = workflowDef.getTaskDef(taskName).getAbsoluteFinishTime();
                     arrivalTime += Monitor.getTaskRecentLatencyTime(workflowDef.getTaskDef(taskName).getTaskType());
-                    expectedStartTime = Math.max(expectedStartTime, arrivalTime);
+                    absoluteStartTime = Math.max(absoluteStartTime, arrivalTime);
                 }
             }
 
             double cu = ce.get(td.getTaskType());
             long executionTime = (long)Math.ceil(td.getTaskSize() / cu);
-            long finishTime = expectedStartTime + executionTime;
-            td.setExpectedStartTime(expectedStartTime);
-            td.setExpectedFinishTime(finishTime);
-            expectedExecutionTime = Math.max(expectedExecutionTime, finishTime);
+            long absoluteFinishTime = absoluteStartTime + executionTime;
+            td.setAbsoluteStartTime(absoluteStartTime);
+            td.setAbsoluteFinishTime(absoluteFinishTime);
+            expectedExecutionTime = Math.max(expectedExecutionTime, absoluteFinishTime);
 
             for (String nt: td.getNextTasks()) {
                 if (!taskQueue.contains(nt))
@@ -193,21 +190,21 @@ public class SchedulerImpl implements Scheduler {
             List<String> priorTasks = td.getPriorTasks();
 
             long arrivalTime = 0;
-            long expectedStartTime = 0;
+            long absoluteStartTime = 0;
 
             if (priorTasks.size() != 0)
                 for (String taskName: priorTasks) {
-                    arrivalTime = workflowDef.getTaskDef(taskName).getExpectedFinishTime();
+                    arrivalTime = workflowDef.getTaskDef(taskName).getAbsoluteFinishTime();
                     arrivalTime += Monitor.getTaskRecentLatencyTime(workflowDef.getTaskDef(taskName).getTaskType());
-                    expectedStartTime = Math.max(expectedStartTime, arrivalTime);
+                    absoluteStartTime = Math.max(absoluteStartTime, arrivalTime);
                 }
 
             double cu = workflowDef.getCeByType(td.getTaskType());
             long executionTime = (long)Math.ceil(td.getTaskSize() / cu);
-            long finishTime = expectedStartTime + executionTime;
-            td.setExpectedStartTime(expectedStartTime);
-            td.setExpectedFinishTime(finishTime);
-            expectedExecutionTime = Math.max(expectedExecutionTime, finishTime);
+            long absoluteFinishTime = absoluteStartTime + executionTime;
+            td.setAbsoluteStartTime(absoluteStartTime);
+            td.setAbsoluteFinishTime(absoluteFinishTime);
+            expectedExecutionTime = Math.max(expectedExecutionTime, absoluteFinishTime);
 
             for (String nt: td.getNextTasks()) {
                 if (!taskQueue.contains(nt))
@@ -290,12 +287,12 @@ public class SchedulerImpl implements Scheduler {
      */
     public ExecutionPlan genExecutionPlan(long startTime, WorkflowDefinition workflowDef) {
 
-        Method method = new DemoExecutionPlanGenerator(workflowDef);
+        Method method = new DemoExecutionPlanGenerator(workflowDef, startTime);
 
         // 用新的CE配置更新下每个任务的执行时间，用于估计实际执行时间，计算紧急程度
         updateExpectedExecutionTime(workflowDef);
 
-        return method.schedule(startTime);
+        return method.schedule();
     }
 
     /**
