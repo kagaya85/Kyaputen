@@ -132,8 +132,14 @@ public class ExecutionService {
 
         scheduler.deploy(plan);
 
-        // 创建工作流
-        workflow = workflowExecutor.createWorkflow(workflowDef, plan);
+        if(workflow == null) {
+            // 创建工作流
+            workflow = workflowExecutor.createWorkflow(workflowDef, plan);
+        } else {
+            // 更新已有工作流
+            workflow = workflowExecutor.updateWorkflow(workflow, plan);
+        }
+
         // 启动工作流
         workflowExecutor.startWorkflow(workflow, inputParam);
     }
