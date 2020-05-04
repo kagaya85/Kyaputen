@@ -77,7 +77,9 @@ public class DemoExecutionPlanGenerator implements Method {
     private String allocatePod(TaskExecutionPlan plan) {
         String podId = null;
         TaskDefinition taskDef = workflowDef.getTaskDef(plan.getTaskName());
-        long executionTime, finishTime;
+        long executionTime;
+        int minPrice = Integer.MAX_VALUE;
+
         for (String pid: podResource.getPodIdList()) {
             Pod pod = podResource.getPod(pid);
 
@@ -90,8 +92,8 @@ public class DemoExecutionPlanGenerator implements Method {
 
             if (pod.getEarliestStartTime() + executionTime < deadline) {
                 // 满足时间需求的情况下，选择最优pod
-
-                podId = pid;
+                if(pod.getPrice() < minPrice)
+                    podId = pid;
             }
 
         }
@@ -100,6 +102,9 @@ public class DemoExecutionPlanGenerator implements Method {
         if (podId == null) {
             podId = IdGenerator.generate();
 
+            Pod pod = new Pod();
+            pod.setPodId(podId);
+            pod.setStatus(Pod.PodStatus.NEW);
 
         }
 

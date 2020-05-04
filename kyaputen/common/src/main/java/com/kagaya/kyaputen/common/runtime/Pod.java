@@ -28,6 +28,10 @@ public class Pod {
 
     private long startTime;
 
+    private long price;
+
+    private static final String PullImageTaskId = "*PullImageTask*";
+
     // 任务执行计划队列
     public List<TaskExecutionPlan> executionPlanQueue = new LinkedList<>();
 
@@ -130,7 +134,28 @@ public class Pod {
         }
     }
 
+    public void addPullImageTask(long pullTime) {
+        TaskExecutionPlan plan = new TaskExecutionPlan("PullImage", "PullImage");
+        plan.setTaskId(PullImageTaskId);
+        plan.setExecutionTime(pullTime);
+    }
 
+    public void finishPullImage() {
+        for (int i = 0; i < executionPlanQueue.size(); i++) {
+            TaskExecutionPlan plan = executionPlanQueue.get(i);
+            if (plan.getTaskId().equals(PullImageTaskId)) {
+                executionPlanQueue.remove(i);
+            }
+        }
+    }
+
+    public long getPrice() {
+        return price;
+    }
+
+    public void setPrice(long price) {
+        this.price = price;
+    }
 
     public enum PodStatus {
         NEW, IDLE, RUNNING, DOWN, ERROR
