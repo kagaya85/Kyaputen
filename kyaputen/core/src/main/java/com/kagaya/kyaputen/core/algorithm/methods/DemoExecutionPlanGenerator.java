@@ -6,7 +6,6 @@ import com.kagaya.kyaputen.common.runtime.Node;
 import com.kagaya.kyaputen.common.runtime.Pod;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
-import com.kagaya.kyaputen.core.algorithm.SchedulerImpl;
 import com.kagaya.kyaputen.core.config.Constant;
 import com.kagaya.kyaputen.core.config.PullTime;
 import com.kagaya.kyaputen.core.dao.NodeResourceDAO;
@@ -69,7 +68,7 @@ public class DemoExecutionPlanGenerator implements Method {
             taskExecutionPlan.setExecutionTime(taskDef.getAbsoluteFinishTime() - taskDef.getAbsoluteStartTime());
             taskExecutionPlan.setTaskId(IdGenerator.generate());
 
-            String podId = allocatePod(taskExecutionPlan);
+            String podId = allocatePod(taskExecutionPlan, workflowDef.getCeByType(taskDef.getTaskType()));
 
             Pod pod = podResource.getPod(podId);
 
@@ -105,10 +104,10 @@ public class DemoExecutionPlanGenerator implements Method {
      * @param plan
      * @return
      */
-    private String allocatePod(TaskExecutionPlan plan) {
+    private String allocatePod(TaskExecutionPlan plan, double ce) {
         String podId = null;
         TaskDefinition taskDef = workflowDef.getTaskDef(plan.getTaskName());
-        long executionTime;
+        long executionTime = (long)Math.ceil(taskDef.getTaskSize() / ce);
         int minPrice = Integer.MAX_VALUE;
         long deadline = startTime + taskDef.getAbsoluteStartTime() + taskDef.getTimeLimit();
 
@@ -119,13 +118,16 @@ public class DemoExecutionPlanGenerator implements Method {
             if (!pod.getTaskImageName().equals(plan.getTaskType()) || pod.getStatus().equals(Pod.PodStatus.DOWN) || pod.getStatus().equals(Pod.PodStatus.ERROR))
                 continue;
 
-            executionTime = (long)Math.ceil(taskDef.getTaskSize() / pod.getComputeUnit());
+            // 对需要做伸缩的pod做标记，设置一个伸缩阈值
+            if (pod.getComputeUnit() < ce - Constant.RESIZE_THRESHOLD_CU || pod.getComputeUnit() > ce + Constant.RESIZE_THRESHOLD_CU)
+                pod.setNeedUpdate();
 
             if (pod.getEarliestStartTime() + executionTime < deadline) {
                 // 满足时间需求的情况下，选择最优pod
                 if(pod.getPrice() < minPrice)
                     podId = pid;
             }
+
 
         }
 

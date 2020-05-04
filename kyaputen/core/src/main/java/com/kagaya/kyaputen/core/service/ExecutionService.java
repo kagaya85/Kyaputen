@@ -130,7 +130,7 @@ public class ExecutionService {
         // 调用资源分配算法
         ExecutionPlan plan = scheduler.genExecutionPlan(System.currentTimeMillis(), workflowDef);
 
-        scheduler.deploy(plan);
+        scheduler.deploy(workflowDef, plan);
 
         if(workflow == null) {
             // 创建工作流

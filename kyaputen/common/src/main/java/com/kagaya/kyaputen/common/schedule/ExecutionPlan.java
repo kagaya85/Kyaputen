@@ -1,12 +1,10 @@
 package com.kagaya.kyaputen.common.schedule;
 
+        import com.kagaya.kyaputen.common.metadata.tasks.Task;
         import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
         import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 
-        import java.util.HashMap;
-        import java.util.LinkedList;
-        import java.util.List;
-        import java.util.Map;
+        import java.util.*;
 
 public class ExecutionPlan {
 
@@ -27,4 +25,7 @@ public class ExecutionPlan {
         return executionPlanMap.get(taskName);
     }
 
+    public List<TaskExecutionPlan> getTaskExecutionPlans() {
+        return new ArrayList<>(executionPlanMap.values());
+    }
 }

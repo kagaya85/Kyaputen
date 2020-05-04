@@ -3,18 +3,17 @@ package com.kagaya.kyaputen.core.execution;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
+import com.kagaya.kyaputen.common.runtime.Pod;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
-import com.kagaya.kyaputen.core.dao.ExecutionDAO;
-import com.kagaya.kyaputen.core.dao.QueueDAO;
-import com.kagaya.kyaputen.core.dao.WorkflowQueue;
+import com.kagaya.kyaputen.core.dao.*;
 import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.metrics.Monitor;
 import com.kagaya.kyaputen.core.service.DecideService;
+import com.kagaya.kyaputen.core.service.KubernetesService;
 import com.kagaya.kyaputen.core.utils.QueueUtils;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
-import com.kagaya.kyaputen.core.dao.WorkflowDefinitionDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +37,10 @@ public class WorkflowExecutor {
     private QueueDAO<TaskMessage> pollingQueue;
 
     private WorkflowQueue workflowQueue;
+
+    private PodResourceDAO podResourceDAO = new PodResourceDAO();
+
+    private KubernetesService k8s = new KubernetesService();
 
     @Inject
     public WorkflowExecutor(ExecutionDAO executionDAO, DecideService decideService) {
@@ -134,6 +137,12 @@ public class WorkflowExecutor {
             Monitor.logTaskExecutionTime(task.getTaskType(), duration);
             Monitor.logTaskLatencyTime(task, latency);
         }
+
+        // 检查pod，判断是否需要伸缩
+        Pod pod = podResourceDAO.getPod(task.getWorkerId());
+        pod.finishTaskExecutionPlan(task.getTaskId());
+        if (pod.needUpdate())
+            k8s.resizePod(pod, task.getTaskDefinition());
     }
 
     public Task getTask(String workflowId, String taskId) {

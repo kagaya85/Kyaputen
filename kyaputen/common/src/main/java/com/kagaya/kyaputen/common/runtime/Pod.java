@@ -28,6 +28,8 @@ public class Pod {
 
     private long startTime;
 
+    private boolean needUpdate = false;
+
     // 当前CU下的价格
     private double price;
 
@@ -102,6 +104,15 @@ public class Pod {
         this.startTime = startTime;
     }
 
+    public void setNeedUpdate() {
+        needUpdate = true;
+    }
+
+    public boolean needUpdate() {
+        return needUpdate;
+    }
+
+
     /**
      * 获取最快新任务开始时间
      * @return time ms
@@ -133,6 +144,9 @@ public class Pod {
                 executionPlanQueue.remove(i);
             }
         }
+
+        if (executionPlanQueue.size() == 0)
+            status = PodStatus.IDLE;
     }
 
     public void addPullImageTask(long pullTime) {

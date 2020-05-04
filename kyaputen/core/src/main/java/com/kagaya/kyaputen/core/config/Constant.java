@@ -14,5 +14,7 @@ public class Constant {
 
     public static final double DEADLINE_FACTOR = 0.5;
 
+    public static final double RESIZE_THRESHOLD_CU = 2;   // 伸缩cu阈值
+
     public final static double E = 1.0e-7;
 }

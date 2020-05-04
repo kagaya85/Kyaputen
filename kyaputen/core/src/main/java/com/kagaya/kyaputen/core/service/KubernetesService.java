@@ -1,7 +1,12 @@
 package com.kagaya.kyaputen.core.service;
 
+import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
+import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Node;
 import com.kagaya.kyaputen.common.runtime.Pod;
+import com.kagaya.kyaputen.common.runtime.Workflow;
+import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
+import com.kagaya.kyaputen.core.config.K8sConfig;
 import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.ApiException;
 import io.kubernetes.client.Configuration;
@@ -26,14 +31,31 @@ public class KubernetesService {
         Configuration.setDefaultApiClient(client);
     }
 
-    public Boolean createPod(V1Pod pod, String namespace) {
+    public KubernetesService() {
+        ApiClient client = new ClientBuilder().setBasePath(K8sConfig.getApiServerAddress()).setVerifyingSsl(false)
+                .setAuthentication(new AccessTokenAuthentication(K8sConfig.getToken())).build();
+
+        Configuration.setDefaultApiClient(client);
+    }
+
+    public Boolean createPod(Pod pod, TaskDefinition taskDef, TaskExecutionPlan plan) {
+
+        String namespace = null;
+        V1Pod body = new V1Pod();
+        V1PodSpec podSpec = new V1PodSpec();
+        V1ObjectMeta metadata = new V1ObjectMeta();
+
+        pod.setSpec();
+        pod.setMetadata();
+
 
         CoreV1Api apiInstance = new CoreV1Api();
 
         try {
-            V1Pod result =  apiInstance.createNamespacedPod(namespace, pod,true, "true", null);
+            V1Pod result =  apiInstance.createNamespacedPod(namespace, body,true, "true", null);
 
             logger.debug(result.toString());
+            pod.setStatus(Pod.PodStatus.IDLE);
             return true;
         } catch (ApiException e) {
             logger.error("Create pod error in namespace: {} for reason: {}, header: {}", namespace, e.getResponseBody(), e.getResponseHeaders());
@@ -43,8 +65,9 @@ public class KubernetesService {
         }
     }
 
-    public Pod resizePod(String podName, String namespace, V1ResourceRequirements resource) {
+    public Pod resizePod(Pod pod, TaskDefinition taskDef) {
 
+        pod.setStatus(Pod.PodStatus.IDLE);
         return new Pod();
     }
 
@@ -97,7 +120,7 @@ public class KubernetesService {
     }
 
 
-    public Node createNode(V1Node node, String dryRun) {
+    public Node startNode(Node node) {
 
         CoreV1Api apiInstance = new CoreV1Api();
 
@@ -105,7 +128,7 @@ public class KubernetesService {
         return new Node();
     }
 
-    public void deleteNode(String nodeId) {
+    public void shutdownNode(Node node) {
 
     }
 }

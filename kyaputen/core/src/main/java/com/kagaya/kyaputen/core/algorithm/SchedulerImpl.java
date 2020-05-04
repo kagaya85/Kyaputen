@@ -3,14 +3,20 @@ package com.kagaya.kyaputen.core.algorithm;
 
 import afu.org.checkerframework.checker.oigj.qual.O;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
+import com.kagaya.kyaputen.common.runtime.Node;
+import com.kagaya.kyaputen.common.runtime.Pod;
+import com.kagaya.kyaputen.common.runtime.Pod.PodStatus;
 import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
+import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
 import com.kagaya.kyaputen.core.algorithm.methods.DemoExecutionPlanGenerator;
 import com.kagaya.kyaputen.core.algorithm.methods.Method;
 import com.kagaya.kyaputen.core.config.Constant;
 import com.kagaya.kyaputen.core.config.K8sConfig;
 import com.kagaya.kyaputen.core.config.Price;
+import com.kagaya.kyaputen.core.dao.NodeResourceDAO;
+import com.kagaya.kyaputen.core.dao.PodResourceDAO;
 import com.kagaya.kyaputen.core.metrics.Monitor;
 import com.kagaya.kyaputen.core.service.KubernetesService;
 import org.slf4j.Logger;
@@ -128,6 +134,14 @@ public class SchedulerImpl implements Scheduler {
         }
 
         workflowDef.setCEMap(ce);
+        markUpdatePod(workflowDef);
+    }
+
+    @Override
+    public void markUpdatePod(WorkflowDefinition workflowDef) {
+
+
+
     }
 
     /**
@@ -301,16 +315,34 @@ public class SchedulerImpl implements Scheduler {
      * 应用调度方案，包括申请资源
      */
     @Override
-    public void deploy(ExecutionPlan executionPlan) {
+    public void deploy(WorkflowDefinition workflowDef, ExecutionPlan executionPlan) {
 
-        String apiServerAddr = "";
-        String token = "";
+        KubernetesService k8s = new KubernetesService();
+        PodResourceDAO podResourceDAO = new PodResourceDAO();
+        NodeResourceDAO nodeResourceDAO = new NodeResourceDAO();
 
-        KubernetesService k8s = new KubernetesService(K8sConfig.getApiServerAddress(), K8sConfig.getToken());
+        for (TaskExecutionPlan plan: executionPlan.getTaskExecutionPlans()) {
 
+            Pod pod = podResourceDAO.getPod(plan.getPodId());
+            Node node = nodeResourceDAO.getNode(plan.getNodeId());
+            TaskDefinition taskDef = workflowDef.getTaskDef(plan.getTaskName());
 
+            if (node.getStatus().isDown()) {
+                // 启动node
+                k8s.startNode(node);
+            }
 
+            if (pod.getStatus().equals(PodStatus.NEW)) {
+                // 新建立的pod需部署到对应node上
+                k8s.createPod(pod, taskDef, plan);
 
+            } else if (pod.getStatus().equals(PodStatus.IDLE)) {
+                if (pod.needUpdate())
+                    k8s.resizePod(pod, taskDef);
+            } else {
+                // 其他
+            }
+        }
     }
 
 
