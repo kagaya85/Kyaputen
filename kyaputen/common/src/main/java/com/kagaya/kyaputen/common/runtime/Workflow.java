@@ -4,10 +4,7 @@ import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @description runtime工作流状态管理
@@ -40,7 +37,7 @@ public class Workflow {
 
     private String name;
 
-    private WorkflowStatus status = WorkflowStatus.RUNNING;
+    private WorkflowStatus status = WorkflowStatus.READY;
 
     private Long createTime;
 
@@ -77,6 +74,10 @@ public class Workflow {
 
     public void setTasks(Map<String, Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public List<String> getTaskNames() {
+        return new ArrayList<>(tasks.keySet());
     }
 
     public String getName() {

@@ -1,9 +1,12 @@
 package com.kagaya.kyaputen.core.service;
 
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
+import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.core.algorithm.Scheduler;
+import com.kagaya.kyaputen.core.algorithm.SchedulerImpl;
+import com.kagaya.kyaputen.core.config.Constant;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
@@ -32,6 +35,7 @@ import java.util.Map;
 public class ExecutionService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExecutionService.class);
+    public static final WorkflowDefinitionDAO workflowDefinitionDAO = new WorkflowDefinitionDAO();
 
     private final QueueDAO<TaskMessage> queueDAO;
     private final Scheduler scheduler;
@@ -104,6 +108,7 @@ public class ExecutionService {
 
     public void startWorkflow(String workflowName, Map<String, Object> inputParam) {
         List<Workflow> workflowList = workflowQueue.getByName(workflowName);
+        WorkflowDefinition workflowDef = workflowDefinitionDAO.get(workflowName);
 
         Workflow workflow = null;
         // find a READY workflow instance
@@ -114,25 +119,22 @@ public class ExecutionService {
             }
         }
 
-        if(workflow == null) { // 新建工作流的情况
-
+        if(workflow != null) {
+            logger.debug("Ready status instance of workflow: {} exists " ,workflowName);
+        } else {
             logger.debug("No ready status instance of workflow: " + workflowName);
-
-            // 调用资源分配算法
-            ExecutionPlan plan;
-            // 向K8s申请资源
-
-            workflow = workflowExecutor.createWorkflow(workflowDefs.get(workflowName), plan);
-        } else { // 需要对资源进行调整
-
-            // 调用资源分配算法
-
-            // 判断是否需要调整资源
-
         }
 
+        // 划分Ce
+        scheduler.calcWorkflowCostEfficient(workflowDef, Constant.DEADLINE_FACTOR);
+        // 调用资源分配算法
+        ExecutionPlan plan = scheduler.genExecutionPlan(System.currentTimeMillis(), workflowDef);
 
-        // 启动任务流
+        scheduler.deploy(plan);
+
+        // 创建工作流
+        workflow = workflowExecutor.createWorkflow(workflowDef, plan);
+        // 启动工作流
         workflowExecutor.startWorkflow(workflow, inputParam);
     }
 

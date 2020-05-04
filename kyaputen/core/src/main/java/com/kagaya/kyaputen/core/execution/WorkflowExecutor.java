@@ -5,6 +5,7 @@ import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
+import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
 import com.kagaya.kyaputen.core.dao.ExecutionDAO;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.core.dao.WorkflowQueue;
@@ -51,6 +52,27 @@ public class WorkflowExecutor {
      */
     public Workflow createWorkflow(WorkflowDefinition workflowDef, ExecutionPlan plan) {
         Workflow workflow = executionDAO.createWorkflow(workflowDef, plan);
+        return workflow;
+    }
+
+    /**
+     * 用新的执行计划更新已有工作流实例
+     * @param workflow - 已有工作流对象
+     * @param plan
+     * @return
+     */
+    public Workflow updateWorkflow(Workflow workflow, ExecutionPlan plan) {
+
+        List<String> tasks = workflow.getTaskNames();
+
+        for (String tn: tasks) {
+            Task t = workflow.getTask(tn);
+            TaskExecutionPlan p = plan.getTaskExecutionPlan(t.getTaskDefName());
+            t.setTaskId(p.getTaskId());
+            t.setWorkerId(p.getPodId());
+            t.setStartTime(0);
+        }
+
         return workflow;
     }
 

@@ -12,8 +12,6 @@ public class ExecutionPlan {
 
     private Map<String, TaskExecutionPlan> executionPlanMap = new HashMap<>();
 
-    private List<String> urgentLevelQueue = new LinkedList<>();
-
     public ExecutionPlan(WorkflowDefinition workflowDef) {
         for (String name: workflowDef.getTaskDefNames()) {
             TaskDefinition taskDef = workflowDef.getTaskDef(name);
@@ -28,4 +26,5 @@ public class ExecutionPlan {
     public TaskExecutionPlan getTaskExecutionPlan(String taskName) {
         return executionPlanMap.get(taskName);
     }
+
 }

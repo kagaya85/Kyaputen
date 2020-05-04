@@ -1,6 +1,7 @@
 package com.kagaya.kyaputen.core.algorithm;
 
 
+import afu.org.checkerframework.checker.oigj.qual.O;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.schedule.DeploymentPlan;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
@@ -285,6 +286,7 @@ public class SchedulerImpl implements Scheduler {
     /**
      * 生成执行方案
      */
+    @Override
     public ExecutionPlan genExecutionPlan(long startTime, WorkflowDefinition workflowDef) {
 
         Method method = new DemoExecutionPlanGenerator(workflowDef, startTime);
@@ -296,27 +298,17 @@ public class SchedulerImpl implements Scheduler {
     }
 
     /**
-     * 生成部署方案
-     */
-    public DeploymentPlan genDeploymentPlan() {
-
-        DeploymentPlan plan = new DeploymentPlan();
-
-
-        return plan;
-    }
-
-    /**
      * 应用调度方案，包括申请资源
      */
-    public void apply(ExecutionPlan executionPlan, DeploymentPlan deploymentPlan) {
+    @Override
+    public void deploy(ExecutionPlan executionPlan) {
 
         String apiServerAddr = "";
         String token = "";
 
         KubernetesService k8s = new KubernetesService(K8sConfig.getApiServerAddress(), K8sConfig.getToken());
 
-
     }
+
 
 }

@@ -8,6 +8,7 @@ import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.runtime.Workflow.WorkflowStatus;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
+import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
 import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.utils.IdGenerator;
 
@@ -79,13 +80,15 @@ public class ExecutionDAOImpl implements ExecutionDAO {
             TaskDefinition taskDef = workflowDef.getTaskDef(tdn);
             Task task = new Task();
             String taskName = taskDef.getTaskDefName();
+            TaskExecutionPlan taskPlan = plan.getTaskExecutionPlan(taskName);
 
             task.setWorkflowInstanceId(workflowId);
             task.setTaskDefName(taskName);
             task.setExecuted(false);
             task.setPollCount(0);
-            task.setTaskId(plan.getTaskExecutionPlan(taskName).getTaskId());
-            task.setRetryCount(0);
+            task.setTaskId(taskPlan.getTaskId());
+            task.setWorkerId(taskPlan.getPodId());
+            task.setRetryCount(3);
             task.setPriority(taskDef.getPriority());
             task.setTaskDefinition(taskDef);
             task.setStartTime(0);
