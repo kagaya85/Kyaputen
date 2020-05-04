@@ -2,28 +2,24 @@ package com.kagaya.kyaputen.core.dao;
 
 import com.kagaya.kyaputen.common.runtime.Workflow;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class WorkflowQueue {
 
     // 改成Map？？？
-    private static List<Workflow> workflowQueue = new LinkedList<>();
+    private static Map<String, Workflow> workflowMap = new HashMap<>();
 
     public Workflow getById(String workflowId) {
-
-        for (Workflow workflow: workflowQueue) {
-            if (workflow.getWorkflowId().equals(workflowId))
-                return workflow;
-        }
-
-        return null;
+        return workflowMap.get(workflowId);
     }
 
     public List<Workflow> getByName(String workflowName) {
         List<Workflow> workflowList = new LinkedList<>();
 
-        for(Workflow workflow: workflowQueue) {
+        for(Workflow workflow: workflowMap.values()) {
             if (workflow.getName().equals(workflowName))
                 workflowList.add(workflow);
         }
@@ -32,11 +28,11 @@ public class WorkflowQueue {
     }
 
     public void add(Workflow workflow) {
-        workflowQueue.add(workflow);
+        workflowMap.put(workflow.getWorkflowId(), workflow);
     }
 
-    public boolean remove(String workflowId) {
-        return workflowQueue.removeIf(workflow -> workflow.getWorkflowId().equals(workflowId));
+    public void remove(String workflowId) {
+        workflowMap.remove(workflowId);
     }
 
 }

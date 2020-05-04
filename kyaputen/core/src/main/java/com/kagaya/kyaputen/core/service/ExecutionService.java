@@ -144,6 +144,7 @@ public class ExecutionService {
         workflowExecutor.startWorkflow(workflow, inputParam);
     }
 
+    @Deprecated
     public void updateTask(Task task) {
         updateTask(new TaskResult(task));
     }

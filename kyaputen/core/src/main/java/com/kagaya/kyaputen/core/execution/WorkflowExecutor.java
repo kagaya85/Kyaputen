@@ -82,6 +82,7 @@ public class WorkflowExecutor {
      */
     public void startWorkflow(Workflow workflow, Map<String, Object> inputParam) {
         workflow.setInput(inputParam);
+        workflow.setStatus(WorkflowStatus.RUNNING);
         decide(workflow.getWorkflowId());
     }
 
