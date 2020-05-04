@@ -2,11 +2,18 @@ package com.kagaya.kyaputen.core.algorithm.methods;
 
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
+import com.kagaya.kyaputen.common.runtime.Node;
 import com.kagaya.kyaputen.common.runtime.Pod;
 import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
+import com.kagaya.kyaputen.core.algorithm.SchedulerImpl;
+import com.kagaya.kyaputen.core.config.Constant;
+import com.kagaya.kyaputen.core.config.PullTime;
+import com.kagaya.kyaputen.core.dao.NodeResourceDAO;
 import com.kagaya.kyaputen.core.dao.PodResourceDAO;
 import com.kagaya.kyaputen.core.utils.IdGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -14,11 +21,17 @@ import java.util.List;
 
 public class DemoExecutionPlanGenerator implements Method {
 
+    private static final Logger logger = LoggerFactory.getLogger(DemoExecutionPlanGenerator.class);
+
     private ExecutionPlan exePlan = null;
 
     private WorkflowDefinition workflowDef = null;
 
     private PodResourceDAO podResource = new PodResourceDAO();
+
+    PodResourceDAO podResourceDAO = new PodResourceDAO();
+
+    NodeResourceDAO nodeResourceDAO = new NodeResourceDAO();
 
     // 工作流开始的现实时间
     private long startTime;
@@ -62,10 +75,28 @@ public class DemoExecutionPlanGenerator implements Method {
 
             if (pod.getStatus().equals(Pod.PodStatus.NEW)) {
                 // 若为新Pod，则分配Node
+                Node selectedNode = null;
+                for (Node node: nodeResourceDAO.getNodeList()) {
+                    if (node.getStatus().isDown())
+                        continue;
 
+                    double remainComputeUnit = node.getRemainComputeUnit();
 
+                    if (remainComputeUnit + Constant.E > pod.getComputeUnit()) {
+                        selectedNode = node;
+                        break;
+                    }
+                }
+
+                if (selectedNode == null) {
+                    // 部署阶段创建新node
+                    logger.info("No suitable Node for Pod: {}, Id: {}, need to create a new pod", pod.getTaskImageName(), pod.getPodId());
+                }
+
+                double price = selectedNode.getPrice() * (pod.getComputeUnit()/selectedNode.getTotalComputeUnit());
+                pod.setPrice(price);
+                pod.setNodeId(selectedNode.getId());
             }
-
         }
     }
 
@@ -79,6 +110,7 @@ public class DemoExecutionPlanGenerator implements Method {
         TaskDefinition taskDef = workflowDef.getTaskDef(plan.getTaskName());
         long executionTime;
         int minPrice = Integer.MAX_VALUE;
+        long deadline = startTime + taskDef.getAbsoluteStartTime() + taskDef.getTimeLimit();
 
         for (String pid: podResource.getPodIdList()) {
             Pod pod = podResource.getPod(pid);
@@ -88,7 +120,6 @@ public class DemoExecutionPlanGenerator implements Method {
                 continue;
 
             executionTime = (long)Math.ceil(taskDef.getTaskSize() / pod.getComputeUnit());
-            long deadline = startTime + taskDef.getAbsoluteStartTime() + taskDef.getTimeLimit();
 
             if (pod.getEarliestStartTime() + executionTime < deadline) {
                 // 满足时间需求的情况下，选择最优pod
@@ -100,16 +131,30 @@ public class DemoExecutionPlanGenerator implements Method {
 
         // 需要新建pod
         if (podId == null) {
+            long est = Constant.POD_LUNCH_TIME_MS + PullTime.getPullTime(plan.getTaskType());
             podId = IdGenerator.generate();
 
             Pod pod = new Pod();
             pod.setPodId(podId);
             pod.setStatus(Pod.PodStatus.NEW);
+            pod.addPullImageTask(est);
+            pod.setTaskImageName(plan.getTaskType());
 
+            // 性价比最高的ce
+            double bestFitCe = workflowDef.getCeByType(plan.getTaskType());
+            // 最小ce
+            double minCe = (long)Math.ceil(taskDef.getTaskSize() / (deadline - est));
+
+            if (minCe < bestFitCe) {
+                pod.setComputeUnit(minCe);
+            }
+            else {
+                pod.setComputeUnit(bestFitCe);
+            }
+
+            // 更新pod分配map
+            podResource.addPod(pod);
         }
-
-        // 更新pod分配map
-
 
         plan.setPodId(podId);
         return podId;

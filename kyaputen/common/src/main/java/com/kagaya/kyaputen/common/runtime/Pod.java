@@ -28,7 +28,8 @@ public class Pod {
 
     private long startTime;
 
-    private long price;
+    // 当前CU下的价格
+    private double price;
 
     private static final String PullImageTaskId = "*PullImageTask*";
 
@@ -149,11 +150,11 @@ public class Pod {
         }
     }
 
-    public long getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(long price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

@@ -29,10 +29,9 @@ public class Node {
 
     public Node() {}
 
-    public Node(int cpu, int mem, NodeStatus status) {
+    public Node(int cpu, int mem) {
         this.cpu = cpu;
         this.mem = mem;
-        this.status = status;
     }
 
     public String getId() {
@@ -97,6 +96,10 @@ public class Node {
         this.status = status;
     }
 
+    public NodeStatus getStatus() {
+        return status;
+    }
+
     public Boolean isImageLoaded(String imageName) {
         return imageList.contains(imageName);
     }
@@ -129,18 +132,6 @@ public class Node {
         this.allocatedComputeUnit = allocatedComputeUnit;
     }
 
-    public Boolean isDeployed() {
-        return status.isDeployed();
-    }
-
-    public Boolean isRunning() {
-        return status.isRunning();
-    }
-
-    public Boolean isDown() {
-        return status.isDown();
-    }
-
     public enum NodeStatus {
         
         NewNode(false, false, false), Running(true, true, false), Idle(true, false, false), Down(true, false, true);
@@ -157,15 +148,15 @@ public class Node {
             this.down = down;
         }
 
-        Boolean isDeployed() {
+        public Boolean isDeployed() {
             return deployed;
         }
 
-        Boolean isRunning() {
+        public Boolean isRunning() {
             return running;
         }
 
-        Boolean isDown() {
+        public Boolean isDown() {
             return down;
         }
 
