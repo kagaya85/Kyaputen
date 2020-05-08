@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class KubernetesService {
 
@@ -47,23 +48,25 @@ public class KubernetesService {
         Configuration.setDefaultApiClient(client);
     }
 
-    public Boolean createPod(Pod pod, TaskDefinition taskDef, TaskExecutionPlan plan) {
+    public void createPod(Pod pod, double ce) {
 
-        String namespace = null;
+        String namespace = "default";
         V1Pod body = new V1Pod();
         V1PodSpec podSpec = new V1PodSpec();
         V1ObjectMeta metadata = new V1ObjectMeta();
         V1Container container = new V1Container();
         V1ResourceRequirements resources = new V1ResourceRequirements();
         List<V1Container> containers = new LinkedList<>();
-        Map<String, Quantity> resourceMap = new HashMap<>();
-        
+        Map<String, Quantity> resourceLimitMap = new HashMap<>();
         Node node = nodeResourceDAO.getNode(pod.getNodeId());
 
-        container.setName(plan.getTaskName());
+        String cpu = String.format("%dm", (int)Math.ceil(ce * 1000));
+        resourceLimitMap.put("cpu", new Quantity(cpu));
+
+        container.setName(pod.getTaskImageName());
         container.setImage(pod.getTaskImageName());
 
-        resources.limits()
+        resources.limits(resourceLimitMap);
         container.setResources(resources);
 
         containers.add(container);
@@ -82,23 +85,22 @@ public class KubernetesService {
 
             logger.debug(result.toString());
             pod.setStatus(Pod.PodStatus.IDLE);
-            return true;
         } catch (ApiException e) {
             logger.error("Create pod error in namespace: {} for reason: {}, header: {}", namespace, e.getResponseBody(), e.getResponseHeaders());
             e.printStackTrace();
-
-            return false;
         }
     }
 
-    public Pod resizePod(Pod pod, TaskDefinition taskDef) {
+    public void resizePod(Pod pod, double ce) {
+
+        deletePod(pod);
+        createPod(pod, ce);
 
         pod.setStatus(Pod.PodStatus.IDLE);
-        return new Pod();
     }
 
-    public void deletePod(String podName, String namespace) {
-
+    public void deletePod(Pod pod) {
+        String namespace = "default";
         CoreV1Api apiInstance = new CoreV1Api();
 
         Integer gracePeriodSeconds = 56;
@@ -107,7 +109,8 @@ public class KubernetesService {
         V1DeleteOptions body = new V1DeleteOptions();
 
         try{
-            V1Status result = apiInstance.deleteNamespacedPod(podName, namespace, "true", body, null, gracePeriodSeconds, orphanDependents, propagationPolicy);
+            V1Status result = apiInstance.deleteNamespacedPod(pod.getPodId(), namespace, "true", body, null, gracePeriodSeconds, orphanDependents, propagationPolicy);
+            pod.setStatus(Pod.PodStatus.DOWN);
             logger.debug(result.toString());
         } catch (ApiException e) {
             logger.error("Delete pod error in namespace: {} for reason: {}, header: {}", namespace, e.getResponseBody(), e.getResponseHeaders());
