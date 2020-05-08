@@ -7,22 +7,31 @@ import com.kagaya.kyaputen.common.runtime.Pod;
 import com.kagaya.kyaputen.common.runtime.Workflow;
 import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
 import com.kagaya.kyaputen.core.config.K8sConfig;
+import com.kagaya.kyaputen.core.dao.NodeResourceDAO;
+import com.kagaya.kyaputen.core.dao.PodResourceDAO;
+
 import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.ApiException;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
+import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.models.*;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 public class KubernetesService {
 
     private static final Logger logger = LoggerFactory.getLogger(KubernetesService.class);
+
+    private final NodeResourceDAO nodeResourceDAO = new NodeResourceDAO();
+
+    private final PodResourceDAO podResourceDAO = new PodResourceDAO();
 
     public KubernetesService(String apiServerAddress, String token) {
         ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false)
@@ -44,10 +53,27 @@ public class KubernetesService {
         V1Pod body = new V1Pod();
         V1PodSpec podSpec = new V1PodSpec();
         V1ObjectMeta metadata = new V1ObjectMeta();
+        V1Container container = new V1Container();
+        V1ResourceRequirements resources = new V1ResourceRequirements();
+        List<V1Container> containers = new LinkedList<>();
+        Map<String, Quantity> resourceMap = new HashMap<>();
+        
+        Node node = nodeResourceDAO.getNode(pod.getNodeId());
 
-        pod.setSpec();
-        pod.setMetadata();
+        container.setName(plan.getTaskName());
+        container.setImage(pod.getTaskImageName());
 
+        resources.limits()
+        container.setResources(resources);
+
+        containers.add(container);
+
+        podSpec.setContainers(containers);
+        podSpec.setNodeName(node.getNodeName());
+
+        metadata.setName(pod.getPodId());
+        body.setSpec(podSpec);
+        body.setMetadata(metadata);
 
         CoreV1Api apiInstance = new CoreV1Api();
 

@@ -7,6 +7,8 @@ public class Node {
 
     private String id;
 
+    private String nodeName;
+
     private String nodeType;
 
     private NodeStatus status;
@@ -40,6 +42,20 @@ public class Node {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     * @return the nodeName
+     */
+    public String getNodeName() {
+        return nodeName;
+    }
+
+    /**
+     * @param nodeName the nodeName to set
+     */
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 
     public String getNodeType() {
