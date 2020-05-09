@@ -24,7 +24,10 @@ public class Pod {
 
     private PodStatus status;
 
+    @Deprecated
     private String nodeId;
+
+    private String nodeName;
 
     private long startTime;
 
@@ -72,12 +75,22 @@ public class Pod {
         this.computeUnit = computeUnit;
     }
 
+    @Deprecated
     public void setNodeId(String nodeId) {
         this.nodeId = nodeId;
     }
 
+    @Deprecated
     public String getNodeId() {
         return nodeId;
+    }
+
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
+    }
+
+    public String getNodeName() {
+        return nodeName;
     }
 
     public PodStatus getStatus() {

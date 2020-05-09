@@ -17,6 +17,7 @@ import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.models.*;
 import io.kubernetes.client.util.ClientBuilder;
+import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,18 @@ public class KubernetesService {
     private final PodResourceDAO podResourceDAO = new PodResourceDAO();
 
     public KubernetesService(String apiServerAddress, String token) {
-        ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false)
-                .setAuthentication(new AccessTokenAuthentication(token)).build();
+//        ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false)
+//                .setAuthentication(new AccessTokenAuthentication(token)).build();
 
-        Configuration.setDefaultApiClient(client);
+//        ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false).build();
+
+        try {
+            ApiClient client = Config.defaultClient();
+            Configuration.setDefaultApiClient(client);
+        } catch (Exception e) {
+            logger.error("ApiClient error: {}", e.getMessage());
+        }
+
     }
 
     public KubernetesService() {
@@ -57,7 +66,6 @@ public class KubernetesService {
         V1ResourceRequirements resources = new V1ResourceRequirements();
         List<V1Container> containers = new LinkedList<>();
         Map<String, Quantity> resourceLimitMap = new HashMap<>();
-        Node node = nodeResourceDAO.getNode(pod.getNodeId());
 
         String cpu = String.format("%dm", (int)Math.ceil(ce * 1000));
         resourceLimitMap.put("cpu", new Quantity(cpu));
@@ -71,9 +79,9 @@ public class KubernetesService {
         containers.add(container);
 
         podSpec.setContainers(containers);
-        podSpec.setNodeName(node.getNodeName());
+        podSpec.setNodeName(pod.getNodeName());
 
-        metadata.setName(pod.getPodId());
+        metadata.setName(pod.getTaskImageName() + "-" + pod.getPodId().split("-")[0]);
         body.setSpec(podSpec);
         body.setMetadata(metadata);
 
