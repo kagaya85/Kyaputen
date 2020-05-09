@@ -2,11 +2,16 @@ package com.kagaya.kyaputen.server;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
+import com.kagaya.kyaputen.core.dao.WorkflowDefinitionDAO;
 import com.kagaya.kyaputen.server.grpc.GRPCServer;
 import com.kagaya.kyaputen.server.grpc.GRPCServerBuilder;
+import com.kagaya.kyaputen.server.metadata.MetadataService;
 import com.kagaya.kyaputen.server.module.ServerModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class KyaputenServer {
 
@@ -15,13 +20,21 @@ public class KyaputenServer {
     private final GRPCServer grpcServer;
     private final GRPCServerBuilder grpcServerBuilder;
 
-    public KyaputenServer(int port) {
+    public KyaputenServer(int port, String workflowDefinitionPath) {
 
         Injector injector = Guice.createInjector(new ServerModule());
 
         grpcServerBuilder = injector.getInstance(GRPCServerBuilder.class);
 
         grpcServer = grpcServerBuilder.build();
+
+        MetadataService metadataService = new MetadataService();
+
+        WorkflowDefinitionDAO workflowDefinitionDAO = new WorkflowDefinitionDAO();
+
+        List<WorkflowDefinition> wds = metadataService.readWorkflowConfig(workflowDefinitionPath);
+
+        workflowDefinitionDAO.addAll(wds);
     }
 
     public void start() {

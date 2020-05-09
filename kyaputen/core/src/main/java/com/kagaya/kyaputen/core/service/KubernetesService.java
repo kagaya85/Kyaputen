@@ -49,7 +49,6 @@ public class KubernetesService {
     }
 
     public void createPod(Pod pod, double ce) {
-
         String namespace = "default";
         V1Pod body = new V1Pod();
         V1PodSpec podSpec = new V1PodSpec();
@@ -83,7 +82,7 @@ public class KubernetesService {
         try {
             V1Pod result =  apiInstance.createNamespacedPod(namespace, body,true, "true", null);
 
-            logger.debug(result.toString());
+            logger.debug("Create pod of image: {}, podId: {}, result: {}", pod.getTaskImageName(), pod.getPodId(), result.toString());
             pod.setStatus(Pod.PodStatus.IDLE);
         } catch (ApiException e) {
             logger.error("Create pod error in namespace: {} for reason: {}, header: {}", namespace, e.getResponseBody(), e.getResponseHeaders());
@@ -110,8 +109,9 @@ public class KubernetesService {
 
         try{
             V1Status result = apiInstance.deleteNamespacedPod(pod.getPodId(), namespace, "true", body, null, gracePeriodSeconds, orphanDependents, propagationPolicy);
+
+            logger.debug("Delete pod of image: {}, podId: {}, result: {}", pod.getTaskImageName(), pod.getPodId(), result.toString());
             pod.setStatus(Pod.PodStatus.DOWN);
-            logger.debug(result.toString());
         } catch (ApiException e) {
             logger.error("Delete pod error in namespace: {} for reason: {}, header: {}", namespace, e.getResponseBody(), e.getResponseHeaders());
 
