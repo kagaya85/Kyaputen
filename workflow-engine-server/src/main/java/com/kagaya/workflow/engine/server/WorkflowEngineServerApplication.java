@@ -12,28 +12,7 @@ import java.io.IOException;
 @EnableEurekaClient
 public class WorkflowEngineServerApplication {
 
-	@Value("${server.port}")
-	private static int port;
-
 	public static void main(String[] args) {
-		KyaputenServer server = new KyaputenServer(port);
-
-		try {
-			server.start();
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace(System.err);
-			server.stop();
-		}
-
-		try {
-			server.blockUntilShutdown();
-		}
-		catch (InterruptedException ie) {
-			ie.printStackTrace(System.err);
-			server.stop();
-		}
-
 		SpringApplication.run(WorkflowEngineServerApplication.class, args);
 	}
 

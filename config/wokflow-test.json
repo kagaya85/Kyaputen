@@ -1,0 +1,17 @@
+{
+    "name": "workflow-test",
+    "description": "test",
+    "version": "0.0.1",
+    "timelimitSeconds": 5,
+    "taskDefinitions": {
+        "taskName": "task1",
+        "taskType": "test",
+        "description": "test",
+        "retryCount" : 3,
+        "timeoutSeconds": 3,
+        "inputKeys": [],
+        "outputKeys": [],
+        "priorTasks": [],
+        "nextTasks": []
+    }
+}
