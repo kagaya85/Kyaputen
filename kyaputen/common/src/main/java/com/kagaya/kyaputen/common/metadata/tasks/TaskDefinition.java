@@ -239,7 +239,13 @@ public class TaskDefinition {
 
     @Override
     public String toString() {
-        return "Task name: " + taskDefName;
+        return "TaskDefinition{" +
+                "taskDefName='" + taskDefName + '\'' +
+                ", taskType='" + taskType + '\'' +
+                ", description='" + description + '\'' +
+                ", inputKeys=" + inputKeys +
+                ", outputKeys=" + outputKeys +
+                '}';
     }
 
     @Override

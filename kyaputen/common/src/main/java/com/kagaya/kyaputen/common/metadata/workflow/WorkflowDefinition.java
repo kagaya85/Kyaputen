@@ -17,15 +17,13 @@ public class WorkflowDefinition {
 
     private String description;
 
-    private int version = 1;
+    private String version;
 
     private Map<String, TaskDefinition> taskDefs = new HashMap<>();
 
     private List<String> inputParameters;
 
     private List<String> outputParameters;
-
-    private long timeoutSeconds;
 
     private long timeLimit;
 
@@ -48,11 +46,11 @@ public class WorkflowDefinition {
         this.description = description;
     }
 
-    public int getVersion() {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 
@@ -131,14 +129,6 @@ public class WorkflowDefinition {
         this.taskDefs = tasks;
     }
 
-    public long getTimeoutSeconds() {
-        return timeoutSeconds;
-    }
-
-    public void setTimeoutSeconds(long timeoutSeconds) {
-        this.timeoutSeconds = timeoutSeconds;
-    }
-
     public List<String> getOutputParameters() {
         return outputParameters;
     }
@@ -167,5 +157,18 @@ public class WorkflowDefinition {
 
     public void setTimeLimit(long timeLimit) {
         this.timeLimit = timeLimit;
+    }
+
+    @Override
+    public String toString() {
+        return "WorkflowDefinition{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", version='" + version + '\'' +
+                ", inputParameters=" + inputParameters +
+                ", outputParameters=" + outputParameters +
+                ", timeLimit=" + timeLimit +
+                ", taskDefs=" + taskDefs +
+                '}';
     }
 }
