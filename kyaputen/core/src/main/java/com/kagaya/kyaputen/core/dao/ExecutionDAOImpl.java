@@ -89,7 +89,6 @@ public class ExecutionDAOImpl implements ExecutionDAO {
             task.setTaskId(taskPlan.getTaskId());
             task.setWorkerId(taskPlan.getPodId());
             task.setRetryCount(3);
-            task.setPriority(taskDef.getPriority());
             task.setTaskDefinition(taskDef);
             task.setStartTime(0);
 

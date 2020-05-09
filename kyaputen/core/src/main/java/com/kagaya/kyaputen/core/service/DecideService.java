@@ -27,10 +27,10 @@ public class DecideService {
     public DecideOutcome decide(Workflow workflow) {
         DecideOutcome outcome = new DecideOutcome();
 
-        List<Task> taskList = workflow.getTasks();
+        List<String> taskNames = workflow.getTaskNames();
 
-        for (Task task: taskList) {
-
+        for (String n: taskNames) {
+            Task task = workflow.getTask(n);
             if (task.getStatus().equals(Status.SCHEDULED) && checkReady(task)) {
                 outcome.tasksToBeScheduled.add(task);
             }
@@ -52,10 +52,9 @@ public class DecideService {
             return true;
 
         Workflow workflow = executionDAO.getWorkflow(task.getWorkflowInstanceId());
-        List<Task> tasks = workflow.getTasks();
 
         for (String taskName: priorTasks) {
-            Task t = workflow.getTaskByName(taskName);
+            Task t = workflow.getTask(taskName);
             if (null == t || !t.getStatus().equals(Status.COMPLETED))
                 return false;
         }

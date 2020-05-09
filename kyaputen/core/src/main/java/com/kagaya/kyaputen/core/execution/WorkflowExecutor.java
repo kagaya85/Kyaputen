@@ -139,10 +139,11 @@ public class WorkflowExecutor {
         }
 
         // 检查pod，判断是否需要伸缩
+        WorkflowDefinition workflowDef = workflow.getWorkflowDefinition();
         Pod pod = podResourceDAO.getPod(task.getWorkerId());
         pod.finishTaskExecutionPlan(task.getTaskId());
         if (pod.needUpdate())
-            k8s.resizePod(pod, task.getTaskDefinition());
+            k8s.resizePod(pod, workflowDef.getCeByType(task.getTaskType()));
     }
 
     public Task getTask(String workflowId, String taskId) {

@@ -30,8 +30,6 @@ public class TaskDefinition {
 
     private int req;
 
-    private int priority = -1;
-
     // 执行时间期限 - 子截止时间
     private long timeLimit;
 
@@ -139,14 +137,6 @@ public class TaskDefinition {
         this.timeoutSeconds = timeoutSeconds;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
     public List<String> getPriorTasks() {
         return priorTasks;
     }
@@ -216,7 +206,7 @@ public class TaskDefinition {
      * @param taskDefName 目标任务名
      * @return
      */
-    public long getDataSize(String taskDefName) {
+    public long getDataTransSize(String taskDefName) {
 
         Long size = dataTransSizeMap.get(taskDefName);
 

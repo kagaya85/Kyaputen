@@ -334,11 +334,11 @@ public class SchedulerImpl implements Scheduler {
 
             if (pod.getStatus().equals(PodStatus.NEW)) {
                 // 新建立的pod需部署到对应node上
-                k8s.createPod(pod, taskDef, plan);
+                k8s.createPod(pod, workflowDef.getCeByType(plan.getTaskType()));
 
             } else if (pod.getStatus().equals(PodStatus.IDLE)) {
                 if (pod.needUpdate())
-                    k8s.resizePod(pod, taskDef);
+                    k8s.resizePod(pod, workflowDef.getCeByType(plan.getTaskType()));
             } else {
                 // 其他
             }
