@@ -6,8 +6,10 @@
         </layout>
     </appender>
     <logger name="com.kagaya.kyaputen.server" level="TRACE"/>
+    <logger name="com.kagaya.kyaputen.core" level="TRACE"/>
+<!--    <logger name="com.kagaya.kyaputen.common" level="TRACE"/>-->
 
-    <root level="warn">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

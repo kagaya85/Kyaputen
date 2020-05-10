@@ -51,6 +51,8 @@ public class SchedulerImpl implements Scheduler {
         Map<String, Double> ce = new HashMap<>();
         Map<String, Integer> taskTypeNum = workflowDef.getTaskTypeNums();
 
+        logger.debug("Calculate Workflow: {} Cost Efficient", workflowDef.getName());
+
         for (String type: taskTypeNum.keySet()) {
             ce.put(type, Constant.POD_MIN_CU);
         }
@@ -58,6 +60,7 @@ public class SchedulerImpl implements Scheduler {
         // 原始执行时间
         long expectedExecutionTime = calcExpectedExecutionTime(workflowDef, ce);
 
+        logger.debug("Workflow: {} expectedExecutionTime={}", workflowDef.getName(), expectedExecutionTime);
         // 调整cu，计算性价比
         while(true) {
 
@@ -314,6 +317,8 @@ public class SchedulerImpl implements Scheduler {
     @Override
     public ExecutionPlan genExecutionPlan(long startTime, WorkflowDefinition workflowDef) {
 
+        logger.debug("Workflow: {} start generate Execution Plan ", workflowDef.getName());
+
         Method method = new DemoExecutionPlanGenerator(workflowDef, startTime);
 
         // 用新的CE配置更新下每个任务的执行时间，用于估计实际执行时间，计算紧急程度
@@ -332,8 +337,10 @@ public class SchedulerImpl implements Scheduler {
         PodResourceDAO podResourceDAO = new PodResourceDAO();
         NodeResourceDAO nodeResourceDAO = new NodeResourceDAO();
 
-        for (TaskExecutionPlan plan: executionPlan.getTaskExecutionPlans()) {
+        logger.debug("Workflow: {} deploying", workflowDef.getName());
 
+        for (TaskExecutionPlan plan: executionPlan.getTaskExecutionPlans()) {
+            logger.debug("TaskExecutionPlan: {}", plan);
             Pod pod = podResourceDAO.getPod(plan.getPodId());
             Node node = nodeResourceDAO.getNode(plan.getNodeId());
             TaskDefinition taskDef = workflowDef.getTaskDef(plan.getTaskName());

@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 public class GRPCServerBuilder {
 
-    private final TaskServiceGrpc.TaskServiceImplBase taskServiceImpl;
+    private final BindableService taskServiceImpl;
 
     @Inject
     public GRPCServerBuilder(TaskServiceGrpc.TaskServiceImplBase taskServiceImpl) {

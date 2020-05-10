@@ -42,6 +42,8 @@ public class MetadataService {
                     tasksMap.put(t.taskName, td);
                 }
 
+                workflowDef.setInputParameters(data.tasks.get(0).inputKeys);
+                workflowDef.setOutputParameters(data.tasks.get(data.tasks.size() - 1).outputKeys);
                 workflowDef.setName(data.name);
                 workflowDef.setDescription(data.description);
                 workflowDef.setTimeLimit(data.timeLimit);

@@ -89,4 +89,18 @@ public class TaskExecutionPlan {
     public String getExpectedStartTime() {
         return expectedStartTime;
     }
+
+    @Override
+    public String toString() {
+        return "TaskExecutionPlan{" +
+                "taskName='" + taskName + '\'' +
+                ", taskId='" + taskId + '\'' +
+                ", taskType='" + taskType + '\'' +
+                ", podId='" + podId + '\'' +
+                ", nodeId='" + nodeId + '\'' +
+                ", expectedStartTime='" + expectedStartTime + '\'' +
+                ", executionTime=" + executionTime +
+                ", urgencyLevel=" + urgencyLevel +
+                '}';
+    }
 }

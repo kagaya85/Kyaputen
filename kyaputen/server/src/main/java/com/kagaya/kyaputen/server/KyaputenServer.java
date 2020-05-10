@@ -45,7 +45,11 @@ public class KyaputenServer {
 
         List<WorkflowDefinition> wds = metadataService.readWorkflowConfig(workflowDefinitionPath);
 
+        logger.debug("Read metadata from: {}, workflow number: {}", workflowDefinitionPath, wds.size());
+
         workflowDefinitionDAO.addAll(wds);
+
+        logger.debug("{} workflow added", wds.size());
     }
 
     public void start() {

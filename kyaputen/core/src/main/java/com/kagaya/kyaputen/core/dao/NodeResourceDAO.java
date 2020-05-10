@@ -29,4 +29,8 @@ public class NodeResourceDAO {
         return new ArrayList<>(nodeMap.values());
     }
 
+    public void addNode(Node node) {
+        nodeMap.put(node.getId(), node);
+    }
+
 }

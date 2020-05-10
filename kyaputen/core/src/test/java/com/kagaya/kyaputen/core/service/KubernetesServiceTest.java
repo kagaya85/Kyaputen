@@ -8,16 +8,16 @@ import com.kagaya.kyaputen.core.utils.IdGenerator;
 public class KubernetesServiceTest {
 
     public static void main(String[] args) {
-        String apiServiceAddress = "http://127.0.0.1:8080";
+        String apiServiceAddress = "https://127.0.0.1:8080";
         String token = "";
 
-        KubernetesService k8s = new KubernetesService(apiServiceAddress);
+        KubernetesService k8s = new KubernetesService();
 
         Pod pod = new Pod();
         Node node = new Node();
 
         String podId = IdGenerator.generate();
-        double ce = 1;
+        double ce = 1.0;
 
         node.setNodeName("minikube");
 

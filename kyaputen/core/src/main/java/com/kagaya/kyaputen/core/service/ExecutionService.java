@@ -46,8 +46,8 @@ public class ExecutionService {
     /**
      * @description 工作流队列，按workflowInstanceId保存运行中的工作流任务
      */
-    private WorkflowQueue workflowQueue;
-    private WorkflowDefinitionDAO workflowDefs;
+    private WorkflowQueue workflowQueue = new WorkflowQueue();
+    private WorkflowDefinitionDAO workflowDefs = new WorkflowDefinitionDAO();
 
 
     private static final int MAX_POLL_TIMEOUT_MS = 5000;

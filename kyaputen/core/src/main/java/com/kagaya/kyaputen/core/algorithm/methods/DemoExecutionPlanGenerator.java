@@ -10,6 +10,7 @@ import com.kagaya.kyaputen.core.config.Constant;
 import com.kagaya.kyaputen.core.config.PullTime;
 import com.kagaya.kyaputen.core.dao.NodeResourceDAO;
 import com.kagaya.kyaputen.core.dao.PodResourceDAO;
+import com.kagaya.kyaputen.core.service.KubernetesService;
 import com.kagaya.kyaputen.core.utils.IdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,8 @@ public class DemoExecutionPlanGenerator implements Method {
     PodResourceDAO podResourceDAO = new PodResourceDAO();
 
     NodeResourceDAO nodeResourceDAO = new NodeResourceDAO();
+
+    KubernetesService k8s = new KubernetesService();
 
     // 工作流开始的现实时间
     private long startTime;
@@ -90,6 +93,7 @@ public class DemoExecutionPlanGenerator implements Method {
                 if (selectedNode == null) {
                     // 部署阶段创建新node
                     logger.info("No suitable Node for Pod: {}, Id: {}, need to create a new pod", pod.getTaskImageName(), pod.getPodId());
+                    selectedNode = k8s.startNode();
                 }
 
                 double price = selectedNode.getPrice() * (pod.getComputeUnit()/selectedNode.getTotalComputeUnit());

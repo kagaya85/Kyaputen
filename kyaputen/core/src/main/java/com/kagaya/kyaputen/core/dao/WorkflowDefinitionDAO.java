@@ -2,12 +2,13 @@ package com.kagaya.kyaputen.core.dao;
 
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class WorkflowDefinitionDAO {
 
-    private static Map<String, WorkflowDefinition> workflowMetaData;
+    private static Map<String, WorkflowDefinition> workflowMetaData = new HashMap<>();
 
     public WorkflowDefinition get(String workflowName) {
 

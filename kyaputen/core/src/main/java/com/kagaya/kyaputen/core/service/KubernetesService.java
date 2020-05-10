@@ -40,7 +40,9 @@ public class KubernetesService {
 //                .setAuthentication(new AccessTokenAuthentication(token)).build();
 
         try {
-            ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false).build();
+            ApiClient client = Config.defaultClient();
+            client.setBasePath(apiServerAddress);
+
             Configuration.setDefaultApiClient(client);
             logger.info("ApiClient connect to address: {}", apiServerAddress);
         } catch (Exception e) {
@@ -169,12 +171,28 @@ public class KubernetesService {
     }
 
 
+    public Node startNode() {
+
+        for (Node node: nodeResourceDAO.getNodeList()) {
+            if (node.getStatus().equals(Node.NodeStatus.Down)) {
+                node.setStatus(Node.NodeStatus.NewNode);
+                return node;
+            }
+        }
+
+        logger.error("No enough node, start new node fail");
+        return null;
+    }
+
     public Node startNode(Node node) {
 
-        CoreV1Api apiInstance = new CoreV1Api();
+        if (node.getStatus().equals(Node.NodeStatus.Down)) {
+            node.setStatus(Node.NodeStatus.NewNode);
+            return node;
+        }
 
-
-        return new Node();
+        logger.error("Start new node fail");
+        return node;
     }
 
     public void shutdownNode(Node node) {
