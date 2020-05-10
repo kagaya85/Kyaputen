@@ -2,6 +2,8 @@ package com.kagaya.kyaputen.core.metrics;
 
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,8 @@ public class Monitor {
 
     // 记录某种任务类型最近在那个node上执行
     private static Map<String, String> taskRecentExecutionNodeMap = new HashMap<>();
+
+    public static final Logger logger = LoggerFactory.getLogger(Monitor.class);
 
     /**
      * 记录任务执行时间的平均值，用于代表任务大小
@@ -37,7 +41,7 @@ public class Monitor {
         }
 
         taskExecutionTimeMap.put(taskType, t);
-
+        logger.debug("Log taskType: {}, execution time: {}", taskType, timeMs);
     }
 
     public static long getTaskExecutionTime(String taskType) {
@@ -76,7 +80,8 @@ public class Monitor {
     public static void logTaskLatencyTime(Task task, long timeMs) {
         String nodeId = task.getNodeId();
         taskRecentExecutionNodeMap.put(task.getTaskType(), nodeId);
-        nodeLatencyTimeMap.put(nodeId, timeMs);
+        logNodeLatencyTime(nodeId, timeMs);
+        logger.debug("Log nodeId: {}, latency time: {}", nodeId, timeMs);
     }
 
     /**

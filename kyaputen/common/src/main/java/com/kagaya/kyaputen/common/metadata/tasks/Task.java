@@ -171,10 +171,12 @@ public class Task {
         this.retried = retried;
     }
 
+    @Deprecated
     public boolean isExecuted() {
         return executed;
     }
 
+    @Deprecated
     public void setExecuted(boolean executed) {
         this.executed = executed;
     }
@@ -338,5 +340,16 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(getTaskId(), getTaskType(), getTaskDefName(), getWorkflowInstanceId());
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "taskId='" + taskId + '\'' +
+                ", taskType='" + taskType + '\'' +
+                ", status=" + status +
+                ", taskDefName='" + taskDefName + '\'' +
+                ", workerId='" + workerId + '\'' +
+                '}';
     }
 }

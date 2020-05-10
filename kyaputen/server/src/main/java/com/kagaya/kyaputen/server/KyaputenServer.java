@@ -51,8 +51,8 @@ public class KyaputenServer {
     public void start() {
         try {
             grpcServer.start();
+            logger.info("gRPC server started");
             grpcServer.blockUntilShutdown();
-            logger.debug("After start Grpc server");
         }
         catch (Exception e) {
             logger.error("gRPC server error occured: " + e.getMessage());

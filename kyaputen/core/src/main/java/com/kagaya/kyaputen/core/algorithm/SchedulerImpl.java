@@ -133,15 +133,26 @@ public class SchedulerImpl implements Scheduler {
             }
         }
 
+        logger.debug("Calculate CostEfficient of workflow: {}, ce: {}", workflowDef.getName(), ce);
+
         workflowDef.setCEMap(ce);
         markUpdatePod(workflowDef);
     }
 
     @Override
     public void markUpdatePod(WorkflowDefinition workflowDef) {
+        PodResourceDAO podResourceDAO = new PodResourceDAO();
 
+        List<String> podIdList = podResourceDAO.getPodIdList();
+        for(String id: podIdList) {
+            Pod pod = podResourceDAO.getPod(id);
+            double ce = workflowDef.getCeByType(pod.getTaskImageName());
 
-
+            if (pod.getComputeUnit() < ce + Constant.E) {
+                pod.setNeedUpdate();
+                logger.debug("Pod need to be updated. Id: {}, ImageName {} ", pod.getPodId(), pod.getTaskImageName());
+            }
+        }
     }
 
     /**

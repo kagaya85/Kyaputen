@@ -39,10 +39,10 @@ public class KubernetesService {
 //        ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false)
 //                .setAuthentication(new AccessTokenAuthentication(token)).build();
 
-        ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false).build();
-
         try {
+            ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false).build();
             Configuration.setDefaultApiClient(client);
+            logger.info("ApiClient connect to address: {}", apiServerAddress);
         } catch (Exception e) {
             logger.error("ApiClient for address: {}, error: {}", apiServerAddress, e.getMessage());
         }
@@ -56,6 +56,7 @@ public class KubernetesService {
         try {
             ApiClient client = Config.defaultClient();
             Configuration.setDefaultApiClient(client);
+            logger.info("ApiClient connected");
         } catch (Exception e) {
             logger.error("ApiClient error: {}", e.getMessage());
         }
@@ -104,10 +105,15 @@ public class KubernetesService {
 
     public void resizePod(Pod pod, double ce) {
 
+        logger.debug("Resizing pod: {} of image: {} to ce: {}", pod.getPodId(), pod.getTaskImageName(), ce);
+
         deletePod(pod);
         createPod(pod, ce);
 
         pod.setStatus(Pod.PodStatus.IDLE);
+
+        logger.debug("Resized pod: {} of image: {} to ce: {}", pod.getPodId(), pod.getTaskImageName(), ce);
+
     }
 
     public void deletePod(Pod pod) {
@@ -118,9 +124,11 @@ public class KubernetesService {
         Boolean orphanDependents = true;
         String propagationPolicy = "Background";
         V1DeleteOptions body = new V1DeleteOptions();
+        String podName = pod.getTaskImageName() + "-" + pod.getPodId().split("-")[0];
 
+        logger.debug("Deleting pod: {} of image: {}", pod.getPodId(), pod.getTaskImageName());
         try{
-            V1Status result = apiInstance.deleteNamespacedPod(pod.getPodId(), namespace, "true", body, null, gracePeriodSeconds, orphanDependents, propagationPolicy);
+            V1Status result = apiInstance.deleteNamespacedPod(podName, namespace, "true", body, null, gracePeriodSeconds, orphanDependents, propagationPolicy);
 
             logger.debug("Delete pod of image: {}, podId: {}, result: {}", pod.getTaskImageName(), pod.getPodId(), result.toString());
             pod.setStatus(Pod.PodStatus.DOWN);

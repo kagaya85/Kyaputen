@@ -129,4 +129,9 @@ public class PollingQueueDAOImpl implements QueueDAO {
 
         return queue.isEmpty();
     }
+
+    @Override
+    public String toString() {
+        return "{" + taskQueueMap + '}';
+    }
 }

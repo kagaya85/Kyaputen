@@ -33,7 +33,6 @@ public class ExecutionDAOImpl implements ExecutionDAO {
     public void updateTask(Task task, TaskResult taskResult) {
         Workflow workflow = workflowQueue.getById(task.getWorkflowInstanceId());
         Task t = workflow.getTask(task.getTaskId());
-
         t.setOutputData(taskResult.getOutputData());
     }
 

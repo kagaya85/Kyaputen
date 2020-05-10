@@ -55,6 +55,7 @@ public class WorkflowExecutor {
      */
     public Workflow createWorkflow(WorkflowDefinition workflowDef, ExecutionPlan plan) {
         Workflow workflow = executionDAO.createWorkflow(workflowDef, plan);
+        logger.debug("Create workflow, Id: {}", workflow.getWorkflowId());
         return workflow;
     }
 
@@ -76,6 +77,7 @@ public class WorkflowExecutor {
             t.setStartTime(0);
         }
 
+        logger.debug("Update workflow, Id: {}", workflow.getWorkflowId());
         return workflow;
     }
 
@@ -87,12 +89,15 @@ public class WorkflowExecutor {
         workflow.setInput(inputParam);
         workflow.setStatus(WorkflowStatus.RUNNING);
         decide(workflow.getWorkflowId());
+        logger.debug("Workflow start, workflowId: {} ", workflow.getWorkflowId());
     }
 
     public void updateTask(TaskResult taskResult) {
         if (taskResult == null) {
             throw new ExecutionException(ExecutionException.Code.INVALID_INPUT, "TaskResult object is null");
         }
+
+        logger.debug("Updating task: {}, WorkerId: {} with output: {}", taskResult.getTaskId(), taskResult.getWorkerId(), taskResult.getOutputData());
 
         String workflowId = taskResult.getWorkflowInstanceId();
         Workflow workflow = executionDAO.getWorkflow(workflowId);
@@ -117,7 +122,7 @@ public class WorkflowExecutor {
         task.setWorkerId(taskResult.getWorkerId());
         task.setOutputData(taskResult.getOutputData());
 
-        logger.debug("Task: {} being updated", task.getTaskId());
+        logger.debug("Task: {} is updated, Id: {}, Type: {}", task.getTaskDefName(), task.getTaskId(), task.getTaskType());
 
         decide(workflowId);
 
@@ -132,6 +137,7 @@ public class WorkflowExecutor {
         WorkflowDefinition workflowDef = workflow.getWorkflowDefinition();
         Pod pod = podResourceDAO.getPod(task.getWorkerId());
         pod.finishTaskExecutionPlan(task.getTaskId());
+        logger.debug("Finish task execution plan of taskId: {}", task.getTaskId());
         if (pod.needUpdate())
             k8s.resizePod(pod, workflowDef.getCeByType(task.getTaskType()));
     }
@@ -150,6 +156,7 @@ public class WorkflowExecutor {
         Workflow workflow = executionDAO.getWorkflow(workflowId);
 
         if (workflow.getStatus().isTerminal()) {
+            logger.info("Workflow: {} is terminated", workflowId);
             return true;
         }
 
@@ -180,6 +187,7 @@ public class WorkflowExecutor {
                 }
             }
 
+            logger.debug("Polling queue: {}", pollingQueue);
 
         } catch (Exception e) {
             logger.error("WorkflowExecutor decide error", e);
@@ -234,6 +242,7 @@ public class WorkflowExecutor {
         }
 
         task.setInputData(inputData);
+        logger.debug("Populate task, Id: {}", task.getTaskId());
     }
 
     public void pauseWorkflow(String workflowId) {

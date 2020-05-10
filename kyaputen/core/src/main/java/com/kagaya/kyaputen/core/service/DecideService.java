@@ -41,7 +41,7 @@ public class DecideService {
                 outcome.tasksToBeScheduled.add(task);
             }
         }
-
+        logger.debug("Decide workflow: {}, taskToBeScheduled: {}", workflow.getWorkflowId(), outcome.tasksToBeScheduled);
         return outcome;
     }
 

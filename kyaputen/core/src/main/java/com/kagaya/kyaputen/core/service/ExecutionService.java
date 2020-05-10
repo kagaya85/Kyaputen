@@ -77,10 +77,10 @@ public class ExecutionService {
      * @return
      */
     public Task getPollTask(String taskName, String workerId, String domain, int count, int timeoutMilliSecond) {
-        if (timeoutMilliSecond > MAX_POLL_TIMEOUT_MS) {
-            throw new ExecutionException(ExecutionException.Code.INVALID_INPUT,
-                    "Long Poll Timeout value cannot be more than 5 seconds");
-        }
+//        if (timeoutMilliSecond > MAX_POLL_TIMEOUT_MS) {
+//            throw new ExecutionException(ExecutionException.Code.INVALID_INPUT,
+//                    "Long Poll Timeout value cannot be more than 5 seconds");
+//        }
 
         String queueName = QueueUtils.getQueueName(taskName, domain,null);
 
@@ -104,12 +104,16 @@ public class ExecutionService {
         task.setStartTime(System.currentTimeMillis());
         task.setPollCount(task.getPollCount() + 1);
 
+        logger.debug("GetPollTask: {}, taskName: {}, workerId: {}", task, taskName, workerId);
+
         return task;
     }
 
     public void startWorkflow(String workflowName, Map<String, Object> inputParam) {
         List<Workflow> workflowList = workflowQueue.getByName(workflowName);
         WorkflowDefinition workflowDef = workflowDefinitionDAO.get(workflowName);
+
+        logger.debug("Starting workflow: {} with inputData: {}", workflowName, inputParam);
 
         Workflow workflow = null;
         // find a READY workflow instance
@@ -168,16 +172,6 @@ public class ExecutionService {
 
     public void terminateWorkflow(String workflowId) {
 
-    }
-
-    public Workflow getWorkflowInstance(String workflowName) {
-
-        return new Workflow();
-    }
-
-    public List<String> getRunningWorkflows(String workflowName) {
-
-        return new LinkedList<String>();
     }
 
 }
