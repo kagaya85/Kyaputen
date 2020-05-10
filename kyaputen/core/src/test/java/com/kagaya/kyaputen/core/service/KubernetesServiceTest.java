@@ -11,7 +11,7 @@ public class KubernetesServiceTest {
         String apiServiceAddress = "http://127.0.0.1:8080";
         String token = "";
 
-        KubernetesService k8s = new KubernetesService(apiServiceAddress, token);
+        KubernetesService k8s = new KubernetesService(apiServiceAddress);
 
         Pod pod = new Pod();
         Node node = new Node();

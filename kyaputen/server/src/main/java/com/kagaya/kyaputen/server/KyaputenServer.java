@@ -20,7 +20,11 @@ public class KyaputenServer {
     private final GRPCServer grpcServer;
     private final GRPCServerBuilder grpcServerBuilder;
 
-    public KyaputenServer(int port, String workflowDefinitionPath) {
+    private final MetadataService metadataService = new MetadataService();
+
+    private final WorkflowDefinitionDAO workflowDefinitionDAO = new WorkflowDefinitionDAO();
+
+    public KyaputenServer(int port) {
 
         Injector injector = Guice.createInjector(new ServerModule());
 
@@ -28,9 +32,16 @@ public class KyaputenServer {
 
         grpcServer = grpcServerBuilder.build();
 
-        MetadataService metadataService = new MetadataService();
+    }
 
-        WorkflowDefinitionDAO workflowDefinitionDAO = new WorkflowDefinitionDAO();
+
+    public KyaputenServer(int port, String workflowDefinitionPath) {
+
+        Injector injector = Guice.createInjector(new ServerModule());
+
+        grpcServerBuilder = injector.getInstance(GRPCServerBuilder.class);
+
+        grpcServer = grpcServerBuilder.build();
 
         List<WorkflowDefinition> wds = metadataService.readWorkflowConfig(workflowDefinitionPath);
 
@@ -41,6 +52,7 @@ public class KyaputenServer {
         try {
             grpcServer.start();
             grpcServer.blockUntilShutdown();
+            logger.debug("After start Grpc server");
         }
         catch (Exception e) {
             logger.error("gRPC server error occured: " + e.getMessage());

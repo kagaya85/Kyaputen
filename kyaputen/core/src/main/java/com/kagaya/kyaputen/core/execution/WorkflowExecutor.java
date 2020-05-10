@@ -30,11 +30,11 @@ public class WorkflowExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowExecutor.class);
 
-    private final DecideService decideService;
+    private DecideService decideService = new DecideService();
 
-    private final ExecutionDAO executionDAO;
+    private ExecutionDAO executionDAO = new ExecutionDAOImpl();
 
-    private QueueDAO<TaskMessage> pollingQueue;
+    private QueueDAO pollingQueue = new PollingQueueDAOImpl();
 
     private WorkflowQueue workflowQueue;
 
@@ -42,11 +42,11 @@ public class WorkflowExecutor {
 
     private KubernetesService k8s = new KubernetesService();
 
-    @Inject
-    public WorkflowExecutor(ExecutionDAO executionDAO, DecideService decideService) {
-        this.executionDAO = executionDAO;
-        this.decideService = decideService;
-    }
+//    @Inject
+//    public WorkflowExecutor(ExecutionDAO executionDAO, QueueDAO queueDAO) {
+//        this.executionDAO = executionDAO;
+//        this.pollingQueue = queueDAO;
+//    }
 
     /**
      * 创建工作流，进入工作流队列，设置workflowId
@@ -88,16 +88,6 @@ public class WorkflowExecutor {
         workflow.setStatus(WorkflowStatus.RUNNING);
         decide(workflow.getWorkflowId());
     }
-
-    public void completeWorkflow(String workflowId) {
-        Workflow wf = executionDAO.getWorkflow(workflowId);
-
-        if (wf.getStatus().equals(WorkflowStatus.COMPLETED)) {
-            logger.info("Workflow: {} - {} completed successful.", wf.getName(), workflowId);
-            workflowQueue.remove(workflowId);
-        }
-    }
-
 
     public void updateTask(TaskResult taskResult) {
         if (taskResult == null) {
@@ -184,6 +174,8 @@ public class WorkflowExecutor {
                     TaskMessage message = new TaskMessage(task.getWorkflowInstanceId(), task.getTaskId(), task.getPriority(), task.getWorkerId());
                     String queueName = QueueUtils.getQueueName(task);
                     task.setScheduledTime(System.currentTimeMillis());
+
+                    // 考虑直接添加到pod结构到执行队列中？
                     pollingQueue.push(queueName, message);
                 }
             }
@@ -204,7 +196,20 @@ public class WorkflowExecutor {
 
         // 若成功结束
         workflow.setStatus(WorkflowStatus.COMPLETED);
+        workflow.setEndTime(System.currentTimeMillis());
+        workflowQueue.remove(workflow.getWorkflowId());
 
+        logger.info("Workflow: {} - {} completed successful.", workflow.getName(), workflow.getWorkflowId());
+    }
+
+    @Deprecated
+    public void completeWorkflow(String workflowId) {
+        Workflow wf = executionDAO.getWorkflow(workflowId);
+
+        if (wf.getStatus().equals(WorkflowStatus.COMPLETED)) {
+            logger.info("Workflow: {} - {} completed successful.", wf.getName(), workflowId);
+            workflowQueue.remove(workflowId);
+        }
     }
 
     /**

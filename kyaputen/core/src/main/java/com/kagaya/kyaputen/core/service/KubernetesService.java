@@ -35,11 +35,23 @@ public class KubernetesService {
 
     private final PodResourceDAO podResourceDAO = new PodResourceDAO();
 
-    public KubernetesService(String apiServerAddress, String token) {
+    public KubernetesService(String apiServerAddress) {
 //        ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false)
 //                .setAuthentication(new AccessTokenAuthentication(token)).build();
 
-//        ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false).build();
+        ApiClient client = new ClientBuilder().setBasePath(apiServerAddress).setVerifyingSsl(false).build();
+
+        try {
+            Configuration.setDefaultApiClient(client);
+        } catch (Exception e) {
+            logger.error("ApiClient for address: {}, error: {}", apiServerAddress, e.getMessage());
+        }
+
+    }
+
+    public KubernetesService() {
+//        ApiClient client = new ClientBuilder().setBasePath(K8sConfig.getApiServerAddress()).setVerifyingSsl(false)
+//                .setAuthentication(new AccessTokenAuthentication(K8sConfig.getToken())).build();
 
         try {
             ApiClient client = Config.defaultClient();
@@ -47,14 +59,6 @@ public class KubernetesService {
         } catch (Exception e) {
             logger.error("ApiClient error: {}", e.getMessage());
         }
-
-    }
-
-    public KubernetesService() {
-        ApiClient client = new ClientBuilder().setBasePath(K8sConfig.getApiServerAddress()).setVerifyingSsl(false)
-                .setAuthentication(new AccessTokenAuthentication(K8sConfig.getToken())).build();
-
-        Configuration.setDefaultApiClient(client);
     }
 
     public void createPod(Pod pod, double ce) {

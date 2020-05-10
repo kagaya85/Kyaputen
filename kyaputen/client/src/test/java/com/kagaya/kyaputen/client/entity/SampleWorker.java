@@ -22,8 +22,10 @@ public class SampleWorker implements Worker {
     public TaskResult execute(Task task) {
         TaskResult result = new TaskResult(task);
 
-        result.getOutputData().put("test1", "testValue");
-        result.getOutputData().put("test2", 1551);
+        System.out.println("Input:" + task.getInputData());
+
+        result.getOutputData().put("level", "test");
+        result.getOutputData().put("score", 1551);
 
         result.setStatus(Status.COMPLETED);
 

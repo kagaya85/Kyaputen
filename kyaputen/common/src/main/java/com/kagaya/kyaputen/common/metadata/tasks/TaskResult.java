@@ -31,7 +31,7 @@ public class TaskResult {
             case CANCELED:
             case COMPLETED_WITH_ERRORS:
             case TIMED_OUT:
-            case SKIPPED:
+            case FAILED:
                 this.status = Status.FAILED;
                 break;
             case SCHEDULED:

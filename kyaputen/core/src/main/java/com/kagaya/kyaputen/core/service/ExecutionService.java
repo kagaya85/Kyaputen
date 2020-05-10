@@ -7,6 +7,7 @@ import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.core.algorithm.Scheduler;
 import com.kagaya.kyaputen.core.algorithm.SchedulerImpl;
 import com.kagaya.kyaputen.core.config.Constant;
+import com.kagaya.kyaputen.core.dao.PollingQueueDAOImpl;
 import com.kagaya.kyaputen.core.dao.QueueDAO;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.Task.Status;
@@ -37,9 +38,11 @@ public class ExecutionService {
     private static final Logger logger = LoggerFactory.getLogger(ExecutionService.class);
     public static final WorkflowDefinitionDAO workflowDefinitionDAO = new WorkflowDefinitionDAO();
 
-    private final QueueDAO<TaskMessage> queueDAO;
-    private final Scheduler scheduler;
-    private final WorkflowExecutor workflowExecutor;
+    private QueueDAO queueDAO = new PollingQueueDAOImpl();
+
+    private Scheduler scheduler = new SchedulerImpl();
+
+    private final WorkflowExecutor workflowExecutor = new WorkflowExecutor();
     /**
      * @description 工作流队列，按workflowInstanceId保存运行中的工作流任务
      */
@@ -53,14 +56,12 @@ public class ExecutionService {
 
     private static final int MAX_SEARCH_SIZE = 5_000;
 
-    @Inject
-    public ExecutionService(QueueDAO<TaskMessage> queueDAO,
-                            Scheduler scheduler,
-                            WorkflowExecutor workflowExecutor) {
-        this.queueDAO = queueDAO;
-        this.scheduler = scheduler;
-        this.workflowExecutor = workflowExecutor;
-    }
+//    @Inject
+//    public ExecutionService(QueueDAO queueDAO,
+//                            Scheduler scheduler) {
+//        this.queueDAO = queueDAO;
+//        this.scheduler = scheduler;
+//    }
 
     public Task getPollTask(String taskName, String workerId, int count, int timeoutInMilliSecond) {
         return getPollTask(taskName, workerId, null, count, timeoutInMilliSecond);

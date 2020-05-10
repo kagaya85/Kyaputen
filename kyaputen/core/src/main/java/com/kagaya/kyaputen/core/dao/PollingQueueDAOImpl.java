@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class PollingQueueDAOImpl implements QueueDAO<TaskMessage> {
+public class PollingQueueDAOImpl implements QueueDAO {
 
     private String queueNamePrefix = "PQ-";
 

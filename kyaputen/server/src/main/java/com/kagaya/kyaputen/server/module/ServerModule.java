@@ -8,6 +8,7 @@ public class ServerModule extends AbstractModule {
     protected void configure() {
 
         install(new GRPCModule());
+        install(new CoreModule());
 
     }
 }

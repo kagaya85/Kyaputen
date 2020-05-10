@@ -260,7 +260,7 @@ public class Task {
         COMPLETED_WITH_ERRORS(true, true, true),
         SCHEDULED(false, true, true),
         TIMED_OUT(true, false, true),
-        SKIPPED(true, true, false);
+        IN_QUEUE(false, true, false);
 
         private boolean terminal;
 

@@ -19,17 +19,15 @@ public class TaskServiceImpl extends TaskServiceGrpc.TaskServiceImplBase {
     public static final Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
     private static final ProtoMapper protoMapper = new ProtoMapper();
 
-
     private static final int MAX_TASK_COUNT = 100;
     private static final int POLL_TIMEOUT_MS = 100;
     private static final int MAX_POLL_TIMEOUT_MS = 5000;
 
-    private final ExecutionService executionService;
+    private final ExecutionService executionService = new ExecutionService();
 
-    @Inject
-    public TaskServiceImpl(ExecutionService executionService) {
-        this.executionService = executionService;
-    }
+//    public TaskServiceImpl(ExecutionService executionService) {
+//        this.executionService = executionService;
+//    }
 
     @Override
     public void poll(TaskServicePb.PollRequest request, StreamObserver<TaskServicePb.PollResponse> response) {

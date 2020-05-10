@@ -23,10 +23,9 @@ import java.util.Map;
  */
 public class ExecutionDAOImpl implements ExecutionDAO {
 
-    private WorkflowQueue workflowQueue;
+    private WorkflowQueue workflowQueue = new WorkflowQueue();
 
-    @Inject
-    ExecutionDAOImpl() {
+    public ExecutionDAOImpl() {
 
     }
 
@@ -91,6 +90,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
             task.setRetryCount(3);
             task.setTaskDefinition(taskDef);
             task.setStartTime(0);
+            task.setStatus(Task.Status.IN_QUEUE);
 
             taskMap.put(taskName, task);
         }

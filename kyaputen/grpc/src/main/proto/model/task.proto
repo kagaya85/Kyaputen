@@ -17,7 +17,7 @@ message Task {
         COMPLETED_WITH_ERRORS = 5;
         SCHEDULED = 6;
         TIMED_OUT = 7;
-        SKIPPED = 8;
+        IN_QUEUE = 8;
     }
     string task_id = 1;
     string task_type = 2;
