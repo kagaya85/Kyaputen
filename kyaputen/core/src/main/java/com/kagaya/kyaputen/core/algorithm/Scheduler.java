@@ -20,6 +20,14 @@ public interface Scheduler {
     void markUpdatePod(WorkflowDefinition workflowDef);
 
     /**
+     * 划分截止时间
+     * @param workflowDef
+     * @param startTime
+     * @param deadline
+     */
+    void divideSubDeadline(WorkflowDefinition workflowDef, long startTime, long deadline);
+
+    /**
      *
      * @param startTime
      * @param workflowDef

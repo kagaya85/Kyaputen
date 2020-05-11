@@ -35,10 +35,10 @@ public class Main {
         input.put("age", 321);
         input.put("test", "321test123");
 
-        executionService.startWorkflow("workflow-test", input);
+        executionService.startWorkflow("workflow-test", input, System.currentTimeMillis() + 5000);
 
 
-        server.start();
+//        server.start();
     }
 
 }

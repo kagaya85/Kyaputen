@@ -60,7 +60,6 @@ public class SchedulerImpl implements Scheduler {
         // 原始执行时间
         long expectedExecutionTime = calcExpectedExecutionTime(workflowDef, ce);
 
-        logger.debug("Workflow: {} expectedExecutionTime={}", workflowDef.getName(), expectedExecutionTime);
         // 调整cu，计算性价比
         while(true) {
 
@@ -165,6 +164,7 @@ public class SchedulerImpl implements Scheduler {
      * @return
      */
     private long calcExpectedExecutionTime(WorkflowDefinition workflowDef, Map<String, Double> ce) {
+        logger.debug("Calculate expected execution time of workflow: {}", workflowDef.getName());
 
         long expectedExecutionTime = 0;
         List<String> taskQueue = new LinkedList<>();
@@ -200,8 +200,8 @@ public class SchedulerImpl implements Scheduler {
                     taskQueue.add(nt);
             }
         }
+        logger.debug("Workflow: {} expected execution time: {}", workflowDef.getName(), expectedExecutionTime);
 
-        logger.debug("Calculate Expected Execution Time of workflow: {}", workflowDef.getName());
         return expectedExecutionTime;
     }
 
@@ -261,10 +261,12 @@ public class SchedulerImpl implements Scheduler {
      * @param startTime 工作流计划开始时间
      * @param deadline 工作流截止日期
      */
-    private void divideSubDeadline(WorkflowDefinition workflowDef, long startTime, long deadline) {
+    public void divideSubDeadline(WorkflowDefinition workflowDef, long startTime, long deadline) {
 
         TaskDefinition taskDef = workflowDef.getEndTaskDefinition();
         List<String> taskQueue = new LinkedList<>(taskDef.getPriorTasks());
+
+        logger.debug("Divide deadline or workflow: {}, startTime: {}, deadline: {}", workflowDef.getName(), startTime, deadline);
 
         double ce = workflowDef.getCeByType(taskDef.getTaskType());
         long rankTime = (long)Math.ceil(taskDef.getTaskSize() / ce);
@@ -308,6 +310,7 @@ public class SchedulerImpl implements Scheduler {
             long executionTime = (long)Math.ceil(td.getTaskSize() / workflowDef.getCeByType(td.getTaskType()));
             long timeLimit = totTimeLimit * (totRank - td.getRankTime() + executionTime) / totRank;
             td.setTimeLimit(timeLimit);
+            logger.debug("Task: {}, timeLimit: {}", td.getTaskType(), timeLimit);
         }
     }
 
@@ -337,13 +340,12 @@ public class SchedulerImpl implements Scheduler {
         PodResourceDAO podResourceDAO = new PodResourceDAO();
         NodeResourceDAO nodeResourceDAO = new NodeResourceDAO();
 
-        logger.debug("Workflow: {} deploying", workflowDef.getName());
+        logger.debug("Workflow: {} deploying...", workflowDef.getName());
 
         for (TaskExecutionPlan plan: executionPlan.getTaskExecutionPlans()) {
             logger.debug("TaskExecutionPlan: {}", plan);
             Pod pod = podResourceDAO.getPod(plan.getPodId());
-            Node node = nodeResourceDAO.getNode(plan.getNodeId());
-            TaskDefinition taskDef = workflowDef.getTaskDef(plan.getTaskName());
+            Node node = nodeResourceDAO.getNode(plan.getNodeName());
 
             if (node.getStatus().isDown()) {
                 // 启动node
@@ -359,6 +361,7 @@ public class SchedulerImpl implements Scheduler {
                     k8s.resizePod(pod, workflowDef.getCeByType(plan.getTaskType()));
             } else {
                 // 其他
+                k8s.startNode(node);
             }
         }
     }

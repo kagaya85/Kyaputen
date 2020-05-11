@@ -11,6 +11,8 @@ import com.kagaya.kyaputen.common.schedule.ExecutionPlan;
 import com.kagaya.kyaputen.common.schedule.TaskExecutionPlan;
 import com.kagaya.kyaputen.core.events.TaskMessage;
 import com.kagaya.kyaputen.core.utils.IdGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -24,6 +26,8 @@ import java.util.Map;
 public class ExecutionDAOImpl implements ExecutionDAO {
 
     private WorkflowQueue workflowQueue = new WorkflowQueue();
+
+    private static final Logger logger = LoggerFactory.getLogger(ExecutionDAO.class);
 
     public ExecutionDAOImpl() {
 
@@ -64,6 +68,7 @@ public class ExecutionDAOImpl implements ExecutionDAO {
         workflow.setWorkflowId(workflowId);
         workflow.setTasks(createTaskMap(workflowId, workflowDef, plan));
 
+        logger.debug("Create workflow, name: {}, id: {}, tasks: {}", workflow.getName(), workflow.getWorkflowId(), workflow.getTaskNames());
         workflowQueue.add(workflow);
 
         return workflow;
@@ -86,12 +91,14 @@ public class ExecutionDAOImpl implements ExecutionDAO {
             task.setPollCount(0);
             task.setTaskId(taskPlan.getTaskId());
             task.setWorkerId(taskPlan.getPodId());
+            task.setTaskType(taskDef.getTaskType());
             task.setRetryCount(3);
             task.setTaskDefinition(taskDef);
             task.setStartTime(0);
             task.setStatus(Task.Status.IN_QUEUE);
 
             taskMap.put(taskName, task);
+            logger.debug("Create task, name: {}, type: {}, id: {}", task.getTaskDefName(), task.getTaskType(), task.getTaskId());
         }
 
         return taskMap;

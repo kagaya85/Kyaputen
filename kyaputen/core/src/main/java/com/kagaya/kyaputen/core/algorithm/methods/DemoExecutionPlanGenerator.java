@@ -60,6 +60,8 @@ public class DemoExecutionPlanGenerator implements Method {
 
         taskQueue.sort(new TaskUrgencyLevelComparator());
 
+        logger.debug("Workflow: {} urgency level queue: {}", workflowDef.getName(), taskQueue);
+
         while (!taskQueue.isEmpty()) {
             String taskName = taskQueue.get(0);
             taskQueue.remove(0);
@@ -68,6 +70,7 @@ public class DemoExecutionPlanGenerator implements Method {
             TaskExecutionPlan taskExecutionPlan = exePlan.getTaskExecutionPlan(taskName);
 
             // 设置task基础属性
+            taskExecutionPlan.setExpectedStartTime(startTime + taskDef.getAbsoluteStartTime());
             taskExecutionPlan.setExecutionTime(taskDef.getAbsoluteFinishTime() - taskDef.getAbsoluteStartTime());
             taskExecutionPlan.setTaskId(IdGenerator.generate());
 
@@ -98,7 +101,8 @@ public class DemoExecutionPlanGenerator implements Method {
 
                 double price = selectedNode.getPrice() * (pod.getComputeUnit()/selectedNode.getTotalComputeUnit());
                 pod.setPrice(price);
-                pod.setNodeId(selectedNode.getId());
+                pod.setNodeName(selectedNode.getNodeName());
+                taskExecutionPlan.setNodeName(selectedNode.getNodeName());
             }
         }
     }
@@ -114,6 +118,8 @@ public class DemoExecutionPlanGenerator implements Method {
         long executionTime = (long)Math.ceil(taskDef.getTaskSize() / ce);
         int minPrice = Integer.MAX_VALUE;
         long deadline = startTime + taskDef.getAbsoluteStartTime() + taskDef.getTimeLimit();
+
+        logger.debug("TaskExecutionPlan of task: {}, type: {}, ce: {}, allocating pod...", plan.getTaskName(), plan.getTaskType(), ce);
 
         for (String pid: podResource.getPodIdList()) {
             Pod pod = podResource.getPod(pid);
@@ -131,7 +137,6 @@ public class DemoExecutionPlanGenerator implements Method {
                 if(pod.getPrice() < minPrice)
                     podId = pid;
             }
-
 
         }
 
@@ -160,6 +165,7 @@ public class DemoExecutionPlanGenerator implements Method {
 
             // 更新pod分配map
             podResource.addPod(pod);
+            logger.debug("Task: {}, type: {} created a new pod, podId: {}, podCe: {}", plan.getTaskName(), plan.getTaskType(), pod.getPodId(), pod.getComputeUnit());
         }
 
         plan.setPodId(podId);
@@ -167,6 +173,7 @@ public class DemoExecutionPlanGenerator implements Method {
     }
 
     private void calcUrgencyLevel() {
+        logger.debug("Calculating urgency level of workflow: {}", workflowDef.getName());
         for (String tdn: workflowDef.getTaskDefNames()) {
             TaskDefinition td = workflowDef.getTaskDef(tdn);
             TaskExecutionPlan plan = exePlan.getTaskExecutionPlan(tdn);

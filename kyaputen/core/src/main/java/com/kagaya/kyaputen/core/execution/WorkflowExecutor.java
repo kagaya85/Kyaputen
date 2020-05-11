@@ -55,7 +55,6 @@ public class WorkflowExecutor {
      */
     public Workflow createWorkflow(WorkflowDefinition workflowDef, ExecutionPlan plan) {
         Workflow workflow = executionDAO.createWorkflow(workflowDef, plan);
-        logger.debug("Create workflow, Id: {}", workflow.getWorkflowId());
         return workflow;
     }
 

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class NodeResourceDAO {
 
-    // 管理已有node信息
+    // 管理已有node信息 nodeName -> Node
     private static Map<String, Node> nodeMap = new HashMap<>();
 
     public NodeResourceDAO() {
@@ -21,8 +21,8 @@ public class NodeResourceDAO {
         NodeResourceDAO.nodeMap = nodeMap;
     }
 
-    public Node getNode(String nodeId) {
-        return nodeMap.get(nodeId);
+    public Node getNode(String nodeName) {
+        return nodeMap.get(nodeName);
     }
 
     public List<Node> getNodeList() {
@@ -30,7 +30,7 @@ public class NodeResourceDAO {
     }
 
     public void addNode(Node node) {
-        nodeMap.put(node.getId(), node);
+        nodeMap.put(node.getNodeName(), node);
     }
 
 }

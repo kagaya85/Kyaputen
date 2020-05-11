@@ -48,7 +48,7 @@ public class Monitor {
         Long time = taskExecutionTimeMap.get(taskType);
 
         if (time == null) {
-            time = 1000L;
+            time = 5000L;
         }
 
         return time;
@@ -71,7 +71,7 @@ public class Monitor {
         Long time = nodeLatencyTimeMap.get(nodeId);
 
         if (time == null) {
-            time = -1L;
+            time = 0L;
         }
 
         return time;

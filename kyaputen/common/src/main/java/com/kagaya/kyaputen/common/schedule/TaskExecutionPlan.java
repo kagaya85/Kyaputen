@@ -12,9 +12,9 @@ public class TaskExecutionPlan {
 
     private String podId;
 
-    private String nodeId;
+    private String nodeName;
 
-    private String expectedStartTime;
+    private long expectedStartTime;
 
     // 预期执行时间 ms
     private long executionTime;
@@ -26,12 +26,12 @@ public class TaskExecutionPlan {
         this.taskType = taskType;
     }
 
-    public String getNodeId() {
-        return nodeId;
+    public String getNodeName() {
+        return nodeName;
     }
 
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 
     public String getPodId() {
@@ -82,11 +82,11 @@ public class TaskExecutionPlan {
         this.taskId = taskId;
     }
 
-    public void setExpectedStartTime(String expectedStartTime) {
+    public void setExpectedStartTime(long expectedStartTime) {
         this.expectedStartTime = expectedStartTime;
     }
 
-    public String getExpectedStartTime() {
+    public long getExpectedStartTime() {
         return expectedStartTime;
     }
 
@@ -97,7 +97,7 @@ public class TaskExecutionPlan {
                 ", taskId='" + taskId + '\'' +
                 ", taskType='" + taskType + '\'' +
                 ", podId='" + podId + '\'' +
-                ", nodeId='" + nodeId + '\'' +
+                ", nodeName='" + nodeName + '\'' +
                 ", expectedStartTime='" + expectedStartTime + '\'' +
                 ", executionTime=" + executionTime +
                 ", urgencyLevel=" + urgencyLevel +
