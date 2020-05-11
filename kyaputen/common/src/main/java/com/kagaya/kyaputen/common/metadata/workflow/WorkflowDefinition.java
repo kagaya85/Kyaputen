@@ -141,7 +141,7 @@ public class WorkflowDefinition {
         Double ce = CostEfficientMap.get(taskType);
 
         if (ce == null) {
-            return 1.0;
+            return 0.5;
         }
 
         return ce;

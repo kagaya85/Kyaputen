@@ -50,7 +50,7 @@ public class DecideService {
      * @return
      */
     private boolean checkReady(Task task) {
-        logger.debug("Check ready task : {}}", task);
+        logger.debug("Check task: {}}", task);
 
         TaskDefinition taskDef = task.getTaskDefinition();
 
@@ -64,11 +64,11 @@ public class DecideService {
         for (String taskName: priorTasks) {
             Task t = workflow.getTask(taskName);
             if (null == t) {
-                logger.debug("Check Task: {} is null", taskName);
+                logger.debug("Check prior task: {} is null", taskName);
                 return false;
             }
             else if (!t.getStatus().equals(Status.COMPLETED)) {
-                logger.debug("Check Task: {} - {} is not ready or already completed", t.getTaskDefName(), t.getTaskId());
+                logger.debug("Check prior task, name: {}, type: {} is not complete", t.getTaskDefName(), t.getTaskId());
                 return false;
             }
         }

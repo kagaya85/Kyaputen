@@ -109,7 +109,7 @@ public class ExecutionService {
         return task;
     }
 
-    public void startWorkflow(String workflowName, Map<String, Object> inputParam, long deadline) {
+    public void startWorkflow(String workflowName, Map<String, Object> inputParam) {
         List<Workflow> workflowList = workflowQueue.getByName(workflowName);
         WorkflowDefinition workflowDef = workflowDefinitionDAO.get(workflowName);
 
@@ -133,7 +133,8 @@ public class ExecutionService {
         // 划分Ce
         scheduler.calcWorkflowCostEfficient(workflowDef, Constant.DEADLINE_FACTOR);
         // 划分截止时间
-        scheduler.divideSubDeadline(workflowDef, System.currentTimeMillis(), deadline);
+        long startTime = System.currentTimeMillis();
+        scheduler.divideSubDeadline(workflowDef, startTime, startTime + workflowDef.getTimeLimit());
         // 调用资源分配算法
         ExecutionPlan plan = scheduler.genExecutionPlan(System.currentTimeMillis(), workflowDef);
 

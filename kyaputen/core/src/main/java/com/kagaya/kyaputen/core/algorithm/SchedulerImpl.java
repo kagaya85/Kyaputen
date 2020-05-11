@@ -34,10 +34,13 @@ public class SchedulerImpl implements Scheduler {
      */
     public void updateTaskSize(WorkflowDefinition workflowDef) {
 
+        logger.debug("Update task size of workflow: {}", workflowDef.getName());
+
         for (String tdn: workflowDef.getTaskDefNames()) {
             TaskDefinition td = workflowDef.getTaskDef(tdn);
             long taskSize = (long)(Monitor.getTaskExecutionTime(td.getTaskType()) * workflowDef.getCeByType(td.getTaskType()));
             td.setTaskSize(taskSize);
+            logger.debug("Update task size: {}, of taskType: {}", taskSize, td.getTaskType());
         }
     }
 
@@ -53,18 +56,23 @@ public class SchedulerImpl implements Scheduler {
 
         logger.debug("Calculate Workflow: {} Cost Efficient", workflowDef.getName());
 
+        updateTaskSize(workflowDef);
+
         for (String type: taskTypeNum.keySet()) {
             ce.put(type, Constant.POD_MIN_CU);
         }
 
         // 原始执行时间
         long expectedExecutionTime = calcExpectedExecutionTime(workflowDef, ce);
+        logger.info("Workflow: {}, expected execution time: {}, time limit: {}", workflowDef.getName(), expectedExecutionTime, workflowDef.getTimeLimit());
 
         // 调整cu，计算性价比
         while(true) {
 
-            if (expectedExecutionTime < workflowDef.getTimeLimit())
+            if (expectedExecutionTime < workflowDef.getTimeLimit()) {
+                logger.info("Workflow: {}, expected execution time: {}, time limit: {}", workflowDef.getName(), expectedExecutionTime, workflowDef.getTimeLimit());
                 break;
+            }
 
             String speedupType = null;
             double maxGain = 0.0;
@@ -133,6 +141,8 @@ public class SchedulerImpl implements Scheduler {
                     ce.put(speedupType, oldCU + Constant.CU_INTERVAL);
                 }
             }
+
+            expectedExecutionTime = calcExpectedExecutionTime(workflowDef, ce);
         }
 
         logger.debug("Calculate CostEfficient of workflow: {}, ce: {}", workflowDef.getName(), ce);
@@ -266,7 +276,7 @@ public class SchedulerImpl implements Scheduler {
         TaskDefinition taskDef = workflowDef.getEndTaskDefinition();
         List<String> taskQueue = new LinkedList<>(taskDef.getPriorTasks());
 
-        logger.debug("Divide deadline or workflow: {}, startTime: {}, deadline: {}", workflowDef.getName(), startTime, deadline);
+        logger.debug("Divide deadline or workflow: {}, startTime: {}, deadline: {}, timeLimit: {}", workflowDef.getName(), startTime, deadline, deadline - startTime);
 
         double ce = workflowDef.getCeByType(taskDef.getTaskType());
         long rankTime = (long)Math.ceil(taskDef.getTaskSize() / ce);
@@ -304,11 +314,12 @@ public class SchedulerImpl implements Scheduler {
             logger.error("Deadline before the startTime in divide subdeadline");
         }
         long totRank = workflowDef.getStartTaskDefinition().getRankTime();
+        logger.debug("Total rank: {}", totRank);
 
         for (String tdn: workflowDef.getTaskDefNames()) {
             TaskDefinition td = workflowDef.getTaskDef(tdn);
-            long executionTime = (long)Math.ceil(td.getTaskSize() / workflowDef.getCeByType(td.getTaskType()));
-            long timeLimit = totTimeLimit * (totRank - td.getRankTime() + executionTime) / totRank;
+            long executionTime = (long)Math.floor(td.getTaskSize() / workflowDef.getCeByType(td.getTaskType()));
+            long timeLimit = totTimeLimit * executionTime / totRank;
             td.setTimeLimit(timeLimit);
             logger.debug("Task: {}, timeLimit: {}", td.getTaskType(), timeLimit);
         }

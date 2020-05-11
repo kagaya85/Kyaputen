@@ -48,7 +48,7 @@ public class Monitor {
         Long time = taskExecutionTimeMap.get(taskType);
 
         if (time == null) {
-            time = 5000L;
+            time = 1000L;
         }
 
         return time;

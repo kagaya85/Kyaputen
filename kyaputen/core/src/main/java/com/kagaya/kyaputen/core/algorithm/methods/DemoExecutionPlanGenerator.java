@@ -156,12 +156,13 @@ public class DemoExecutionPlanGenerator implements Method {
             // 最小ce
             double minCe = (long)Math.ceil(taskDef.getTaskSize() / (deadline - est));
 
-            if (minCe < bestFitCe) {
-                pod.setComputeUnit(minCe);
-            }
-            else {
-                pod.setComputeUnit(bestFitCe);
-            }
+//            if (minCe < bestFitCe) {
+//                pod.setComputeUnit(minCe);
+//            }
+//            else {
+//                pod.setComputeUnit(bestFitCe);
+//            }
+            pod.setComputeUnit(bestFitCe);
 
             // 更新pod分配map
             podResource.addPod(pod);
