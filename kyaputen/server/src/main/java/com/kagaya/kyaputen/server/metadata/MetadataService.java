@@ -5,7 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskDefinition;
 import com.kagaya.kyaputen.common.metadata.workflow.WorkflowDefinition;
+import com.kagaya.kyaputen.common.runtime.Node;
 import com.kagaya.kyaputen.common.runtime.Workflow;
+import com.kagaya.kyaputen.core.utils.IdGenerator;
 
 import java.io.FileReader;
 import java.util.HashMap;
@@ -59,5 +61,37 @@ public class MetadataService {
         }
 
         return workflowDefs;
+    }
+
+    public List<Node> readNodeConfig(String filepath) {
+        Gson gson = new GsonBuilder().create();
+        List<Node> nodes = new LinkedList<>();
+
+        try {
+            JsonReader reader = new JsonReader(new FileReader(filepath));
+            NodeBean[] nodeBeans = gson.fromJson(reader, NodeBean[].class);
+
+            for (NodeBean data: nodeBeans) {
+                Node node = new Node();
+
+                node.setNodeName(data.nodeName);
+                node.setCpu(data.cpu);
+                node.setMem(data.mem);
+                node.setPrice(data.price);
+                // ce = cpu
+                node.setTotalComputeUnit(data.cpu);
+                node.setAllocatedComputeUnit(0);
+                node.setId(IdGenerator.generate());
+                node.setStatus(Node.NodeStatus.Down);
+                nodes.add(node);
+            }
+
+        }
+        catch (Exception e) {
+            System.out.println("error: " + e.getMessage());
+            System.exit(-1);
+        }
+
+        return nodes;
     }
 }

@@ -12,7 +12,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        KyaputenServer server = new KyaputenServer(18080, "/Users/kagaya/Documents/repos/microservice/config/workflow-test.json");
+        KyaputenServer server = new KyaputenServer(18080,
+                "/Users/kagaya/Documents/repos/microservice/config/workflow-test.json",
+                "/Users/kagaya/Documents/repos/microservice/config/nodes.json");
 
         ExecutionService executionService = new ExecutionService();
         NodeResourceDAO nodeResourceDAO = new NodeResourceDAO();

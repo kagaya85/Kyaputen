@@ -33,4 +33,10 @@ public class NodeResourceDAO {
         nodeMap.put(node.getNodeName(), node);
     }
 
+    public void addAll(List<Node> nodes) {
+        for (Node node: nodes) {
+            nodeMap.put(node.getNodeName(), node);
+        }
+    }
+
 }
