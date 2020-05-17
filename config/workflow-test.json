@@ -1,0 +1,64 @@
+[
+    {
+        "name": "workflow-test",
+        "description": "test",
+        "version": "0.0.1",
+        "timeLimit": 2000,
+        "tasks": [
+            {
+                "taskName": "task1",
+                "taskType": "testType1",
+                "description": "test1",
+                "timeoutSeconds": 3,
+                "inputKeys": [
+                    "name",
+                    "id",
+                    "age"
+                ],
+                "outputKeys": [
+                    "level",
+                    "score"
+                ],
+                "priorTasks": [],
+                "nextTasks": [
+                    "task2"
+                ]
+            },
+            {
+                "taskName": "task2",
+                "taskType": "testType2",
+                "description": "test2",
+                "timeoutSeconds": 3,
+                "inputKeys": [
+                    "level",
+                    "score"
+                ],
+                "outputKeys": [
+                    "result"
+                ],
+                "priorTasks": [
+                    "task1"
+                ],
+                "nextTasks": [
+                    "task3"
+                ]
+            },
+            {
+                "taskName": "task3",
+                "taskType": "testType3",
+                "description": "test3",
+                "timeoutSeconds": 3,
+                "inputKeys": [
+                    "result"
+                ],
+                "outputKeys": [
+                    "output"
+                ],
+                "priorTasks": [
+                    "task2"
+                ],
+                "nextTasks": []
+            }
+        ]
+    }
+]
