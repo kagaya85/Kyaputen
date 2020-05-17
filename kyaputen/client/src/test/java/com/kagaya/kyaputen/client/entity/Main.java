@@ -15,7 +15,7 @@ public class Main {
 //        Task task = taskClient.pollTask("testType", "test123", "testDomain");
 //        System.out.println("task status: " + task.getStatus().name());
 
-        Worker worker = new SampleWorker("testTask");
+        Worker worker = new SampleWorker(KyaputenClientConfig.getTaskType());
 
         TaskRunner runner = new TaskRunner.Builder(taskClient, worker).build();
 

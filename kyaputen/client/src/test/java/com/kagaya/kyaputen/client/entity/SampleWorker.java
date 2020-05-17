@@ -8,25 +8,33 @@ import com.kagaya.kyaputen.common.metadata.tasks.TaskResult.Status;
 
 public class SampleWorker implements Worker {
 
-    private String taskDefName;
+    private String taskType;
 
-    public SampleWorker(String taskDefName) {
-        this.taskDefName = taskDefName;
+    public SampleWorker(String taskType) {
+        this.taskType = taskType;
     }
 
     @Override
     public String getTaskDefName() {
-        return taskDefName;
+        return taskType;
     }
 
     @Override
     public TaskResult execute(Task task) {
+        String workerId = task.getWorkerId();
+        String workerflowInstanceId = task.getWorkflowInstanceId();
         TaskResult result = new TaskResult(task);
 
         System.out.println("Input:" + task.getInputData());
 
-        result.getOutputData().put("level", "test");
-        result.getOutputData().put("score", 1551);
+        result.getOutputData().put("name", "test");
+        result.getOutputData().put("id", "1145141919810");
+        result.getOutputData().put("age", 1551);
+        result.getOutputData().put("level", "senior");
+        result.getOutputData().put("score", "98");
+        result.getOutputData().put("result", "status ok");
+        result.getOutputData().put("output", "this is an output");
+
 
         try {
             Thread.sleep(KyaputenClientConfig.getSleepTime());
@@ -36,6 +44,8 @@ public class SampleWorker implements Worker {
         }
 
         result.setStatus(Status.COMPLETED);
+        result.setWorkerId(workerId);
+        result.setWorkflowInstanceId(workerflowInstanceId);
 
         return result;
     }

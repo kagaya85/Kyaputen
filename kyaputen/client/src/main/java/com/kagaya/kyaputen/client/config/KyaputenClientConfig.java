@@ -8,6 +8,8 @@ import java.io.FileReader;
 
 public class KyaputenClientConfig {
 
+    private static String taskType = "test";
+
     private static String address = "localhost";
 
     private static int port = 18080;
@@ -30,6 +32,9 @@ public class KyaputenClientConfig {
             JsonReader reader = new JsonReader(new FileReader(configPath));
             ConfigBean config = gson.fromJson(reader, ConfigBean.class);
 
+            if (config.taskType != null)
+                taskType = config.taskType;
+
             if (config.address != null)
                 address = config.address;
 
@@ -49,6 +54,13 @@ public class KyaputenClientConfig {
         }
     }
 
+    public static String getTaskType() {
+        return taskType;
+    }
+
+    public static void setTaskType(String taskType) {
+        KyaputenClientConfig.taskType = taskType;
+    }
 
     public static int getPort() {
         return port;
