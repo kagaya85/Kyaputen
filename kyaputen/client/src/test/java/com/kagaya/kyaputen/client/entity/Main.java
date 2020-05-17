@@ -7,10 +7,10 @@ import com.kagaya.kyaputen.client.worker.Worker;
 
 public class Main {
     public static void main(String[] args) {
-        KyaputenClientConfig.setAddress("localhost");
-        KyaputenClientConfig.setPort(18080);
 
-        TaskClient taskClient = new TaskClient();
+        KyaputenClientConfig config = new KyaputenClientConfig("./config.json");
+
+        TaskClient taskClient = new TaskClient(config);
 
 //        Task task = taskClient.pollTask("testType", "test123", "testDomain");
 //        System.out.println("task status: " + task.getStatus().name());
