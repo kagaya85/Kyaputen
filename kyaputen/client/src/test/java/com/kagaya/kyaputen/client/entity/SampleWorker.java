@@ -1,5 +1,6 @@
 package com.kagaya.kyaputen.client.entity;
 
+import com.kagaya.kyaputen.client.config.KyaputenClientConfig;
 import com.kagaya.kyaputen.client.worker.Worker;
 import com.kagaya.kyaputen.common.metadata.tasks.Task;
 import com.kagaya.kyaputen.common.metadata.tasks.TaskResult;
@@ -26,6 +27,13 @@ public class SampleWorker implements Worker {
 
         result.getOutputData().put("level", "test");
         result.getOutputData().put("score", 1551);
+
+        try {
+            Thread.sleep(KyaputenClientConfig.getSleepTime());
+        }
+        catch (InterruptedException e) {
+            System.err.println("Thread InterruptedException");
+        }
 
         result.setStatus(Status.COMPLETED);
 
