@@ -137,8 +137,9 @@ public class WorkflowExecutor {
         Pod pod = podResourceDAO.getPod(task.getWorkerId());
         pod.finishTaskExecutionPlan(task.getTaskId());
         logger.debug("Finish task execution plan of taskId: {}", task.getTaskId());
-        if (pod.needUpdate())
+        if (pod.needUpdate()) {
             k8s.resizePod(pod, workflowDef.getCeByType(task.getTaskType()));
+        }
     }
 
     public Task getTask(String workflowId, String taskId) {

@@ -65,6 +65,7 @@ public class KubernetesService {
     }
 
     public void createPod(Pod pod, double ce) {
+        NodeResourceDAO nodeResourceDAO = new NodeResourceDAO();
         String namespace = "default";
         V1Pod body = new V1Pod();
         V1PodSpec podSpec = new V1PodSpec();
@@ -99,6 +100,9 @@ public class KubernetesService {
 
             logger.debug("Create pod of image: {}, podId: {}, result: {}", pod.getTaskImageName(), pod.getPodId(), result.toString());
             pod.setStatus(Pod.PodStatus.IDLE);
+            Node node = nodeResourceDAO.getNode(pod.getNodeName());
+            node.addImage(pod.getTaskImageName());
+            node.addPod(pod.getPodId());
         } catch (ApiException e) {
             logger.error("Create pod error in namespace: {} for reason: {}, header: {}", namespace, e.getResponseBody(), e.getResponseHeaders());
             e.printStackTrace();
